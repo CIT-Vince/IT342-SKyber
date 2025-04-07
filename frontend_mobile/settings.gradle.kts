@@ -19,11 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-<<<<<<< Updated upstream
-rootProject.name = "edu.cit.SKyber"
-include(":app")
-=======
-rootProject.name = "Skyber Mobile"
+rootProject.name = "Skyber"
 include(":app")
  
->>>>>>> Stashed changes

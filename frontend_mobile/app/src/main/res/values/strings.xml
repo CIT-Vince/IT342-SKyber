@@ -1,7 +1,3 @@
 <resources>
-<<<<<<< Updated upstream
-    <string name="app_name">edu.cit.SKyber</string>
-=======
-    <string name="app_name">Skyber Mobile</string>
->>>>>>> Stashed changes
+    <string name="app_name">Skyber</string>
 </resources>

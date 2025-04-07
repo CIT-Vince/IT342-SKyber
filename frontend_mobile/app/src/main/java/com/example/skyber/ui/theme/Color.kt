@@ -1,4 +1,4 @@
-package com.example.skybermobile.ui.theme
+package com.example.skyber.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

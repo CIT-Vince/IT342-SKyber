@@ -1,4 +1,4 @@
-package com.example.educitskyber
+package com.example.skyber
 
 import org.junit.Test
 
