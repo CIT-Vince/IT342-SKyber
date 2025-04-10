@@ -1,0 +1,109 @@
+<!-- edit-project.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Project</title>
+</head>
+<body>
+  <h2>Edit Project</h2>
+
+  <form id="editProjectForm">
+    <div>
+      <label for="projectName">Project Name:</label>
+      <input type="text" id="projectName" name="projectName" required><br><br>
+    </div>
+
+    <div>
+      <label for="description">Description:</label>
+      <textarea id="description" name="description" required></textarea><br><br>
+    </div>
+
+    <div>
+      <label for="status">Status:</label>
+      <input type="text" id="status" name="status" required><br><br>
+    </div>
+
+    <div>
+      <label for="budget">Budget:</label>
+      <input type="number" id="budget" name="budget" required><br><br>
+    </div>
+
+    <div>
+      <label for="projectManager">Project Manager:</label>
+      <input type="text" id="projectManager" name="projectManager" required><br><br>
+    </div>
+
+    <div>
+      <label for="teamMembers">Team Members:</label>
+      <input type="text" id="teamMembers" name="teamMembers" required><br><br>
+    </div>
+
+    <div>
+      <label for="stakeholders">Stakeholders:</label>
+      <input type="text" id="stakeholders" name="stakeholders" required><br><br>
+    </div>
+
+    <div>
+      <label for="sustainabilityGoals">Sustainability Goals:</label>
+      <input type="text" id="sustainabilityGoals" name="sustainabilityGoals" required><br><br>
+    </div>
+
+    <button type="submit">Save Changes</button>
+  </form>
+
+  <script>
+    // Get the project ID from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get('id');
+
+    // Fetch the existing project details
+    fetch(`/api/project-transparency/${projectId}`)
+      .then(response => response.json())
+      .then(project => {
+        document.getElementById('projectName').value = project.projectName;
+        document.getElementById('description').value = project.description;
+        document.getElementById('status').value = project.status;
+        document.getElementById('budget').value = project.budget;
+        document.getElementById('projectManager').value = project.projectManager;
+        document.getElementById('teamMembers').value = project.teamMembers;
+        document.getElementById('stakeholders').value = project.stakeholders;
+        document.getElementById('sustainabilityGoals').value = project.sustainabilityGoals;
+      })
+      .catch(error => console.error('Error fetching project data:', error));
+
+    // Handle form submission to update the project
+    document.getElementById('editProjectForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const updatedProject = {
+        projectName: document.getElementById('projectName').value,
+        description: document.getElementById('description').value,
+        status: document.getElementById('status').value,
+        budget: document.getElementById('budget').value,
+        projectManager: document.getElementById('projectManager').value,
+        teamMembers: document.getElementById('teamMembers').value,
+        stakeholders: document.getElementById('stakeholders').value,
+        sustainabilityGoals: document.getElementById('sustainabilityGoals').value,
+      };
+
+      // Update the project using PUT method
+      fetch(`/api/project-transparency/${projectId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedProject),
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert('Project updated successfully!');
+        window.location.href = '/projecttransparency-list.html'; // Redirect back to project list page
+      })
+      .catch(error => {
+        alert('Error updating project');
+        console.error('Error:', error);
+      });
+    });
+  </script>
+</body>
+</html>
