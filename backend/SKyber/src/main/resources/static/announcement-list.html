@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Announcement List</title>
+</head>
+<body>
+  <h2>Announcements</h2>
+
+  <div id="announcementList">
+    <!-- Announcements will be dynamically loaded here -->
+  </div>
+
+  <script>
+    // Fetch and display all announcements
+    fetch('/api/announcements')
+      .then(response => response.json())
+      .then(data => {
+        const announcementListDiv = document.getElementById('announcementList');
+        
+        // Loop through each announcement and add it to the page
+        data.forEach(announcement => {
+          const announcementDiv = document.createElement('div');
+          announcementDiv.classList.add('announcement');
+          announcementDiv.innerHTML = `
+            <h3>${announcement.title}</h3>
+            <p>${announcement.content}</p>
+            <p><strong>Barangay:</strong> ${announcement.barangay}</p>
+            <p><strong>Category:</strong> ${announcement.category}</p>
+            <p><strong>Posted At:</strong> ${announcement.postedAt}</p>
+            <button onclick="editAnnouncement(${announcement.id})">Edit</button>
+            <button onclick="deleteAnnouncement(${announcement.id})">Delete</button>
+            <hr>
+          `;
+          announcementListDiv.appendChild(announcementDiv);
+        });
+      })
+      .catch(error => console.error('Error fetching announcements:', error));
+
+    // Edit announcement function
+    function editAnnouncement(id) {
+      window.location.href = `/announcement-form.html?id=${id}`;  // Redirect to the form with the announcement ID
+    }
+
+    // Delete announcement function
+    function deleteAnnouncement(id) {
+      if (confirm('Are you sure you want to delete this announcement?')) {
+        fetch(`/api/announcements/${id}`, {
+          method: 'DELETE'
+        })
+        .then(() => {
+          alert('Announcement deleted successfully!');
+          location.reload();  // Reload the page to reflect changes
+        })
+        .catch(error => alert('Error deleting announcement.'));
+      }
+    }
+  </script>
+</body>
+</html>
