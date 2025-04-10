@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthRequest {
-    private String email;  // this is typically the email or username
+    private String username;  // this is typically the email or username
     private String password;
 
     

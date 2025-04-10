@@ -1,0 +1,74 @@
+<!-- project-list.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project List</title>
+</head>
+<body>
+  <h2>Project List</h2>
+  
+  <table id="projectsTable">
+    <thead>
+      <tr>
+        <th>Project Name</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Budget</th>
+        <th>Project Manager</th>
+        <th>Team Members</th>
+        <th>Stakeholders</th>
+        <th>Sustainability Goals</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    fetch('/api/project-transparency')
+      .then(response => response.json())
+      .then(projects => {
+        const tableBody = document.querySelector("#projectsTable tbody");
+        projects.forEach(project => {
+          const row = document.createElement("tr");
+
+          row.innerHTML = `
+            <td>${project.projectName}</td>
+            <td>${project.description}</td>
+            <td>${project.status}</td>
+            <td>${project.budget}</td>
+            <td>${project.projectManager}</td>
+            <td>${project.teamMembers}</td>
+            <td>${project.stakeholders}</td>
+            <td>${project.sustainabilityGoals}</td>
+            <td>
+              <button onclick="editProject(${project.id})">Edit</button>
+              <button onclick="deleteProject(${project.id})">Delete</button>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+      })
+      .catch(error => console.error('Error fetching projects:', error));
+
+    function editProject(id) {
+      window.location.href = `/edit-project.html?id=${id}`;
+    }
+
+    function deleteProject(id) {
+      if (confirm('Are you sure you want to delete this project?')) {
+        fetch(`/api/project-transparency/${id}`, {
+          method: 'DELETE',
+        })
+        .then(() => {
+          alert('Project deleted successfully');
+          location.reload();  // Reload to update the list
+        })
+        .catch(error => console.error('Error deleting project:', error));
+      }
+    }
+  </script>
+</body>
+</html>
