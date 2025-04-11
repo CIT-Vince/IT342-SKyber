@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-SKyberApplication<SKyber>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "edu.cit.SKyber.SKyberApplication",
+            "projectName": "SKyber",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

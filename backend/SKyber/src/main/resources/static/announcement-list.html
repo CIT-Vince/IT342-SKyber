@@ -14,7 +14,8 @@
 
   <script>
     // Fetch and display all announcements
-    fetch('/api/announcements')
+    fetch('/api/announcements/get-announcements')
+
       .then(response => response.json())
       .then(data => {
         const announcementListDiv = document.getElementById('announcementList');
@@ -45,17 +46,18 @@
 
     // Delete announcement function
     function deleteAnnouncement(id) {
-      if (confirm('Are you sure you want to delete this announcement?')) {
-        fetch(`/api/announcements/${id}`, {
-          method: 'DELETE'
-        })
-        .then(() => {
-          alert('Announcement deleted successfully!');
-          location.reload();  // Reload the page to reflect changes
-        })
-        .catch(error => alert('Error deleting announcement.'));
-      }
-    }
+  if (confirm('Are you sure you want to delete this announcement?')) {
+    fetch(`/api/announcements/delete-announcement/${id}`, {
+      method: 'DELETE'
+    })
+    .then(() => {
+      alert('Announcement deleted successfully!');
+      location.reload();  // Reload the page to reflect changes
+    })
+    .catch(error => alert('Error deleting announcement.'));
+  }
+}
+
   </script>
 </body>
 </html>
