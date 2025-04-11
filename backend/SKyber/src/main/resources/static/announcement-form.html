@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Create/Edit Announcement</title>
 </head>
 <body>
@@ -39,16 +39,20 @@
   </form>
 
   <script>
-    // Load the announcement data if we are editing an existing announcement
+    // Get the announcement ID from the URL (for editing)
     const urlParams = new URLSearchParams(window.location.search);
-    const announcementId = urlParams.get('id'); // Get the announcement ID from the URL
+    const announcementId = urlParams.get('id');
 
+    // If editing an existing announcement, fetch the data and populate the form
     if (announcementId) {
-      // Fetch the existing announcement details
-      fetch(`/api/announcements/${announcementId}`)
-        .then(response => response.json())
+      fetch(`/api/announcements/get-announcement/${announcementId}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch announcement');
+          }
+          return response.json();
+        })
         .then(data => {
-          // Pre-fill the form with existing data
           document.getElementById('title').value = data.title;
           document.getElementById('content').value = data.content;
           document.getElementById('barangay').value = data.barangay;
@@ -62,22 +66,27 @@
 
     // Handle form submission
     document.getElementById('announcementForm').onsubmit = function(event) {
-      event.preventDefault(); // Prevent default form submission
+      event.preventDefault();
 
       const formData = new FormData(event.target);
-
       const method = announcementId ? 'PUT' : 'POST';
-      const url = announcementId ? `/api/announcements/${announcementId}` : '/api/announcements';
+      const url = announcementId
+        ? `/api/announcements/update-announcement/${announcementId}`
+        : '/api/announcements/create-announcement';
 
-      // Send the form data to the backend
       fetch(url, {
         method: method,
         body: formData
       })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to save announcement');
+        }
+        return response.json();
+      })
       .then(data => {
         alert('Announcement saved successfully!');
-        window.location.href = '/announcement-list.html';  // Redirect to list page after submission
+        window.location.href = '/announcement-list.html';
       })
       .catch(error => {
         console.error('Error saving announcement:', error);
