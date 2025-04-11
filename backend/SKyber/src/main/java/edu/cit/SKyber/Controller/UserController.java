@@ -1,10 +1,16 @@
 package edu.cit.SKyber.Controller;
 
-import edu.cit.SKyber.Entity.UserInfo;
 import edu.cit.SKyber.Entity.AuthRequest;
+import edu.cit.SKyber.Entity.UserInfo;
 import edu.cit.SKyber.Service.JwtService;
 import edu.cit.SKyber.Service.UserInfoService;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,17 +30,24 @@ public class UserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @GetMapping("/welcome")
-    public String welcome() {
-        return "Welcome this endpoint is not secure";
+    @PostMapping("/register")
+public ResponseEntity<Map<String, String>> registerUser(@RequestBody UserInfo userInfo) {
+    String result = service.addUser(userInfo);
+    
+    Map<String, String> response = new HashMap<>();
+    if (result.equals("User added successfully!")) {
+        response.put("message", result);  // Adding message to the response body
+        return ResponseEntity.ok(response);  // 200 OK on success
+    } else {
+        response.put("message", "Error adding user.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);  // 400 Bad Request on failure
     }
+}
 
-    @PostMapping("/addNewUser")
-    public String addNewUser(@RequestBody UserInfo userInfo) {
-        return service.addUser(userInfo);
+    @PostMapping("/login")
+    public String loginUser(@RequestParam String email, @RequestParam String password) {
+        return service.loginUserAndGenerateToken(email, password); // Authenticate and generate JWT token
     }
-
-    // Removed the role checks here as they are already managed in SecurityConfig
 
     @PostMapping("/generateToken")
     public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
