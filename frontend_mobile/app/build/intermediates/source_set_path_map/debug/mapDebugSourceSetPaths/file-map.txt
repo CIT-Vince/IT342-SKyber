@@ -1,0 +1,71 @@
+com.example.skyber.app-ui-test-manifest-1.7.2-0 C:\Users\ethan\.gradle\caches\8.10.2\transforms\138999dcf4a213c63186dfa887c34436\transformed\ui-test-manifest-1.7.2\res
+com.example.skyber.app-appcompat-resources-1.7.0-1 C:\Users\ethan\.gradle\caches\8.10.2\transforms\1399720402576d74cdd7296bfc1324de\transformed\appcompat-resources-1.7.0\res
+com.example.skyber.app-navigation-runtime-ktx-2.8.9-2 C:\Users\ethan\.gradle\caches\8.10.2\transforms\1bd1352ab2abc47a164e80915d540951\transformed\navigation-runtime-ktx-2.8.9\res
+com.example.skyber.app-ui-tooling-preview-release-3 C:\Users\ethan\.gradle\caches\8.10.2\transforms\1c659ed76f940aac0fb13e88b4c6d904\transformed\ui-tooling-preview-release\res
+com.example.skyber.app-ui-graphics-release-4 C:\Users\ethan\.gradle\caches\8.10.2\transforms\1d814cf7962b7b7aa05b4d87ab67fac5\transformed\ui-graphics-release\res
+com.example.skyber.app-material-ripple-release-5 C:\Users\ethan\.gradle\caches\8.10.2\transforms\22698df0d55a3bf252577f3fa790457c\transformed\material-ripple-release\res
+com.example.skyber.app-navigation-common-2.8.9-6 C:\Users\ethan\.gradle\caches\8.10.2\transforms\2316ea211e5764d9454dcc30cbec6ae3\transformed\navigation-common-2.8.9\res
+com.example.skyber.app-lifecycle-viewmodel-ktx-2.8.7-7 C:\Users\ethan\.gradle\caches\8.10.2\transforms\23800ca4ca5ce8db1245258f12e184bb\transformed\lifecycle-viewmodel-ktx-2.8.7\res
+com.example.skyber.app-lifecycle-runtime-compose-release-8 C:\Users\ethan\.gradle\caches\8.10.2\transforms\28efdb52aa15174c38aaebe7992a3127\transformed\lifecycle-runtime-compose-release\res
+com.example.skyber.app-lifecycle-runtime-release-9 C:\Users\ethan\.gradle\caches\8.10.2\transforms\29479cbaef71bee22fbd81cfa3938754\transformed\lifecycle-runtime-release\res
+com.example.skyber.app-ui-tooling-release-10 C:\Users\ethan\.gradle\caches\8.10.2\transforms\29e29886a09c673d4188ba6f32c880e0\transformed\ui-tooling-release\res
+com.example.skyber.app-animation-release-11 C:\Users\ethan\.gradle\caches\8.10.2\transforms\2f6c3b5ce1f801179d803b665c30a0b6\transformed\animation-release\res
+com.example.skyber.app-animation-core-release-12 C:\Users\ethan\.gradle\caches\8.10.2\transforms\361478873185213e6a003974e2cb3fe1\transformed\animation-core-release\res
+com.example.skyber.app-activity-ktx-1.10.1-13 C:\Users\ethan\.gradle\caches\8.10.2\transforms\3be6e705c9ce10d7fce8b53dfab433b9\transformed\activity-ktx-1.10.1\res
+com.example.skyber.app-foundation-layout-release-14 C:\Users\ethan\.gradle\caches\8.10.2\transforms\3c190050e058b7c0377a43c3e4016f58\transformed\foundation-layout-release\res
+com.example.skyber.app-lifecycle-runtime-ktx-release-15 C:\Users\ethan\.gradle\caches\8.10.2\transforms\40f2dd4dfd3321a1e607b2e902276b43\transformed\lifecycle-runtime-ktx-release\res
+com.example.skyber.app-lifecycle-livedata-core-2.8.7-16 C:\Users\ethan\.gradle\caches\8.10.2\transforms\49792293ab0bb87083e594ed96e03c2f\transformed\lifecycle-livedata-core-2.8.7\res
+com.example.skyber.app-cardview-1.0.0-17 C:\Users\ethan\.gradle\caches\8.10.2\transforms\49bd1418350485320e53e8053de9a06f\transformed\cardview-1.0.0\res
+com.example.skyber.app-recyclerview-1.1.0-18 C:\Users\ethan\.gradle\caches\8.10.2\transforms\4ac30e903ceb0b9fa6564584e83c30de\transformed\recyclerview-1.1.0\res
+com.example.skyber.app-lifecycle-viewmodel-savedstate-2.8.7-19 C:\Users\ethan\.gradle\caches\8.10.2\transforms\4b2603e65ac55d968d934964efcaee79\transformed\lifecycle-viewmodel-savedstate-2.8.7\res
+com.example.skyber.app-fragment-1.5.4-20 C:\Users\ethan\.gradle\caches\8.10.2\transforms\4b4ea09cf0b0c59c462f24e57c06f3ba\transformed\fragment-1.5.4\res
+com.example.skyber.app-lifecycle-livedata-2.8.7-21 C:\Users\ethan\.gradle\caches\8.10.2\transforms\52efbab6d8263a520ef5327af81c3499\transformed\lifecycle-livedata-2.8.7\res
+com.example.skyber.app-customview-poolingcontainer-1.0.0-22 C:\Users\ethan\.gradle\caches\8.10.2\transforms\5384ccaca56dac7915ce15f75235d8ac\transformed\customview-poolingcontainer-1.0.0\res
+com.example.skyber.app-profileinstaller-1.4.0-23 C:\Users\ethan\.gradle\caches\8.10.2\transforms\53aecf06840a158fe46bb68494aaf914\transformed\profileinstaller-1.4.0\res
+com.example.skyber.app-ui-text-release-24 C:\Users\ethan\.gradle\caches\8.10.2\transforms\5cb6e89154ebc261423f8c59e54d3a51\transformed\ui-text-release\res
+com.example.skyber.app-material3-release-25 C:\Users\ethan\.gradle\caches\8.10.2\transforms\6545c123e8d4fc9771a3eaee3e97e8ee\transformed\material3-release\res
+com.example.skyber.app-foundation-release-26 C:\Users\ethan\.gradle\caches\8.10.2\transforms\6e604d3bc285019035c8956b7f16dc51\transformed\foundation-release\res
+com.example.skyber.app-ui-tooling-data-release-27 C:\Users\ethan\.gradle\caches\8.10.2\transforms\6f212ee27d84da4622d9661c87e466d3\transformed\ui-tooling-data-release\res
+com.example.skyber.app-emoji2-1.3.0-28 C:\Users\ethan\.gradle\caches\8.10.2\transforms\6fc70ff37dc0ab5b5efcc63d78a9244d\transformed\emoji2-1.3.0\res
+com.example.skyber.app-material-1.9.0-29 C:\Users\ethan\.gradle\caches\8.10.2\transforms\708a4a4c74242bebb27e0c6b1584f871\transformed\material-1.9.0\res
+com.example.skyber.app-constraintlayout-2.0.1-30 C:\Users\ethan\.gradle\caches\8.10.2\transforms\74c7664047283ca08c64146ac11440c6\transformed\constraintlayout-2.0.1\res
+com.example.skyber.app-ui-release-31 C:\Users\ethan\.gradle\caches\8.10.2\transforms\7ce7e8518821ad2d2e5b62f267100b88\transformed\ui-release\res
+com.example.skyber.app-activity-1.10.1-32 C:\Users\ethan\.gradle\caches\8.10.2\transforms\8784fe225196a59326b5d538e459d18f\transformed\activity-1.10.1\res
+com.example.skyber.app-navigation-runtime-2.8.9-33 C:\Users\ethan\.gradle\caches\8.10.2\transforms\8e1ab30e04e76ef7f0bd7c0479bf61a9\transformed\navigation-runtime-2.8.9\res
+com.example.skyber.app-coordinatorlayout-1.1.0-34 C:\Users\ethan\.gradle\caches\8.10.2\transforms\91ce803bc25d612791ababe24e24977a\transformed\coordinatorlayout-1.1.0\res
+com.example.skyber.app-transition-1.2.0-35 C:\Users\ethan\.gradle\caches\8.10.2\transforms\91eeb8ca93a508e317acc5bde70be444\transformed\transition-1.2.0\res
+com.example.skyber.app-lifecycle-process-2.8.7-36 C:\Users\ethan\.gradle\caches\8.10.2\transforms\9a41fac0225191c1d3fecd444d5f5914\transformed\lifecycle-process-2.8.7\res
+com.example.skyber.app-annotation-experimental-1.4.1-37 C:\Users\ethan\.gradle\caches\8.10.2\transforms\9e1595ecaca713a254cdc14762c5da82\transformed\annotation-experimental-1.4.1\res
+com.example.skyber.app-viewpager2-1.0.0-38 C:\Users\ethan\.gradle\caches\8.10.2\transforms\a50e5fb72c2d55ade7466a225fa8e4b4\transformed\viewpager2-1.0.0\res
+com.example.skyber.app-runtime-saveable-release-39 C:\Users\ethan\.gradle\caches\8.10.2\transforms\a51114fbb5df03c915aaa469216712b2\transformed\runtime-saveable-release\res
+com.example.skyber.app-activity-compose-1.10.1-40 C:\Users\ethan\.gradle\caches\8.10.2\transforms\a7c288f38534b933b97a739eb9aa0218\transformed\activity-compose-1.10.1\res
+com.example.skyber.app-lifecycle-viewmodel-release-41 C:\Users\ethan\.gradle\caches\8.10.2\transforms\ae24a13ec7446685885e4c2c739bb1ef\transformed\lifecycle-viewmodel-release\res
+com.example.skyber.app-material-release-42 C:\Users\ethan\.gradle\caches\8.10.2\transforms\b14d93013e1d80e64526ad1ceffdb1c3\transformed\material-release\res
+com.example.skyber.app-drawerlayout-1.1.1-43 C:\Users\ethan\.gradle\caches\8.10.2\transforms\b28bf37ebff826129a850e5320e00f5d\transformed\drawerlayout-1.1.1\res
+com.example.skyber.app-material-icons-core-release-44 C:\Users\ethan\.gradle\caches\8.10.2\transforms\bde9d88c4f5fff99a1faf6573ab7d31b\transformed\material-icons-core-release\res
+com.example.skyber.app-navigation-compose-2.8.9-45 C:\Users\ethan\.gradle\caches\8.10.2\transforms\c7b3adbcae430b8f4658a9780fcf3dc0\transformed\navigation-compose-2.8.9\res
+com.example.skyber.app-core-viewtree-1.0.0-46 C:\Users\ethan\.gradle\caches\8.10.2\transforms\cd6ec25cc4f5461f5307194c751adb92\transformed\core-viewtree-1.0.0\res
+com.example.skyber.app-core-runtime-2.2.0-47 C:\Users\ethan\.gradle\caches\8.10.2\transforms\d21760410463b0c54a956c17a2c300a3\transformed\core-runtime-2.2.0\res
+com.example.skyber.app-ui-util-release-48 C:\Users\ethan\.gradle\caches\8.10.2\transforms\d48b7c33c6c42a8b79680c8d7fe78ea8\transformed\ui-util-release\res
+com.example.skyber.app-tracing-1.2.0-49 C:\Users\ethan\.gradle\caches\8.10.2\transforms\d87db7104dd6085a805f1fb4ff38a796\transformed\tracing-1.2.0\res
+com.example.skyber.app-core-ktx-1.15.0-50 C:\Users\ethan\.gradle\caches\8.10.2\transforms\d8c8fe9ae6f3f7c3cb168055fe100a12\transformed\core-ktx-1.15.0\res
+com.example.skyber.app-emoji2-views-helper-1.3.0-51 C:\Users\ethan\.gradle\caches\8.10.2\transforms\dd7a4f517335573775087c6468e25f7e\transformed\emoji2-views-helper-1.3.0\res
+com.example.skyber.app-ui-unit-release-52 C:\Users\ethan\.gradle\caches\8.10.2\transforms\e5d3bc55897fa7f382a2ac454b0b50bc\transformed\ui-unit-release\res
+com.example.skyber.app-graphics-path-1.0.1-53 C:\Users\ethan\.gradle\caches\8.10.2\transforms\e6d3d1f64623bd876e3d95d810eda2db\transformed\graphics-path-1.0.1\res
+com.example.skyber.app-lifecycle-viewmodel-compose-release-54 C:\Users\ethan\.gradle\caches\8.10.2\transforms\ea66aaf318096096748291794655c21e\transformed\lifecycle-viewmodel-compose-release\res
+com.example.skyber.app-navigation-common-ktx-2.8.9-55 C:\Users\ethan\.gradle\caches\8.10.2\transforms\ee161b4444c240713d212b471928fd76\transformed\navigation-common-ktx-2.8.9\res
+com.example.skyber.app-core-1.15.0-56 C:\Users\ethan\.gradle\caches\8.10.2\transforms\f1d9d7bc27b08df0db0284d4213e0e9f\transformed\core-1.15.0\res
+com.example.skyber.app-ui-geometry-release-57 C:\Users\ethan\.gradle\caches\8.10.2\transforms\f775980153ea9d03dcdb6c4c35d75f26\transformed\ui-geometry-release\res
+com.example.skyber.app-savedstate-1.2.1-58 C:\Users\ethan\.gradle\caches\8.10.2\transforms\fa37700cb79ebd0729041c1538b1d725\transformed\savedstate-1.2.1\res
+com.example.skyber.app-lifecycle-livedata-core-ktx-2.8.7-59 C:\Users\ethan\.gradle\caches\8.10.2\transforms\fa7aabd69d7a422e1215ea40d0d0085c\transformed\lifecycle-livedata-core-ktx-2.8.7\res
+com.example.skyber.app-runtime-release-60 C:\Users\ethan\.gradle\caches\8.10.2\transforms\fbe898e6f1d0722f8fbc1a1cdcff3dfc\transformed\runtime-release\res
+com.example.skyber.app-appcompat-1.7.0-61 C:\Users\ethan\.gradle\caches\8.10.2\transforms\fbfb98d893ca05a45e83db7d014efb13\transformed\appcompat-1.7.0\res
+com.example.skyber.app-startup-runtime-1.1.1-62 C:\Users\ethan\.gradle\caches\8.10.2\transforms\fcc15cbad4a63c6fffca1ca6325be0b0\transformed\startup-runtime-1.1.1\res
+com.example.skyber.app-savedstate-ktx-1.2.1-63 C:\Users\ethan\.gradle\caches\8.10.2\transforms\fddf3501e451d4d5ffe8316d2bd7dfaf\transformed\savedstate-ktx-1.2.1\res
+com.example.skyber.app-pngs-64 C:\Users\ethan\OneDrive\Documents\3rd Year 2nd sem projects\Skyber\IT342-SKyber\frontend_mobile\app\build\generated\res\pngs\debug
+com.example.skyber.app-resValues-65 C:\Users\ethan\OneDrive\Documents\3rd Year 2nd sem projects\Skyber\IT342-SKyber\frontend_mobile\app\build\generated\res\resValues\debug
+com.example.skyber.app-packageDebugResources-66 C:\Users\ethan\OneDrive\Documents\3rd Year 2nd sem projects\Skyber\IT342-SKyber\frontend_mobile\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.example.skyber.app-packageDebugResources-67 C:\Users\ethan\OneDrive\Documents\3rd Year 2nd sem projects\Skyber\IT342-SKyber\frontend_mobile\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.example.skyber.app-debug-68 C:\Users\ethan\OneDrive\Documents\3rd Year 2nd sem projects\Skyber\IT342-SKyber\frontend_mobile\app\build\intermediates\merged_res\debug\mergeDebugResources
+com.example.skyber.app-debug-69 C:\Users\ethan\OneDrive\Documents\3rd Year 2nd sem projects\Skyber\IT342-SKyber\frontend_mobile\app\src\debug\res
+com.example.skyber.app-main-70 C:\Users\ethan\OneDrive\Documents\3rd Year 2nd sem projects\Skyber\IT342-SKyber\frontend_mobile\app\src\main\res

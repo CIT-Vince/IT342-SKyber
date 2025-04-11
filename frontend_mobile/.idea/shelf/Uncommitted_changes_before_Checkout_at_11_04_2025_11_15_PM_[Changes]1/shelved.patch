@@ -1,0 +1,610 @@
+Index: app/src/main/res/layout/login.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/login.xml b/app/src/main/res/layout/login.xml
+new file mode 100644
+--- /dev/null	(date 1744178383585)
++++ b/app/src/main/res/layout/login.xml	(date 1744178383585)
+@@ -0,0 +1,43 @@
++<?xml version="1.0" encoding="utf-8"?>
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent">
++
++    <LinearLayout
++        android:layout_width="match_parent"
++        android:layout_height="match_parent"
++        android:orientation="vertical">
++
++        <EditText
++            android:id="@+id/email"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:ems="10"
++            android:inputType="text"
++            android:hint="Email" />
++
++        <EditText
++            android:id="@+id/password"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:ems="10"
++            android:inputType="textPassword"
++            android:hint="Password" />
++
++        <Button
++            android:id="@+id/button"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:text="Button" />
++
++        <TextView
++            android:id="@+id/link_signup"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:text="Sign Up"
++            android:textColor="@android:color/holo_blue_light"
++            android:clickable="true"
++            android:focusable="true"
++            android:textAlignment="center" />
++    </LinearLayout>
++</LinearLayout>
+\ No newline at end of file
+Index: app/src/main/java/com/example/skyber/SignupActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/skyber/SignupActivity.kt b/app/src/main/java/com/example/skyber/SignupActivity.kt
+new file mode 100644
+--- /dev/null	(date 1744363615495)
++++ b/app/src/main/java/com/example/skyber/SignupActivity.kt	(date 1744363615495)
+@@ -0,0 +1,39 @@
++package com.example.skyber
++
++import android.app.DatePickerDialog
++import android.os.Bundle
++import android.widget.EditText
++import androidx.appcompat.app.AppCompatActivity
++import androidx.lifecycle.ViewModelProvider
++import com.example.skyber.viewmodel.AuthViewModel
++import java.util.*
++
++class SignupActivity : AppCompatActivity() {
++    override fun onCreate(savedInstanceState: Bundle?){
++        super.onCreate(savedInstanceState)
++        setContentView(R.layout.signup)
++        val viewModel = ViewModelProvider(this)[AuthViewModel::class.java]
++        //Input fields
++        val editTextDate = findViewById<EditText>(R.id.editTextDate)
++        val firstName = findViewById<EditText>(R.id.firstname).text.toString()
++        val lastName = findViewById<EditText>(R.id.lastname).text.toString()
++
++        val emailEditText = findViewById<EditText>(R.id.email)
++        val email = emailEditText.text.toString()
++
++        editTextDate.setOnClickListener {
++            val calendar = Calendar.getInstance()
++            val year = calendar.get(Calendar.YEAR)
++            val month = calendar.get(Calendar.MONTH)
++            val day = calendar.get(Calendar.DAY_OF_MONTH)
++
++            val datePickerDialog = DatePickerDialog(this,
++                { _, selectedYear, selectedMonth, selectedDay ->
++                    val date = "${selectedYear}-${selectedMonth + 1}-${selectedDay}"
++                    editTextDate.setText(date)
++                }, year, month, day
++            )
++            datePickerDialog.show()
++        }
++    }
++}
+\ No newline at end of file
+Index: app/src/main/java/com/example/skyber/NavigationBar/Home.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/skyber/NavigationBar/Home.kt b/app/src/main/java/com/example/skyber/NavigationBar/Home.kt
+new file mode 100644
+--- /dev/null	(date 1744359803344)
++++ b/app/src/main/java/com/example/skyber/NavigationBar/Home.kt	(date 1744359803344)
+@@ -0,0 +1,26 @@
++package com.example.skyber.NavigationBar
++
++import androidx.compose.foundation.layout.Arrangement
++import androidx.compose.foundation.layout.Box
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.material3.Text
++import androidx.compose.runtime.Composable
++import androidx.compose.ui.Alignment
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.unit.sp
++import com.example.skyber.ui.theme.SkyberBlue
++
++
++@Composable
++fun Home() {
++    Box(modifier = Modifier.fillMaxSize()){
++        Column(modifier = Modifier.fillMaxSize()
++            .align(Alignment.Center),
++            verticalArrangement = Arrangement.Center,
++            horizontalAlignment = Alignment.CenterHorizontally){
++            Text(text = "Home", fontSize = 30.sp, color = SkyberBlue)
++        }
++
++    }
++}
+\ No newline at end of file
+Index: app/src/main/res/layout/signup.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/signup.xml b/app/src/main/res/layout/signup.xml
+new file mode 100644
+--- /dev/null	(date 1744181968202)
++++ b/app/src/main/res/layout/signup.xml	(date 1744181968202)
+@@ -0,0 +1,108 @@
++<?xml version="1.0" encoding="utf-8"?>
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent">
++
++    <LinearLayout
++        android:layout_width="match_parent"
++        android:layout_height="match_parent"
++        android:orientation="vertical">
++
++        <EditText
++            android:id="@+id/firstname"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:ems="10"
++            android:inputType="text"
++            android:hint="First Name" />
++
++        <EditText
++            android:id="@+id/lastname"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:ems="10"
++            android:inputType="text"
++            android:hint="Last Name" />
++
++        <EditText
++            android:id="@+id/email"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:ems="10"
++            android:hint="Email"
++            android:inputType="textEmailAddress" />
++
++        <EditText
++            android:id="@+id/editTextDate"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:hint="Select Date"
++            android:focusable="false"
++            android:clickable="true"
++            android:inputType="none" />
++
++        <EditText
++            android:id="@+id/age"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:ems="10"
++            android:inputType="text"
++            android:hint="Age" />
++
++        <EditText
++            android:id="@+id/address"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:ems="10"
++            android:inputType="text"
++            android:hint="Address" />
++
++        <EditText
++            android:id="@+id/phoneNumber"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:ems="10"
++            android:hint="Phone Number"
++            android:inputType="phone" />
++
++        <EditText
++            android:id="@+id/password"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:ems="10"
++            android:hint="Password"
++            android:inputType="textPassword" />
++
++        <RadioGroup
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:orientation="horizontal">
++
++            <RadioButton
++                android:id="@+id/genderMale"
++                android:layout_width="130dp"
++                android:layout_height="wrap_content"
++                android:text="Male" />
++
++            <RadioButton
++                android:id="@+id/genderFemale"
++                android:layout_width="130dp"
++                android:layout_height="wrap_content"
++                android:text="Female" />
++
++            <RadioButton
++                android:id="@+id/others"
++                android:layout_width="130dp"
++                android:layout_height="wrap_content"
++                android:layout_weight="1"
++                android:text="Other" />
++        </RadioGroup>
++
++        <Button
++            android:id="@+id/btn_signup"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:text="Signup" />
++
++    </LinearLayout>
++</LinearLayout>
+\ No newline at end of file
+Index: app/src/main/java/com/example/skyber/NavigationBar/Screens.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/skyber/NavigationBar/Screens.kt b/app/src/main/java/com/example/skyber/NavigationBar/Screens.kt
+new file mode 100644
+--- /dev/null	(date 1744359803283)
++++ b/app/src/main/java/com/example/skyber/NavigationBar/Screens.kt	(date 1744359803283)
+@@ -0,0 +1,10 @@
++package com.example.skyber.NavigationBar
++
++sealed class Screens(val screen: String){
++    data object Home: Screens("home")
++    data object VolunteerHub: Screens("Volunteer Hub")
++    data object Analytics: Screens("Analytics")
++    data object Announcement: Screens("Announcement")
++    data object UserProfile: Screens("User Profile")
++
++}
+\ No newline at end of file
+Index: app/src/main/java/com/example/skyber/LoginActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/skyber/LoginActivity.kt b/app/src/main/java/com/example/skyber/LoginActivity.kt
+new file mode 100644
+--- /dev/null	(date 1744178095181)
++++ b/app/src/main/java/com/example/skyber/LoginActivity.kt	(date 1744178095181)
+@@ -0,0 +1,21 @@
++package com.example.skyber
++
++import android.content.Intent
++import android.os.Bundle
++import android.os.PersistableBundle
++import android.widget.TextView
++import androidx.appcompat.app.AppCompatActivity
++
++class LoginActivity : AppCompatActivity() {
++    override fun onCreate(savedInstanceState: Bundle?) {
++        super.onCreate(savedInstanceState)
++        setContentView(R.layout.login)
++
++        val signupLink = findViewById<TextView>(R.id.link_signup)
++
++        signupLink.setOnClickListener {
++            val intent = Intent(this, SignupActivity::class.java)
++            startActivity(intent)
++        }
++    }
++}
+\ No newline at end of file
+Index: .idea/inspectionProfiles/Project_Default.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/inspectionProfiles/Project_Default.xml b/.idea/inspectionProfiles/Project_Default.xml
+new file mode 100644
+--- /dev/null	(date 1744173859884)
++++ b/.idea/inspectionProfiles/Project_Default.xml	(date 1744173859884)
+@@ -0,0 +1,57 @@
++<component name="InspectionProjectProfileManager">
++  <profile version="1.0">
++    <option name="myName" value="Project Default" />
++    <inspection_tool class="ComposePreviewDimensionRespectsLimit" enabled="true" level="WARNING" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++      <option name="previewFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="ComposePreviewMustBeTopLevelFunction" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++      <option name="previewFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="ComposePreviewNeedsComposableAnnotation" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++      <option name="previewFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="ComposePreviewNotSupportedInUnitTestFiles" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++      <option name="previewFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="GlancePreviewDimensionRespectsLimit" enabled="true" level="WARNING" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="GlancePreviewMustBeTopLevelFunction" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="GlancePreviewNeedsComposableAnnotation" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="GlancePreviewNotSupportedInUnitTestFiles" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="PreviewAnnotationInFunctionWithParameters" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++      <option name="previewFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="PreviewApiLevelMustBeValid" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++      <option name="previewFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="PreviewDeviceShouldUseNewSpec" enabled="true" level="WEAK WARNING" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++      <option name="previewFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="PreviewFontScaleMustBeGreaterThanZero" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++      <option name="previewFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="PreviewMultipleParameterProviders" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++      <option name="previewFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="PreviewPickerAnnotation" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++      <option name="previewFile" value="true" />
++    </inspection_tool>
++  </profile>
++</component>
+\ No newline at end of file
+Index: .idea/compiler.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/compiler.xml b/.idea/compiler.xml
+new file mode 100644
+--- /dev/null	(date 1744029809586)
++++ b/.idea/compiler.xml	(date 1744029809586)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="CompilerConfiguration">
++    <bytecodeTargetLevel target="21" />
++  </component>
++</project>
+\ No newline at end of file
+Index: app/src/main/java/com/example/skyber/NavigationBar/VolunteerHub.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/skyber/NavigationBar/VolunteerHub.kt b/app/src/main/java/com/example/skyber/NavigationBar/VolunteerHub.kt
+new file mode 100644
+--- /dev/null	(date 1744359803303)
++++ b/app/src/main/java/com/example/skyber/NavigationBar/VolunteerHub.kt	(date 1744359803303)
+@@ -0,0 +1,28 @@
++package com.example.skyber.NavigationBar
++
++import androidx.compose.foundation.layout.Arrangement
++import androidx.compose.foundation.layout.Box
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.material3.Text
++import androidx.compose.runtime.Composable
++import androidx.compose.ui.Alignment
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.unit.sp
++import com.example.skyber.ui.theme.SkyberBlue
++
++
++@Composable
++fun VolunteerHub() {
++    Box(modifier = Modifier.fillMaxSize()) {
++        Column(
++            modifier = Modifier.fillMaxSize()
++                .align(Alignment.Center),
++            verticalArrangement = Arrangement.Center,
++            horizontalAlignment = Alignment.CenterHorizontally
++        ) {
++            Text(text = "Volunteer Hub", fontSize = 30.sp, color = SkyberBlue)
++        }
++
++    }
++}
+\ No newline at end of file
+Index: app/src/main/java/com/example/skyber/NavigationBar/UserProfile.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/skyber/NavigationBar/UserProfile.kt b/app/src/main/java/com/example/skyber/NavigationBar/UserProfile.kt
+new file mode 100644
+--- /dev/null	(date 1744359803324)
++++ b/app/src/main/java/com/example/skyber/NavigationBar/UserProfile.kt	(date 1744359803324)
+@@ -0,0 +1,28 @@
++package com.example.skyber.NavigationBar
++
++import androidx.compose.foundation.layout.Arrangement
++import androidx.compose.foundation.layout.Box
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.material3.Text
++import androidx.compose.runtime.Composable
++import androidx.compose.ui.Alignment
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.unit.sp
++import com.example.skyber.ui.theme.SkyberBlue
++
++
++@Composable
++fun UserProfile() {
++    Box(modifier = Modifier.fillMaxSize()) {
++        Column(
++            modifier = Modifier.fillMaxSize()
++                .align(Alignment.Center),
++            verticalArrangement = Arrangement.Center,
++            horizontalAlignment = Alignment.CenterHorizontally
++        ) {
++            Text(text = "User Profile", fontSize = 30.sp, color = SkyberBlue)
++        }
++
++    }
++}
+\ No newline at end of file
+Index: .idea/deploymentTargetSelector.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/deploymentTargetSelector.xml b/.idea/deploymentTargetSelector.xml
+new file mode 100644
+--- /dev/null	(date 1744029809628)
++++ b/.idea/deploymentTargetSelector.xml	(date 1744029809628)
+@@ -0,0 +1,10 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="deploymentTargetSelector">
++    <selectionStates>
++      <SelectionState runConfigName="app">
++        <option name="selectionMode" value="DROPDOWN" />
++      </SelectionState>
++    </selectionStates>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/kotlinc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/kotlinc.xml b/.idea/kotlinc.xml
+new file mode 100644
+--- /dev/null	(date 1744029809621)
++++ b/.idea/kotlinc.xml	(date 1744029809621)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="KotlinJpsPluginSettings">
++    <option name="version" value="2.0.0" />
++  </component>
++</project>
+\ No newline at end of file
+Index: app/src/main/java/com/example/skyber/NavigationBar/Analytics.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/skyber/NavigationBar/Analytics.kt b/app/src/main/java/com/example/skyber/NavigationBar/Analytics.kt
+new file mode 100644
+--- /dev/null	(date 1744359803334)
++++ b/app/src/main/java/com/example/skyber/NavigationBar/Analytics.kt	(date 1744359803334)
+@@ -0,0 +1,28 @@
++package com.example.skyber.NavigationBar
++
++import androidx.compose.foundation.layout.Arrangement
++import androidx.compose.foundation.layout.Box
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.material3.Text
++import androidx.compose.runtime.Composable
++import androidx.compose.ui.Alignment
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.unit.sp
++import com.example.skyber.ui.theme.SkyberBlue
++
++
++@Composable
++fun Analytics() {
++    Box(modifier = Modifier.fillMaxSize()) {
++        Column(
++            modifier = Modifier.fillMaxSize()
++                .align(Alignment.Center),
++            verticalArrangement = Arrangement.Center,
++            horizontalAlignment = Alignment.CenterHorizontally
++        ) {
++            Text(text = "Analytics", fontSize = 30.sp, color = SkyberBlue)
++        }
++
++    }
++}
+\ No newline at end of file
+Index: ../backend/SKyber/src/main/resources/application.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>spring.application.name=SKyber\r\n\r\nspring.main.allow-circular-references=true\r\nspring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver\r\nspring.datasource.url = jdbc:mysql://localhost:3306/skyberdb\r\nspring.datasource.username = root\r\nspring.datasource.password = 09665566551\r\nspring.jpa.hibernate.ddl-auto = update\r\nspring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQLDialect\r\nspring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl\r\nlogging.level.org.springframework.security=DEBUG\r\nspring.web.resources.cache.cachecontrol.max-age=3600\r\nspring.web.resources.static-locations=classpath:/static/\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/../backend/SKyber/src/main/resources/application.properties b/../backend/SKyber/src/main/resources/application.properties
+--- a/../backend/SKyber/src/main/resources/application.properties	(revision 48659b3b79f0b11a55eac33532df933a3f3bca1e)
++++ b/../backend/SKyber/src/main/resources/application.properties	(date 1744359290306)
+@@ -4,7 +4,7 @@
+ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+ spring.datasource.url = jdbc:mysql://localhost:3306/skyberdb
+ spring.datasource.username = root
+-spring.datasource.password = 09665566551
++spring.datasource.password = 1234567890
+ spring.jpa.hibernate.ddl-auto = update
+ spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQLDialect
+ spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+Index: app/src/main/java/com/example/skyber/NavigationBar/Announcements.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/skyber/NavigationBar/Announcements.kt b/app/src/main/java/com/example/skyber/NavigationBar/Announcements.kt
+new file mode 100644
+--- /dev/null	(date 1744359803314)
++++ b/app/src/main/java/com/example/skyber/NavigationBar/Announcements.kt	(date 1744359803314)
+@@ -0,0 +1,28 @@
++package com.example.skyber.NavigationBar
++
++import androidx.compose.foundation.layout.Arrangement
++import androidx.compose.foundation.layout.Box
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.material3.Text
++import androidx.compose.runtime.Composable
++import androidx.compose.ui.Alignment
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.unit.sp
++import com.example.skyber.ui.theme.SkyberBlue
++
++
++@Composable
++fun Announcements() {
++    Box(modifier = Modifier.fillMaxSize()) {
++        Column(
++            modifier = Modifier.fillMaxSize()
++                .align(Alignment.Center),
++            verticalArrangement = Arrangement.Center,
++            horizontalAlignment = Alignment.CenterHorizontally
++        ) {
++            Text(text = "Announcements", fontSize = 30.sp, color = SkyberBlue)
++        }
++
++    }
++}
