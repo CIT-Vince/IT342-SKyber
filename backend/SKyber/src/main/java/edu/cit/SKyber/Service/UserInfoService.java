@@ -15,12 +15,11 @@ public class UserInfoService implements UserDetailsService {
 
     private final UserInfoRepository repository;
     private final PasswordEncoder encoder;
-    private final JwtService jwtService;
 
-    public UserInfoService(UserInfoRepository repository, PasswordEncoder encoder, JwtService jwtService) {
+    // Constructor-based dependency injection
+    public UserInfoService(UserInfoRepository repository, PasswordEncoder encoder) {
         this.repository = repository;
         this.encoder = encoder;
-        this.jwtService = jwtService;
     }
 
     @Override
@@ -31,29 +30,8 @@ public class UserInfoService implements UserDetailsService {
     }
 
     public String addUser(UserInfo userInfo) {
-        // Check if the email already exists
-        Optional<UserInfo> existingUser = repository.findByEmail(userInfo.getEmail());
-        if (existingUser.isPresent()) {
-            return "User with this email already exists!";
-        }
-    
-        // Encrypt the password before saving
         userInfo.setPassword(encoder.encode(userInfo.getPassword()));
         repository.save(userInfo);
-        return "User added successfully!";
-    }
-    
-
-    public String loginUserAndGenerateToken(String email, String password) {
-        Optional<UserInfo> userInfo = repository.findByEmail(email);
-        if (userInfo.isEmpty()) {
-            return "User not found!";
-        }
-
-        if (encoder.matches(password, userInfo.get().getPassword())) {
-            // Password matches, generate and return JWT token
-            return jwtService.generateToken(email);
-        }
-        return "Invalid credentials!";
+        return "User Added Successfully";
     }
 }

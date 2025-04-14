@@ -3,7 +3,6 @@ package edu.cit.SKyber.Controller;
 import edu.cit.SKyber.Entity.Announcement;
 import edu.cit.SKyber.Service.AnnouncementService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,26 +21,20 @@ public class AnnouncementController {
         this.announcementService = announcementService;
     }
 
-    // Serve the HTML form for creating an announcement at '/create-announcement'
-    @GetMapping("/create-announcement")
-    public String showAnnouncementForm() {
-        return "announcement-form"; // This resolves to 'src/main/resources/templates/announcement-form.html'
-    }
-
     // Fetch all announcements
-    @GetMapping("/get-announcements")
+    @GetMapping
     public List<Announcement> getAnnouncements() {
         return announcementService.getAllAnnouncements();
     }
 
     // Fetch a single announcement by ID
-    @GetMapping("/get-announcement/{id}")
+    @GetMapping("/{id}")
     public Announcement getAnnouncementById(@PathVariable("id") Long id) {
         return announcementService.getAnnouncementById(id);
     }
 
     // Create a new announcement
-    @PostMapping("/create-announcement")
+    @PostMapping
     public Announcement createAnnouncement(
             @RequestParam("title") String title,
             @RequestParam("content") String content,
@@ -61,7 +54,7 @@ public class AnnouncementController {
     }
 
     // Update an existing announcement
-    @PutMapping("/update-announcement/{id}")
+    @PutMapping("/{id}")
     public Announcement updateAnnouncement(
             @PathVariable("id") Long id,
             @RequestParam("title") String title,
@@ -81,7 +74,7 @@ public class AnnouncementController {
     }
 
     // Delete an announcement by ID
-    @DeleteMapping("/delete-announcement/{id}")
+    @DeleteMapping("/{id}")
     public void deleteAnnouncement(@PathVariable("id") Long id) {
         announcementService.deleteAnnouncement(id);
     }
