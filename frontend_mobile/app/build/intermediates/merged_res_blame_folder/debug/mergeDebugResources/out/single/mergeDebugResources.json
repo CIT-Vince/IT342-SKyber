@@ -1,74 +1,150 @@
 [
     {
-        "merged": "com.example.skyber.app-debug-68:/drawable_ic_launcher_foreground.xml.flat",
-        "source": "com.example.skyber.app-main-70:/drawable/ic_launcher_foreground.xml"
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\xml_data_extraction_rules.xml.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\xml\\data_extraction_rules.xml"
     },
     {
-        "merged": "com.example.skyber.app-debug-68:/xml_backup_rules.xml.flat",
-        "source": "com.example.skyber.app-main-70:/xml/backup_rules.xml"
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-hdpi\\ic_launcher.webp"
     },
     {
-        "merged": "com.example.skyber.app-debug-68:/layout_login.xml.flat",
-        "source": "com.example.skyber.app-main-70:/layout/login.xml"
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-mdpi_skyber_logo.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-mdpi\\skyber_logo.webp"
     },
     {
-        "merged": "com.example.skyber.app-debug-68:/mipmap-xhdpi_ic_launcher_round.webp.flat",
-        "source": "com.example.skyber.app-main-70:/mipmap-xhdpi/ic_launcher_round.webp"
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-hdpi\\ic_launcher_round.webp"
     },
     {
-        "merged": "com.example.skyber.app-debug-68:/mipmap-hdpi_ic_launcher.webp.flat",
-        "source": "com.example.skyber.app-main-70:/mipmap-hdpi/ic_launcher.webp"
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-xxxhdpi_logo.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-xxxhdpi\\logo.webp"
     },
     {
-        "merged": "com.example.skyber.app-debug-68:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
-        "source": "com.example.skyber.app-main-70:/mipmap-xxhdpi/ic_launcher_round.webp"
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-xhdpi_logo_round.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-xhdpi\\logo_round.webp"
     },
     {
-        "merged": "com.example.skyber.app-debug-68:/drawable_ic_launcher_background.xml.flat",
-        "source": "com.example.skyber.app-main-70:/drawable/ic_launcher_background.xml"
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-hdpi_skyber_logo.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-hdpi\\skyber_logo.webp"
     },
     {
-        "merged": "com.example.skyber.app-debug-68:/mipmap-xxxhdpi_ic_launcher.webp.flat",
-        "source": "com.example.skyber.app-main-70:/mipmap-xxxhdpi/ic_launcher.webp"
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-anydpi-v26_logo_round.xml.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-anydpi-v26\\logo_round.xml"
     },
     {
-        "merged": "com.example.skyber.app-debug-68:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
-        "source": "com.example.skyber.app-main-70:/mipmap-xxxhdpi/ic_launcher_round.webp"
+        "merged": "com.example.skyber.app-debug-61:/drawable_logo.png.flat",
+        "source": "com.example.skyber.app-main-63:/drawable/logo.png"
     },
     {
-        "merged": "com.example.skyber.app-debug-68:/xml_data_extraction_rules.xml.flat",
-        "source": "com.example.skyber.app-main-70:/xml/data_extraction_rules.xml"
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-hdpi_logo.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-hdpi\\logo.webp"
     },
     {
-        "merged": "com.example.skyber.app-debug-68:/mipmap-xhdpi_ic_launcher.webp.flat",
-        "source": "com.example.skyber.app-main-70:/mipmap-xhdpi/ic_launcher.webp"
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
     },
     {
-        "merged": "com.example.skyber.app-debug-68:/mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "com.example.skyber.app-main-70:/mipmap-anydpi-v26/ic_launcher.xml"
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-mdpi_logo_round.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-mdpi\\logo_round.webp"
     },
     {
-        "merged": "com.example.skyber.app-debug-68:/mipmap-xxhdpi_ic_launcher.webp.flat",
-        "source": "com.example.skyber.app-main-70:/mipmap-xxhdpi/ic_launcher.webp"
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\drawable_logo.xml.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\drawable\\logo.xml"
     },
     {
-        "merged": "com.example.skyber.app-debug-68:/mipmap-mdpi_ic_launcher_round.webp.flat",
-        "source": "com.example.skyber.app-main-70:/mipmap-mdpi/ic_launcher_round.webp"
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\drawable_ic_launcher_foreground.xml.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\drawable\\ic_launcher_foreground.xml"
     },
     {
-        "merged": "com.example.skyber.app-debug-68:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "com.example.skyber.app-main-70:/mipmap-anydpi-v26/ic_launcher_round.xml"
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\drawable_ic_launcher_background.xml.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\drawable\\ic_launcher_background.xml"
     },
     {
-        "merged": "com.example.skyber.app-debug-68:/mipmap-mdpi_ic_launcher.webp.flat",
-        "source": "com.example.skyber.app-main-70:/mipmap-mdpi/ic_launcher.webp"
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-xhdpi\\ic_launcher_round.webp"
     },
     {
-        "merged": "com.example.skyber.app-debug-68:/mipmap-hdpi_ic_launcher_round.webp.flat",
-        "source": "com.example.skyber.app-main-70:/mipmap-hdpi/ic_launcher_round.webp"
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-xxxhdpi\\ic_launcher_round.webp"
     },
     {
-        "merged": "com.example.skyber.app-debug-68:/layout_signup.xml.flat",
-        "source": "com.example.skyber.app-main-70:/layout/signup.xml"
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-xxxhdpi_skyber_logo.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-xxxhdpi\\skyber_logo.webp"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-xhdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-xxhdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-anydpi-v26_logo.xml.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-anydpi-v26\\logo.xml"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-xxhdpi_logo_round.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-xxhdpi\\logo_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-mdpi_logo.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-mdpi\\logo.webp"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-hdpi_logo_round.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-hdpi\\logo_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-xxxhdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-xxhdpi_logo.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-xxhdpi\\logo.webp"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-xxhdpi\\ic_launcher_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-xxxhdpi_logo_round.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-xxxhdpi\\logo_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-xhdpi_skyber_logo.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-xhdpi\\skyber_logo.webp"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-xxhdpi_skyber_logo.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-xxhdpi\\skyber_logo.webp"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\xml_backup_rules.xml.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\xml\\backup_rules.xml"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\layout_login.xml.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\layout\\login.xml"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-mdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-mdpi\\ic_launcher_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-xhdpi_logo.webp.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-xhdpi\\logo.webp"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\mipmap-anydpi-v26\\ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-debug-61:\\layout_signup.xml.flat",
+        "source": "C:\\Users\\ethan\\.gradle\\daemon\\8.10.2\\com.example.skyber.app-main-63:\\layout\\signup.xml"
     }
 ]
