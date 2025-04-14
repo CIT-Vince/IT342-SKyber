@@ -9,6 +9,7 @@ color teal_700
 color white
 drawable ic_launcher_background
 drawable ic_launcher_foreground
+drawable logo
 id address
 id age
 id btn_signup
@@ -27,6 +28,9 @@ layout login
 layout signup
 mipmap ic_launcher
 mipmap ic_launcher_round
+mipmap logo
+mipmap logo_round
+mipmap skyber_logo
 string app_name
 style Theme.Skyber
 xml backup_rules
