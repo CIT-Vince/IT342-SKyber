@@ -4,30 +4,24 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.automirrored.filled.Announcement
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -36,18 +30,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.skyber.NavigationBar.Analytics
-import com.example.skyber.NavigationBar.Announcements
-import com.example.skyber.NavigationBar.Home
-import com.example.skyber.NavigationBar.UserProfile
-import com.example.skyber.NavigationBar.VolunteerHub
+import com.example.skyber.navigationbar.Reports
+import com.example.skyber.navigationbar.Announcements
+import com.example.skyber.navigationbar.Home
+import com.example.skyber.navigationbar.UserProfile
+import com.example.skyber.navigationbar.VolunteerHub
 import com.example.skyber.ui.theme.NavBarColor
+import com.example.skyber.ui.theme.SkyberBlue
 
 import com.example.skyber.ui.theme.SkyberTheme
+import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
         enableEdgeToEdge()
         setContent {
             SkyberTheme {
@@ -71,7 +68,7 @@ class MainActivity : ComponentActivity() {
                     val bottomNavRoutes = listOf(
                         Screens.Home.screen,
                         Screens.VolunteerHub.screen,
-                        Screens.Analytics.screen,
+                        Screens.Reports.screen,
                         Screens.Announcement.screen,
                         Screens.UserProfile.screen
                     )
@@ -84,11 +81,11 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         // Main screens
-                        composable(Screens.Home.screen) { Home() }
+                        composable(Screens.Home.screen) { Home(navController) }
                         composable(Screens.VolunteerHub.screen) { VolunteerHub() }
-                        composable(Screens.Analytics.screen) { Analytics() }
+                        composable(Screens.Reports.screen) { Reports() }
                         composable(Screens.Announcement.screen) { Announcements() }
-                        composable(Screens.UserProfile.screen) { UserProfile() }
+                        composable(Screens.UserProfile.screen) { UserProfile(navController) }
 
                         // Auth screens
                         composable(Screens.Login.screen) { LoginScreen(navController) }
@@ -101,7 +98,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
 data class NavItem(
     val icon: ImageVector,
     val destination: String
@@ -111,9 +107,9 @@ data class NavItem(
 fun BottomNavBar(navController: NavController) {
     val navItems = listOf(
         NavItem(Icons.Filled.Home, Screens.Home.screen),
-        NavItem(Icons.Filled.DateRange, Screens.VolunteerHub.screen),
-        NavItem(Icons.Filled.KeyboardArrowUp, Screens.Analytics.screen),
-        NavItem(Icons.Filled.Search, Screens.Announcement.screen),
+        NavItem(Icons.Filled.Hub, Screens.VolunteerHub.screen),
+        NavItem(Icons.AutoMirrored.Filled.TrendingUp, Screens.Reports.screen),
+        NavItem(Icons.AutoMirrored.Filled.Announcement, Screens.Announcement.screen),
         NavItem(Icons.Filled.Person, Screens.UserProfile.screen),
     )
 
@@ -123,7 +119,6 @@ fun BottomNavBar(navController: NavController) {
         containerColor = NavBarColor,
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(topStart = 57.dp, topEnd = 57.dp))
     ) {
         navItems.forEach { item ->
             IconButton(
@@ -139,7 +134,7 @@ fun BottomNavBar(navController: NavController) {
                     imageVector = item.icon,
                     contentDescription = null,
                     modifier = Modifier.size(26.dp),
-                    tint = if (selected.value == item.icon) Color.White else Color.DarkGray
+                    tint = if (selected.value == item.icon) SkyberBlue else Color.DarkGray
                 )
             }
         }

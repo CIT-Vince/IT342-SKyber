@@ -1,4 +1,4 @@
-package com.example.skyber.NavigationBar
+package com.example.skyber.navigationbar
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +13,7 @@ import com.example.skyber.ui.theme.SkyberBlue
 
 
 @Composable
-fun UserProfile() {
+fun Reports() {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -21,7 +21,7 @@ fun UserProfile() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "User Profile", fontSize = 30.sp, color = SkyberBlue)
+            Text(text = "Report", fontSize = 30.sp, color = SkyberBlue)
         }
 
     }

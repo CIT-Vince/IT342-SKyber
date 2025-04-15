@@ -1,4 +1,4 @@
-package com.example.skyber.NavigationBar
+package com.example.skyber.navigationbar
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +13,7 @@ import com.example.skyber.ui.theme.SkyberBlue
 
 
 @Composable
-fun VolunteerHub() {
+fun Announcements() {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -21,7 +21,7 @@ fun VolunteerHub() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Volunteer Hub", fontSize = 30.sp, color = SkyberBlue)
+            Text(text = "Announcements", fontSize = 30.sp, color = SkyberBlue)
         }
 
     }
