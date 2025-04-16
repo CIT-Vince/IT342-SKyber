@@ -36,7 +36,7 @@ import com.example.skyber.navigationbar.Home
 import com.example.skyber.navigationbar.UserProfile
 import com.example.skyber.navigationbar.VolunteerHub
 import com.example.skyber.ui.theme.NavBarColor
-import com.example.skyber.ui.theme.SkyberBlue
+import com.example.skyber.ui.theme.SKyberBlue
 
 import com.example.skyber.ui.theme.SkyberTheme
 import com.google.firebase.FirebaseApp
@@ -86,6 +86,8 @@ class MainActivity : ComponentActivity() {
                         composable(Screens.Reports.screen) { Reports() }
                         composable(Screens.Announcement.screen) { Announcements() }
                         composable(Screens.UserProfile.screen) { UserProfile(navController) }
+                        //Screens in User Profile
+                        composable(Screens.EditProfile.screen){ UserProfile(navController)}
 
                         // Auth screens
                         composable(Screens.Login.screen) { LoginScreen(navController) }
@@ -134,7 +136,7 @@ fun BottomNavBar(navController: NavController) {
                     imageVector = item.icon,
                     contentDescription = null,
                     modifier = Modifier.size(26.dp),
-                    tint = if (selected.value == item.icon) SkyberBlue else Color.DarkGray
+                    tint = if (selected.value == item.icon) SKyberBlue else Color.DarkGray
                 )
             }
         }

@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="frontend_mobile.Skyber.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-04-14T17:09:57.192485700Z">
+        <DropdownSelection timestamp="2025-04-16T06:16:16.698367Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\ethan\.android\avd\Medium_Phone.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=R58M44V3HLM" />
             </handle>
           </Target>
         </DropdownSelection>

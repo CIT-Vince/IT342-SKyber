@@ -8,4 +8,5 @@ sealed class Screens(val screen: String){
     data object UserProfile: Screens("User Profile")
     data object Login : Screens("Login")
     data object SignUp : Screens("Signup")
+    data object EditProfile: Screens("Edit Profile")
 }

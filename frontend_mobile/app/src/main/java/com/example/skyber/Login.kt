@@ -143,10 +143,12 @@ fun LoginScreen(navController: NavHostController) {
         }
     }
 }
-
+/*
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
     val navController = rememberNavController()
     LoginScreen(navController = navController)
 }
+
+ */

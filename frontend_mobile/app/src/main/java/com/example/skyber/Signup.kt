@@ -208,7 +208,7 @@ fun SignupScreen(navController: NavHostController){
                 )
             )
 
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             //Radio Group diri
             RadioButtonGenders(
                 modifier = Modifier.padding(16.dp),
@@ -216,7 +216,7 @@ fun SignupScreen(navController: NavHostController){
                 onGenderSelected = { gender = it }
             )
 
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(2.dp))
 
             //Signup button
             //Bring to Login for now change onlclick logic later
@@ -272,7 +272,7 @@ fun SignupScreen(navController: NavHostController){
                 )
             }
 
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(3.dp))
             Text(
                 text = "Log in",
                 color = SKyberYellow,

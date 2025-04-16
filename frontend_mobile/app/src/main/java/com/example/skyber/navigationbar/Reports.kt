@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
-import com.example.skyber.ui.theme.SkyberBlue
+import com.example.skyber.ui.theme.SKyberBlue
 
 
 @Composable
@@ -21,7 +21,7 @@ fun Reports() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Report", fontSize = 30.sp, color = SkyberBlue)
+            Text(text = "Report", fontSize = 30.sp, color = SKyberBlue)
         }
 
     }
