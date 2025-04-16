@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.skyber.R
+import com.example.skyber.headerbar.HeaderBar
+import com.example.skyber.headerbar.NotificationHandler
 import com.example.skyber.ui.theme.White
 import com.example.skyber.ui.theme.SKyberDarkBlue
 
@@ -55,40 +57,13 @@ fun Home(navController: NavHostController) {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 2.dp)
-                    .height(80.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = "Logo",
-                    modifier = Modifier
-                        .height(100.dp)
-                        .width(130.dp)
-                        .padding(9.dp),
-                    contentScale = ContentScale.Fit
-                )
 
-                Spacer(modifier = Modifier.weight(1f))
+            HeaderBar(
+                trailingContent = {
+                    NotificationHandler()
+                }
+            )
 
-                /*IconButton(
-                    //onClick = { showModal = !showModal }
-                ) {*/
-                Icon(
-                    imageVector = Icons.Filled.NotificationsActive,
-                    tint = White,
-                    contentDescription = "Notifications",
-                    modifier = Modifier
-                        .size(35.dp)
-                        .offset(x = (-7).dp, y = (-8).dp)
-                )
-                //}
-
-            }
             Column(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -98,7 +73,7 @@ fun Home(navController: NavHostController) {
                 Icon(
                     imageVector = Icons.Filled.PersonPin,
                     tint = White,
-                    contentDescription = "Notifications",
+                    contentDescription = "Person Pin",
                     modifier = Modifier
                         .size(50.dp)
                 )
@@ -270,73 +245,3 @@ fun CandidateCard(/*Retrieve candidate profile image and first and last name */)
         }
     }
 }
-//Repurpose for notifications modal
-/*
-@Composable
-fun NotificationsIcon(modifier: Modifier = Modifier) {
-    var showNotifications by remember { mutableStateOf(false) }
-    var showModal by remember { mutableStateOf(false) }
-    OutlinedTextField(
-        value = selectedDate?.let { convertMillisToDate(it) } ?: "",
-        onValueChange = { },
-        label = { Text("DOB") },
-        placeholder = { Text("MM/DD/YYYY") },
-        trailingIcon = {
-            Icon(Icons.Default.DateRange, contentDescription = "Select date")
-        },
-        modifier = modifier
-            .fillMaxWidth()
-            .height(30.dp)
-            .pointerInput(selectedDate) {
-                awaitEachGesture {
-                    // Modifier.clickable doesn't work for text fields, so we use Modifier.pointerInput
-                    // in the Initial pass to observe events before the text field consumes them
-                    // in the Main pass.
-                    awaitFirstDown(pass = PointerEventPass.Initial)
-                    val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
-                    if (upEvent != null) {
-                        showModal = true
-                    }
-                }
-            }
-    )
-
-    if (showModal) {
-        DatePickerModal(
-            onDateSelected = { selectedDate = it },
-            onDismiss = { showModal = false }
-        )
-    }
-
-}
-*/
-
-/*
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun NotificationModal(
-    onDateSelected: (Long?) -> Unit,
-    onDismiss: () -> Unit
-) {
-    val datePickerState = rememberDatePickerState()
-
-    DatePickerDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = {
-                onDateSelected(datePickerState.selectedDateMillis)
-                onDismiss()
-            }) {
-                Text("OK")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
-    ) {
-        DatePicker(state = datePickerState)
-    }
-}
- */

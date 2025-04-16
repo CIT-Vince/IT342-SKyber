@@ -46,9 +46,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.skyber.FirebaseHelper
 import com.example.skyber.R
 import com.example.skyber.Screens
-import com.example.skyber.ui.theme.SKyberDarkBlue
-import com.example.skyber.ui.theme.SKyberBlue
-import com.example.skyber.ui.theme.White
+import com.example.skyber.headerbar.*
+import com.example.skyber.ui.theme.*
+
 
 
 
@@ -63,40 +63,11 @@ fun UserProfile(navController: NavHostController) {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 2.dp)
-                    .height(80.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.logo),
-                    contentDescription = "Logo",
-                    modifier = Modifier
-                        .height(100.dp)
-                        .width(130.dp)
-                        .padding(9.dp),
-                    contentScale = ContentScale.Fit
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                /*IconButton(
-                    //onClick = { showModal = !showModal }
-                ) {*/
-                Icon(
-                    imageVector = Icons.Filled.NotificationsActive,
-                    tint = White,
-                    contentDescription = "Notifications",
-                    modifier = Modifier
-                        .size(35.dp)
-                        .offset(x = (-7).dp, y = (-8).dp)
-                )
-                //}
-
-            }//End of row
+            HeaderBar(
+                trailingContent = {
+                    NotificationHandler()
+                }
+            )
 
             Text(
                 text = "User Profile",
