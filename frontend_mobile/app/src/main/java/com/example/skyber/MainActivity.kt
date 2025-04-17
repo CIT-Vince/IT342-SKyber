@@ -1,6 +1,7 @@
 package com.example.skyber
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -8,8 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Announcement
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.filled.Person
@@ -18,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,23 +32,75 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.skyber.navigationbar.Reports
-import com.example.skyber.navigationbar.Announcements
+import com.example.skyber.dataclass.User
+import com.example.skyber.navigationbar.Feedback
+import com.example.skyber.portalnavigator.Announcement.Announcements
 import com.example.skyber.navigationbar.Home
+import com.example.skyber.navigationbar.Portal
 import com.example.skyber.navigationbar.UserProfile
 import com.example.skyber.navigationbar.VolunteerHub
+import com.example.skyber.portalnavigator.Announcement.PostAnnouncement
+import com.example.skyber.portalnavigator.Reports
 import com.example.skyber.ui.theme.NavBarColor
 import com.example.skyber.ui.theme.SKyberBlue
 
 import com.example.skyber.ui.theme.SkyberTheme
+import com.example.skyber.userauth.LoginScreen
+import com.example.skyber.userauth.SignupScreen
+import com.example.skyber.userprofilescreens.EditProfile
 import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
+
+
         enableEdgeToEdge()
         setContent {
+            val uid = FirebaseHelper.auth.currentUser?.uid //Get current user globally
+            val userProfile = remember { mutableStateOf<User?>(null) }//hold the user profile data
+            //global refresher function for changes to user data
+            fun refreshUserProfile() {
+                val uid = FirebaseHelper.auth.currentUser?.uid
+                if (uid != null) {
+                    FirebaseHelper.databaseReference.child("users").child(uid)
+                        .get()
+                        .addOnSuccessListener { snapshot ->
+                            val user = snapshot.getValue(User::class.java)
+                            userProfile.value = user
+                        }
+                        .addOnFailureListener {
+                            Log.e("MainActivity", "Failed to refresh user profile", it)
+                        }
+                }
+            }
+
+            LaunchedEffect(uid) {
+                if (uid != null) {
+                    Log.d("LoginDebug", "Fetching user profile for UID: $uid")
+                    FirebaseHelper.databaseReference.child("users").child(uid)
+                        .get().addOnSuccessListener { snapshot ->
+                            Log.d("LoginDebug", "Raw snapshot: ${snapshot.value}")
+                            val user = snapshot.getValue(User::class.java)
+                            userProfile.value = user
+                            Log.d("LoginDebug", "Parsed user profile: $user")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("LoginDebug", "Failed to fetch user profile", e)
+                        }
+                } else {
+                    Log.w("LoginDebug", "UID is null when trying to fetch user profile")
+                }
+            }
+
+            // Determine the start destination based on user profile availability
+            val startDestination = if (userProfile.value != null) {
+                Screens.Home.screen  // or any other screen if the user is logged in
+            } else {
+                Screens.Login.screen
+            }
+            
             SkyberTheme {
                 val navController = rememberNavController()
                 val showBottomNav = remember { mutableStateOf(true) }
@@ -60,7 +114,6 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     // Main navigation and content handling
                     // Navigation logic same as react routers
-
                     val currentBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentRoute = currentBackStackEntry?.destination?.route
 
@@ -68,32 +121,42 @@ class MainActivity : ComponentActivity() {
                     val bottomNavRoutes = listOf(
                         Screens.Home.screen,
                         Screens.VolunteerHub.screen,
-                        Screens.Reports.screen,
+                        Screens.Portal.screen,
                         Screens.Announcement.screen,
-                        Screens.UserProfile.screen
+                        Screens.PostAnnouncement.screen,
+                        Screens.UserProfile.screen,
+                        Screens.Reports.screen,
+                        Screens.EditProfile.screen,
+                        Screens.Feedback.screen,
+
                     )
 
                     showBottomNav.value = currentRoute in bottomNavRoutes
 
                     NavHost(
                         navController = navController,
-                        startDestination = Screens.Login.screen,
+                        startDestination = startDestination,
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        // Main screens
-                        composable(Screens.Home.screen) { Home(navController) }
-                        composable(Screens.VolunteerHub.screen) { VolunteerHub() }
-                        composable(Screens.Reports.screen) { Reports() }
-                        composable(Screens.Announcement.screen) { Announcements() }
-                        composable(Screens.UserProfile.screen) { UserProfile(navController) }
-                        //Screens in User Profile
-                        composable(Screens.EditProfile.screen){ UserProfile(navController)}
-
                         // Auth screens
                         composable(Screens.Login.screen) { LoginScreen(navController) }
                         composable(Screens.SignUp.screen) { SignupScreen(navController) }
-                    }
 
+                        // Main screens
+                        composable(Screens.Home.screen) { Home(navController, userProfile = userProfile) }
+                        composable(Screens.VolunteerHub.screen) { VolunteerHub() }
+                        composable(Screens.Portal.screen) { Portal(navController) }
+                        composable(Screens.UserProfile.screen) { UserProfile(navController, userProfile = userProfile) }
+                        composable(Screens.Feedback.screen) { Feedback(navController) }
+                        //Screens in Portal
+                        composable(Screens.Reports.screen){ Reports(navController) }
+                        composable(Screens.Announcement.screen) { Announcements(navController) }
+
+                        //Screens in User Profile
+                        composable(Screens.EditProfile.screen){ EditProfile(navController, userProfile = userProfile, ::refreshUserProfile) }
+                        //Screens in Announcement
+                        composable(Screens.PostAnnouncement.screen){ PostAnnouncement(navController, userProfile = userProfile) }
+                    }
                 }
             }
         }
@@ -110,8 +173,8 @@ fun BottomNavBar(navController: NavController) {
     val navItems = listOf(
         NavItem(Icons.Filled.Home, Screens.Home.screen),
         NavItem(Icons.Filled.Hub, Screens.VolunteerHub.screen),
-        NavItem(Icons.AutoMirrored.Filled.TrendingUp, Screens.Reports.screen),
-        NavItem(Icons.AutoMirrored.Filled.Announcement, Screens.Announcement.screen),
+        NavItem(Icons.AutoMirrored.Filled.TrendingUp, Screens.Portal.screen),
+        NavItem(Icons.Filled.Forum, Screens.Feedback.screen),
         NavItem(Icons.Filled.Person, Screens.UserProfile.screen),
     )
 

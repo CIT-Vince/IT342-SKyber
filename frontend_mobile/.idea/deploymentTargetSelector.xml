@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="frontend_mobile.Skyber.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-04-16T08:05:35.288969800Z">
+        <DropdownSelection timestamp="2025-04-17T15:04:10.323326500Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="PhysicalDevice" identifier="serial=R58M44V3HLM" />
@@ -12,6 +12,9 @@
           </Target>
         </DropdownSelection>
         <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="app">
+        <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
   </component>

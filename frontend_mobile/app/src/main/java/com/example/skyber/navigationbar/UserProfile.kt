@@ -26,10 +26,12 @@ import androidx.compose.material.icons.filled.PersonPin
 import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,9 +45,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.skyber.Cards.ListCard
 import com.example.skyber.FirebaseHelper
 import com.example.skyber.R
 import com.example.skyber.Screens
+import com.example.skyber.dataclass.User
 import com.example.skyber.headerbar.*
 import com.example.skyber.ui.theme.*
 
@@ -53,155 +57,141 @@ import com.example.skyber.ui.theme.*
 
 
 @Composable@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-fun UserProfile(navController: NavHostController) {
-    Scaffold() { innerPadding ->
-        Column(
-            modifier = Modifier.fillMaxSize()
-                .background(SKyberDarkBlue)
-                .fillMaxHeight()
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+fun UserProfile(navController: NavHostController, userProfile : MutableState<User?>)  {
+   val user = userProfile.value
+    if (user == null) {
+        // Show a loading spinner while waiting for user data
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            HeaderBar(
-                trailingContent = {
-                    NotificationHandler()
-                }
-            )
-
-            Text(
-                text = "User Profile",
-                color = White,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-
+            CircularProgressIndicator(color = SKyberYellow)
+        }
+        return
+    }else {
+        Scaffold() { innerPadding ->
             Column(
-                modifier = Modifier
-                    .padding(vertical = 13.dp)
+                modifier = Modifier.fillMaxSize()
+                    .background(SKyberDarkBlue)
+                    .fillMaxHeight()
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(
-                    imageVector = Icons.Filled.PersonPin,
-                    tint = White,
-                    contentDescription = "Notifications",
-                    modifier = Modifier
-                        .size(100.dp)
+                HeaderBar(
+                    trailingContent = {
+                        NotificationHandler()
+                    }
                 )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(25.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.Top
-                ){
-                    Text(
-                        text = "First Name",
-                        color = White,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
 
-                    Spacer(
-                        modifier = Modifier.width(10.dp)
-                    )
+                Text(
+                    text = "User Profile",
+                    color = White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
 
-                    Text(
-                        text = "Last Name",
-                        color = White,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-            }
-            //Main Content
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .background(
-                        White,
-                        shape = RoundedCornerShape(
-                            topStart = 60.dp,
-                            topEnd = 60.dp,
-                            bottomStart = 0.dp,
-                            bottomEnd = 0.dp
-                        )
-                    )
-            ){
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                        .padding(20.dp)
-                ){
-                    ListCard(title = "Edit Profile", icon = Icons.Filled.ManageAccounts, onCardClick = {})
-                    ListCard(title = "Volunteers", icon = Icons.Filled.VolunteerActivism, onCardClick = {})
-                    ListCard(title = "Logout", icon = Icons.AutoMirrored.Filled.Logout, onCardClick = {
-                        FirebaseHelper.auth.signOut()
-                        navController.navigate(Screens.Login.screen)
-                    })
+                        .padding(vertical = 6.dp)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.PersonPin,
+                        tint = White,
+                        contentDescription = "User Profile Picture",
+                        modifier = Modifier
+                            .size(100.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(35.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        // Display the current user name and double check if null kay mo crash
+                        if (user != null) {
+                            Text(
+                                text = user.lastname ?: "User",
+                                fontSize = 30.sp,
+                                color = White,
+                                fontWeight = FontWeight.Bold
+                            )
 
+                            Spacer(modifier = Modifier.width(10.dp))
+
+                            Text(
+                                text = user.firstname ?: "User",
+                                fontSize = 30.sp,
+                                color = White,
+                                fontWeight = FontWeight.Bold
+                            )
+                        } else {
+                            CircularProgressIndicator(color = SKyberYellow)
+                        }
+                    }
                 }
-            }
-            
-        }//End of main Column Layout
+                //Main Content
+                Box(
+                    modifier = Modifier
+                        .padding(top = 6.dp)
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .background(
+                            White,
+                            shape = RoundedCornerShape(
+                                topStart = 60.dp,
+                                topEnd = 60.dp,
+                                bottomStart = 0.dp,
+                                bottomEnd = 0.dp
+                            )
+                        )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()
+                            .padding(20.dp)
+                    ) {
+                        ListCard(
+                            title = "Edit Profile",
+                            icon = Icons.Filled.ManageAccounts,
+                            onCardClick = {
+                                navController.navigate(Screens.EditProfile.screen)
+                            })
+                        ListCard(
+                            title = "Volunteers",
+                            icon = Icons.Filled.VolunteerActivism,
+                            onCardClick = {})
+                        ListCard(
+                            title = "Logout",
+                            icon = Icons.AutoMirrored.Filled.Logout,
+                            onCardClick = {
+                                FirebaseHelper.auth.signOut()
+                                navController.navigate(Screens.Login.screen)
+                            })
+
+                    }
+                }
+
+            }//End of main Column Layout
+        }
     }//End of Scaffold
 }
 
-
+/*
 @Preview(showBackground = true)
 @Composable
 fun UserProfilePreview(){
     val navController = rememberNavController()
     UserProfile(navController = navController)
 }
+*/
 
 
-@Composable
-fun ListCard(title: String, icon: ImageVector, onCardClick: () -> Unit ){
-    Card(
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = White),
-        modifier = Modifier
-            .padding(6.dp)
-            .fillMaxWidth()
-            .height(80.dp)
-            .clickable{ onCardClick()}
-    ){
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(8.dp)
-        ){
-            Icon(
-               imageVector = icon,
-                contentDescription = null,
-                tint = SKyberBlue,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(90.dp)
-                    .padding(horizontal =  4.dp)
-            )
-            Text(
-                text = title,
-                fontSize = 26.sp,
-                fontWeight = FontWeight.Bold,
-                color = SKyberBlue,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .weight(1f)
-            )
-        }
-    }
-}
 /*
 @Preview(showBackground = true)
 @Composable
