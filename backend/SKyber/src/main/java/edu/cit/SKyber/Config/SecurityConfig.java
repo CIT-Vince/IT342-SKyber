@@ -26,54 +26,73 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(@Lazy JwtAuthFilter jwtAuthFilter, @Lazy UserDetailsService userDetailsService) {
+    // Constructor injection for required dependencies
+    public SecurityConfig(@Lazy JwtAuthFilter jwtAuthFilter, 
+                        @Lazy UserDetailsService userDetailsService) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.userDetailsService = userDetailsService;
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())  // Disable CSRF as we are using stateless JWT
-                .authorizeRequests(requests -> requests
-                        .requestMatchers("/auth/**", "/login.html", "/register.html", "/auth/register", "/auth/login").permitAll() // Allow access to login and registration pages
-                        .requestMatchers("/**").permitAll()  
-                      )
-                .sessionManagement(management -> management
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider())  // Configure the authentication provider
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);  // Add JWT filter before the default username/password authentication
+    /* 
+     * Main security configuration
+     * Defines endpoint access rules and JWT filter setup
+     */
+    // SecurityConfig.java
 
-        return http.build();  // Return the configured SecurityFilterChain
+@Bean
+SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/auth/welcome", "/auth/addNewUser", "/auth/generateToken","/api/announcements").permitAll()  // Ensure this line is included
+            .requestMatchers("/**").permitAll()
+        )
+        .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authenticationProvider(authenticationProvider())
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+    return http.build();
+}
+
+
+    /* 
+     * Password encoder bean (uses BCrypt hashing)
+     * Critical for secure password storage
+     */
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
+    /* 
+     * Authentication provider configuration
+     * Links UserDetailsService and PasswordEncoder
+     */
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();  // Use BCrypt for secure password encoding
-    }
-
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
+    AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);  // Configure the UserDetailsService
-        provider.setPasswordEncoder(passwordEncoder());  // Use the password encoder
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
 
+    /* 
+     * Authentication manager bean
+     * Required for programmatic authentication (e.g., in /generateToken)
+     */
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();  // Retrieve the AuthenticationManager from Spring Security config
+    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.addAllowedOrigin("*");  // Allow all origins, restrict as needed
-        corsConfig.addAllowedMethod("*");  // Allow all HTTP methods (GET, POST, etc.)
-        corsConfig.addAllowedHeader("*");  // Allow all headers
+        corsConfig.addAllowedOrigin("*"); // Allow all origins, change as needed
+        corsConfig.addAllowedMethod("*"); // Allow all HTTP methods (GET, POST, etc.)
+        corsConfig.addAllowedHeader("*"); // Allow all headers
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfig);  // Apply CORS config globally
+        source.registerCorsConfiguration("/**", corsConfig); // Apply to all endpoints
         return source;
     }
 }
-

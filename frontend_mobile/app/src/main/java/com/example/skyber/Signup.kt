@@ -1,6 +1,7 @@
 package com.example.skyber
 
 import android.icu.text.SimpleDateFormat
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -13,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
+import androidx.compose.material3.TextFieldDefaults.textFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,10 +38,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.skyber.dataclass.User
 import com.example.skyber.ui.theme.SKyberDarkBlue
 import com.example.skyber.ui.theme.SKyberRed
 import com.example.skyber.ui.theme.SKyberYellow
 import java.util.*
+import androidx.compose.ui.platform.LocalContext
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,13 +52,13 @@ fun SignupScreen(navController: NavHostController){
     var firstname by remember {mutableStateOf ("")}
     var lastname by remember {mutableStateOf("")}
     var email by remember { mutableStateOf("") }
-    var dateOfBirth by remember {mutableStateOf("")}
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var gender by remember { mutableStateOf( "")}
     //Date of Birth
     var dob by remember { mutableStateOf("") }
 
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -204,18 +208,56 @@ fun SignupScreen(navController: NavHostController){
                 )
             )
 
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             //Radio Group diri
-            RadioButtonGenders(modifier = Modifier.padding(16.dp))
+            RadioButtonGenders(
+                modifier = Modifier.padding(16.dp),
+                gender = gender,
+                onGenderSelected = { gender = it }
+            )
 
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(2.dp))
 
             //Signup button
             //Bring to Login for now change onlclick logic later
             Button(
                 onClick = {
-                    navController.navigate(Screens.Login.screen)
+                    //Firebase Realtime db reference gikan sa singleton file
+                    val reference = FirebaseHelper.databaseReference
+                    //get reference from singleton
+                    val userReference = FirebaseHelper.databaseReference.child("users")
+                    //user object creation
+                    val userId = userReference.push().key
+
+                    // Basic validation
+                    if (firstname.isEmpty() || lastname.isEmpty() || email.isEmpty() ||
+                        password.isEmpty() || dob.isEmpty() || gender.isEmpty()) {
+                        Toast.makeText(context, "Please fill in all fields.", Toast.LENGTH_SHORT).show()
+                    } else if (userId != null) {//logic for registering user to realtime db
+                        val user = User(
+                            id = userId,
+                            firstname = firstname,
+                            lastname = lastname,
+                            email = email,
+                            password = password,
+                            dob = dob,
+                            gender = gender
+                        )
+
+                        userReference.child(userId).setValue(user).addOnCompleteListener{task ->
+                            if(task.isSuccessful){
+                                navController.navigate(Screens.Login.screen)
+                                Toast.makeText(context, "Registration Succes", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, "Registration failed. Please try again.", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }else{
+                        Toast.makeText(context, "Unexpected Errorm Please try again.", Toast.LENGTH_SHORT).show()
+                    }
+
                 },
+
                 colors = ButtonDefaults.buttonColors(
                     containerColor = SKyberRed,
                     contentColor = Color.White
@@ -230,7 +272,19 @@ fun SignupScreen(navController: NavHostController){
                 )
             }
 
-        }
+            Spacer(modifier = Modifier.height(3.dp))
+            Text(
+                text = "Log in",
+                color = SKyberYellow,
+                fontSize = 15.sp,
+                modifier = Modifier
+                    .clickable {
+                        navController.navigate(Screens.Login.screen)
+                    }
+            )
+
+        }//End of main Column layout
+
     }
 }
 
@@ -260,7 +314,10 @@ fun DatePickerField(
         label = { Text(label) },
         readOnly = true,
         trailingIcon = {
-            IconButton(onClick = { showDatePicker = !showDatePicker }) {
+            IconButton(
+                onClick = { showDatePicker = !showDatePicker },
+
+            ) {
                 Icon(Icons.Default.DateRange, contentDescription = "Select date")
             }
         },
@@ -385,9 +442,12 @@ fun DatePickerModal(
 
 ///for genders
 @Composable
-fun RadioButtonGenders(modifier: Modifier = Modifier) {
+fun RadioButtonGenders(
+    gender: String,
+    onGenderSelected: (String) -> Unit,
+    modifier: Modifier = Modifier
+    ) {
     val radioOptions = listOf("Male", "Female", "Others")
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
     // Note that Modifier.selectableGroup() is essential to ensure correct accessibility behavior
     Row(
         modifier.selectableGroup()
@@ -398,8 +458,8 @@ fun RadioButtonGenders(modifier: Modifier = Modifier) {
                     .width(100.dp)
                     .height(30.dp)
                     .selectable(
-                        selected = (text == selectedOption),
-                        onClick = { onOptionSelected(text) },
+                        selected = (text == gender),
+                        onClick = { onGenderSelected(text) },
                         role = Role.RadioButton
                     )
                     .padding(horizontal = 5.dp),
@@ -408,7 +468,7 @@ fun RadioButtonGenders(modifier: Modifier = Modifier) {
 
             ) {
                 RadioButton(
-                    selected = (text == selectedOption),
+                    selected = (text == gender),
                     onClick = null ,
                     colors = RadioButtonDefaults.colors(
                     selectedColor = SKyberYellow,

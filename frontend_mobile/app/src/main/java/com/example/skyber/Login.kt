@@ -1,5 +1,6 @@
 package com.example.skyber
 
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -33,6 +35,7 @@ import com.example.skyber.ui.theme.SKyberYellow
 fun LoginScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -96,8 +99,27 @@ fun LoginScreen(navController: NavHostController) {
         //Login Button
         Button(
             onClick = {
-                navController.navigate(Screens.Home.screen)
+                val auth = FirebaseHelper.auth
+                
+                val trimmedEmail = email.trim()
+                val trimmedPassword = password.trim()
+
+                if(email.isEmpty() || password.isEmpty()){
+                    Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                }else{
+                    auth.signInWithEmailAndPassword(trimmedEmail, trimmedPassword).addOnCompleteListener{ task ->
+                        if(task.isSuccessful){
+                            navController.navigate(Screens.Home.screen)
+                            Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
+                        }else{
+                            val exception = task.exception
+                            val errorMessage = exception?.message ?: "An error occurred"
+                            Toast.makeText(context, "Login Failed. $errorMessage", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             },
+
             colors = ButtonDefaults.buttonColors(
                 containerColor = SKyberRed,
                 contentColor = Color.White
@@ -121,10 +143,12 @@ fun LoginScreen(navController: NavHostController) {
         }
     }
 }
-
+/*
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
     val navController = rememberNavController()
     LoginScreen(navController = navController)
 }
+
+ */
