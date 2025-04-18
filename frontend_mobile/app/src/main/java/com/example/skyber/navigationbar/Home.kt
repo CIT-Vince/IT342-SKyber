@@ -121,8 +121,8 @@ fun Home(navController: NavHostController, userProfile: MutableState<User?>) {
                             .size(30.dp)
 
                     )
-                    Text(text = " Barangay, ", fontSize = 25.sp, color = White, fontWeight = FontWeight.Bold)
-                    Text(text = "City name", fontSize = 25.sp, color = White, fontWeight = FontWeight.Bold)
+                    Text(text = user.address ?: "", fontSize = 25.sp, color = White, fontWeight = FontWeight.Bold)
+
                 }
                 Column(
                     modifier = Modifier
@@ -144,7 +144,7 @@ fun Home(navController: NavHostController, userProfile: MutableState<User?>) {
                         Text(text = "See All", fontSize = 22.sp, color = White)
                     }
 
-                    AnnouncementCard(backgroundColor = White, fontColor = Black)
+                    //AnnouncementCard(backgroundColor = White, fontColor = Black, title = "")
 
                     Row(
                         modifier = Modifier

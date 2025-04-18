@@ -10,9 +10,15 @@ sealed class Screens(val screen: String){
 
     //Portal nav routes
     data object Reports : Screens("Reports")
+
+    data object Projects : Screens("Projects")//Project and Nested Screens in Projects
+    data object PostProject: Screens("Post Projects")
+    data object DetailsProject: Screens("Details Projects")
+
     //data object JobsAndScholarships : Screens("Signup")
-    data object Announcement: Screens("Announcement")
+    data object Announcement: Screens("Announcement")//Announcement and Nested Screens in Announcement
     data object PostAnnouncement: Screens("Post Announcement")
+    data object DetailsAnnouncement: Screens("Details Announcement")
 
     //screens found in user profile
     data object EditProfile: Screens("Edit Profile")

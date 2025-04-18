@@ -27,19 +27,26 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.skyber.R
+import com.example.skyber.dataclass.Announcement
+import com.example.skyber.dataclass.Project
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.White
 
 
 @Composable
-fun AnnouncementCard(backgroundColor: Color = White, fontColor: Color = Black/*Retrieve announcement image and title */){
+fun AnnouncementCard(backgroundColor: Color = White,
+                     fontColor: Color = Black,
+                     announcement: Announcement,
+                     onClick: () -> Unit){
     Card(
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         shape = RoundedCornerShape(38.dp),
         modifier = Modifier
+            .clickable{ onClick()}
             .height(150.dp)
             .fillMaxWidth()
             .padding(10.dp),
@@ -51,16 +58,29 @@ fun AnnouncementCard(backgroundColor: Color = White, fontColor: Color = Black/*R
             Column(
                 modifier = Modifier
                     .padding(16.dp)
+                    .height(200.dp)
                     .width(210.dp),
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.SpaceBetween,
             ){
                 Text(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    text = "Lorem ipsum dolor sit amet",
-                    fontSize = 28.sp,
+                    text = announcement.title,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = fontColor
+                    color = fontColor,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    text = announcement.author,
+                    fontSize = 20.sp,
+                    color = fontColor,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
                 )
 
             }
@@ -170,3 +190,74 @@ fun ListCard(title: String, icon: ImageVector, onCardClick: () -> Unit ){
         }
     }
 }
+
+@Composable
+fun ProjectTransparencyCard(backgroundColor: Color = White,
+                            fontColor: Color = Black,
+                            project: Project,
+                            onClick: () -> Unit){
+    Card(
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        shape = RoundedCornerShape(38.dp),
+        modifier = Modifier
+            .clickable{ onClick()}
+            .height(150.dp)
+            .fillMaxWidth()
+            .padding(10.dp),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize()
+                .padding(2.dp)
+        ){
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .height(200.dp)
+                    .width(210.dp),
+                verticalArrangement = Arrangement.SpaceBetween,
+            ){
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    text = project.projectName,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = fontColor,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    text = project.projectManager,
+                    fontSize = 20.sp,
+                    color = fontColor,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+            }
+
+            Image(
+                painter = painterResource(id = R.drawable.image),
+                contentDescription = "Logo",
+                modifier = Modifier
+                    .height(120.dp)
+                    .width(100.dp)
+                    .padding(6.dp)
+                    .clip(RoundedCornerShape(20.dp)),
+                contentScale = ContentScale.Fit
+            )
+        }
+    }
+}
+/*
+@Preview(showBackground = true)
+@Composable
+fun Preview() {
+    val navController = rememberNavController()
+    ProjectTransparencyCard(backgroundColor= White,
+        fontColor = Black, onClick = {})
+}
+ */

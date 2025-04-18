@@ -34,7 +34,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.skyber.dataclass.User
@@ -44,6 +43,8 @@ import com.example.skyber.ui.theme.SKyberYellow
 import java.util.*
 import androidx.compose.ui.platform.LocalContext
 import com.example.skyber.FirebaseHelper
+import com.example.skyber.ModularFunctions.DatePickerField
+import com.example.skyber.ModularFunctions.convertMillisToDate
 import com.example.skyber.R
 import com.example.skyber.Screens
 
@@ -57,6 +58,9 @@ fun SignupScreen(navController: NavHostController){
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var gender by remember { mutableStateOf( "")}
+    var address by remember { mutableStateOf("") }
+    var phonenumber by remember { mutableStateOf( "")}
+
     //Date of Birth
     var dob by remember { mutableStateOf("") }
     val role = "viewer"
@@ -66,14 +70,14 @@ fun SignupScreen(navController: NavHostController){
         modifier = Modifier
             .fillMaxSize()
             .background(SKyberDarkBlue)
-            .padding(16.dp),
+            .padding(12.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(70.dp)
+                .height(60.dp)
         ){
             Image(
                 painter = painterResource(id = R.drawable.logo),
@@ -170,12 +174,56 @@ fun SignupScreen(navController: NavHostController){
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            //Date of birth field here
-            DatePickerField(onDateSelected = {
-                dob = convertMillisToDate(it)
-            })
+            TextField(
+                value = phonenumber,
+                onValueChange = { phonenumber = it },
+                label = { Text("Phone Number") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(40.dp))
+                    .background(Color.White),
+                colors = TextFieldDefaults.textFieldColors(
+                    focusedIndicatorColor = SKyberYellow,
+                    unfocusedIndicatorColor = SKyberYellow,
+                    focusedLabelColor = SKyberYellow,
+                    unfocusedLabelColor = SKyberYellow
+                )
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
+
+            TextField(
+                value = address,
+                onValueChange = { address = it },
+                label = { Text("Address") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(40.dp))
+                    .background(Color.White),
+                colors = TextFieldDefaults.textFieldColors(
+                    focusedIndicatorColor = SKyberYellow,
+                    unfocusedIndicatorColor = SKyberYellow,
+                    focusedLabelColor = SKyberYellow,
+                    unfocusedLabelColor = SKyberYellow
+                )
+            )
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            //Date of birth field here
+            DatePickerField(
+                label = "Date of Birth",
+                selectedDate = dob,
+                onDateSelected = { millis ->
+                    dob = convertMillisToDate(millis)
+                }
+            )
+
+            Spacer(modifier = Modifier.height(15.dp))
 
             TextField(
                 value = password,
@@ -197,25 +245,6 @@ fun SignupScreen(navController: NavHostController){
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            TextField(
-                value = confirmPassword,
-                onValueChange = { confirmPassword = it },
-                label = { Text("Confirm Password") },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(40.dp))
-                    .background(Color.White),
-                colors = TextFieldDefaults.textFieldColors(
-                    focusedIndicatorColor = SKyberYellow,
-                    unfocusedIndicatorColor = SKyberYellow,
-                    focusedLabelColor = SKyberYellow,
-                    unfocusedLabelColor = SKyberYellow
-                )
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
             //Radio Group diri
             RadioButtonGenders(
                 modifier = Modifier.padding(16.dp),
@@ -235,8 +264,6 @@ fun SignupScreen(navController: NavHostController){
                     if (firstname.isEmpty() || lastname.isEmpty() || email.isEmpty() ||
                         password.isEmpty() || dob.isEmpty() || gender.isEmpty()) {
                         Toast.makeText(context, "Please fill in all fields.", Toast.LENGTH_SHORT).show()
-                    }else if(password != confirmPassword) {
-                        Toast.makeText(context, "Password must match.", Toast.LENGTH_SHORT).show()
                     } else {
                         // 1. create Firebase Auth account
                         auth.createUserWithEmailAndPassword(email.trim(), password.trim())
@@ -255,7 +282,9 @@ fun SignupScreen(navController: NavHostController){
                                             password = password,
                                             dob = dob,
                                             gender = gender,
-                                            role = role
+                                            role = role,
+                                            phonenumber = phonenumber,
+                                            address = address
                                         )
 
                                     database.child("users").child(uid).setValue(user)
@@ -315,147 +344,6 @@ fun SignUpPreview() {
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DatePickerField(
-    label: String = "Date of Birth",
-    onDateSelected: (Long) -> Unit
-) {
-    var showDatePicker by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState()
-    val selectedDate = datePickerState.selectedDateMillis?.let {
-        convertMillisToDate(it)
-    } ?: ""
-
-    TextField(
-        value = selectedDate,
-        onValueChange = {},
-        label = { Text(label) },
-        readOnly = true,
-        trailingIcon = {
-            IconButton(
-                onClick = { showDatePicker = !showDatePicker },
-
-            ) {
-                Icon(Icons.Default.DateRange, contentDescription = "Select date")
-            }
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(58.dp)
-            .clip(RoundedCornerShape(40.dp)),
-        colors = TextFieldDefaults.textFieldColors(
-            focusedIndicatorColor = SKyberYellow,
-            unfocusedIndicatorColor = SKyberYellow,
-            focusedLabelColor = SKyberYellow,
-            unfocusedLabelColor = SKyberYellow
-        )
-    )
-
-    if (showDatePicker) {
-        Popup(
-            alignment = Alignment.Center,
-            onDismissRequest = { showDatePicker = false }
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .shadow(4.dp, RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    DatePicker(
-                        state = datePickerState,
-                        showModeToggle = false
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Button(
-                        onClick = {
-                            showDatePicker = false
-                            datePickerState.selectedDateMillis?.let { onDateSelected(it) }
-                        },
-                        modifier = Modifier.align(Alignment.End)
-                    ) {
-                        Text("OK")
-                    }
-                }
-            }
-        }
-    }
-}
-
-/*
-@Composable
-fun DatePickerField(modifier: Modifier = Modifier) {
-    var selectedDate by remember { mutableStateOf<Long?>(null) }
-    var showModal by remember { mutableStateOf(false) }
-
-    OutlinedTextField(
-        value = selectedDate?.let { convertMillisToDate(it) } ?: "",
-        onValueChange = { },
-        label = { Text("DOB") },
-        placeholder = { Text("MM/DD/YYYY") },
-        trailingIcon = {
-            Icon(Icons.Default.DateRange, contentDescription = "Select date")
-        },
-        modifier = modifier
-            .fillMaxWidth()
-            .height(30.dp)
-            .pointerInput(selectedDate) {
-                awaitEachGesture {
-                    // Modifier.clickable doesn't work for text fields, so we use Modifier.pointerInput
-                    // in the Initial pass to observe events before the text field consumes them
-                    // in the Main pass.
-                    awaitFirstDown(pass = PointerEventPass.Initial)
-                    val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
-                    if (upEvent != null) {
-                        showModal = true
-                    }
-                }
-            }
-    )
-
-    if (showModal) {
-        DatePickerModal(
-            onDateSelected = { selectedDate = it },
-            onDismiss = { showModal = false }
-        )
-    }
-}
-*/
-fun convertMillisToDate(millis: Long): String {
-    val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
-    return formatter.format(Date(millis))
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DatePickerModal(
-    onDateSelected: (Long?) -> Unit,
-    onDismiss: () -> Unit
-) {
-    val datePickerState = rememberDatePickerState()
-
-    DatePickerDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = {
-                onDateSelected(datePickerState.selectedDateMillis)
-                onDismiss()
-            }) {
-                Text("OK")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
-    ) {
-        DatePicker(state = datePickerState)
-    }
-}
 
 ///for genders
 @Composable

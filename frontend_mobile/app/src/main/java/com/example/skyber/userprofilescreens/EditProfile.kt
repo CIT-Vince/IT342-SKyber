@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonPin
+import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -62,6 +63,8 @@ fun EditProfile(navController: NavHostController, userProfile: MutableState<User
     var newFirstname by remember { mutableStateOf("") }
     var newLastname by remember { mutableStateOf("") }
     var newEmail by remember { mutableStateOf("") }
+    var newAddress by remember { mutableStateOf("") }
+    var newPhonenumber by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var oldPassword by remember { mutableStateOf("") }
     val context = LocalContext.current
@@ -92,7 +95,6 @@ fun EditProfile(navController: NavHostController, userProfile: MutableState<User
                     }
                 )
 
-
                 Column(
                     modifier = Modifier
                         .padding(vertical = 6.dp)
@@ -104,10 +106,8 @@ fun EditProfile(navController: NavHostController, userProfile: MutableState<User
                         imageVector = Icons.Filled.PersonPin,
                         tint = White,
                         contentDescription = "User Profile Picture",
-                        modifier = Modifier
-                            .size(100.dp)
+                        modifier = Modifier.size(100.dp)
                     )
-
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -132,6 +132,65 @@ fun EditProfile(navController: NavHostController, userProfile: MutableState<User
                             color = White,
                             fontWeight = FontWeight.Bold
                         )
+
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        Button(
+                            onClick = {
+                                val database = FirebaseHelper.databaseReference//Firebase Realtime db reference gikan sa singleton file
+                                val uid = FirebaseHelper.auth.currentUser?.uid
+
+
+                                if (uid != null) {
+                                    database.child("users").child(uid).get().addOnSuccessListener {
+                                        val currentUser = userProfile.value
+
+                                        if (currentUser != null && currentUser.password == oldPassword) {
+                                            val updatedUser = User(
+                                                id = currentUser.id,
+                                                firstname = newFirstname.ifEmpty { currentUser.firstname },
+                                                lastname = newLastname.ifEmpty { currentUser.lastname },
+                                                email = newEmail.ifEmpty { currentUser.email },
+                                                password = newPassword.ifEmpty { currentUser.password },
+                                                dob = currentUser.dob,
+                                                gender = currentUser.gender,
+                                                role = currentUser.role,
+                                                phonenumber = newPhonenumber.ifEmpty { currentUser.phonenumber },
+                                                address = newAddress.ifEmpty { currentUser.address }
+                                            )
+                                            FirebaseHelper.databaseReference.child("users")
+                                                .child(currentUser.id!!).setValue(updatedUser)
+                                                .addOnSuccessListener {
+                                                    refreshUserProfile()
+                                                    Toast.makeText(context, "Profile Updated", Toast.LENGTH_SHORT).show()
+                                                }.addOnFailureListener {
+                                                    Toast.makeText(
+                                                        context, "Failed to update profile", Toast.LENGTH_SHORT).show()
+                                                }
+
+                                        } else {
+                                            Toast.makeText(context, "Old Password Doesn't Match", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = SKyberBlue,
+                                contentColor = Color.White
+                            ),
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(60.dp))
+                                .width(60.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Update,
+                                contentDescription = "Update",
+                                tint = White,
+                                modifier = Modifier
+                                    .height(60.dp)
+                                    .width(60.dp)
+                            )
+                        }
 
                     }
 
@@ -159,14 +218,6 @@ fun EditProfile(navController: NavHostController, userProfile: MutableState<User
                             .fillMaxHeight()
                             .padding(20.dp)
                     ) {
-                        Text(
-                            "  EDIT PROFILE",
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = SKyberBlue
-                        )
-
-                        Spacer(modifier = Modifier.height(12.dp))
 
                         Row(
                             modifier = Modifier
@@ -187,9 +238,9 @@ fun EditProfile(navController: NavHostController, userProfile: MutableState<User
                                     .background(Color.White),
                                 colors = TextFieldDefaults.textFieldColors(
                                     focusedIndicatorColor = SKyberYellow,
-                                    unfocusedIndicatorColor = SKyberRed,
+                                    unfocusedIndicatorColor = SKyberYellow,
                                     focusedLabelColor = SKyberYellow,
-                                    unfocusedLabelColor = SKyberRed
+                                    unfocusedLabelColor = SKyberYellow
                                 )
                             )
 
@@ -208,9 +259,9 @@ fun EditProfile(navController: NavHostController, userProfile: MutableState<User
                                     .background(Color.White),
                                 colors = TextFieldDefaults.textFieldColors(
                                     focusedIndicatorColor = SKyberYellow,
-                                    unfocusedIndicatorColor = SKyberRed,
+                                    unfocusedIndicatorColor = SKyberYellow,
                                     focusedLabelColor = SKyberYellow,
-                                    unfocusedLabelColor = SKyberRed
+                                    unfocusedLabelColor = SKyberYellow
                                 )
                             )
                         }
@@ -228,13 +279,55 @@ fun EditProfile(navController: NavHostController, userProfile: MutableState<User
                                 .background(Color.White),
                             colors = TextFieldDefaults.textFieldColors(
                                 focusedIndicatorColor = SKyberYellow,
-                                unfocusedIndicatorColor = SKyberRed,
+                                unfocusedIndicatorColor = SKyberYellow,
                                 focusedLabelColor = SKyberYellow,
-                                unfocusedLabelColor = SKyberRed
+                                unfocusedLabelColor = SKyberYellow
                             )
                         )
 
                         Spacer(modifier = Modifier.height(12.dp))
+
+                        TextField(
+                            value = newAddress,
+                            onValueChange = { newAddress = it },
+                            label = { Text("Address") },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                            modifier = Modifier
+                                .height(60.dp)
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(40.dp))
+                                .background(Color.White),
+                            colors = TextFieldDefaults.textFieldColors(
+                                focusedIndicatorColor = SKyberYellow,
+                                unfocusedIndicatorColor = SKyberYellow,
+                                focusedLabelColor = SKyberYellow,
+                                unfocusedLabelColor = SKyberYellow,
+                            )
+                        )
+
+                        Spacer(modifier = Modifier.height(15.dp))
+
+                        TextField(
+                            value = newPhonenumber,
+                            onValueChange = { newPhonenumber = it },
+                            label = { Text("Phone Number") },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                            modifier = Modifier
+                                .height(60.dp)
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(40.dp))
+                                .background(Color.White),
+                            colors = TextFieldDefaults.textFieldColors(
+                                focusedIndicatorColor = SKyberYellow,
+                                unfocusedIndicatorColor = SKyberYellow,
+                                focusedLabelColor = SKyberYellow,
+                                unfocusedLabelColor = SKyberYellow,
+                            )
+                        )
+
+                        Spacer(modifier = Modifier.height(15.dp))
 
                         TextField(
                             value = oldPassword,
@@ -249,9 +342,9 @@ fun EditProfile(navController: NavHostController, userProfile: MutableState<User
                                 .background(Color.White),
                             colors = TextFieldDefaults.textFieldColors(
                                 focusedIndicatorColor = SKyberYellow,
-                                unfocusedIndicatorColor = SKyberRed,
+                                unfocusedIndicatorColor = SKyberYellow,
                                 focusedLabelColor = SKyberYellow,
-                                unfocusedLabelColor = SKyberRed,
+                                unfocusedLabelColor = SKyberYellow,
                             )
                         )
 
@@ -270,65 +363,13 @@ fun EditProfile(navController: NavHostController, userProfile: MutableState<User
                                 .background(Color.White),
                             colors = TextFieldDefaults.textFieldColors(
                                 focusedIndicatorColor = SKyberYellow,
-                                unfocusedIndicatorColor = SKyberRed,
+                                unfocusedIndicatorColor = SKyberYellow,
                                 focusedLabelColor = SKyberYellow,
-                                unfocusedLabelColor = SKyberRed
+                                unfocusedLabelColor = SKyberYellow
                             )
                         )
 
                         Spacer(modifier = Modifier.height(15.dp))
-
-                        Button(
-                            onClick = {
-                                val auth = FirebaseHelper.auth//get auth from firebase singleton
-                                val database = FirebaseHelper.databaseReference//Firebase Realtime db reference gikan sa singleton file
-                                val uid = FirebaseHelper.auth.currentUser?.uid
-
-
-                                if (uid != null) {
-                                    database.child("users").child(uid).get().addOnSuccessListener {
-                                        val currentUser = userProfile.value
-
-                                        if (currentUser != null && currentUser.password == oldPassword) {
-                                            val updatedUser = User(
-                                                id = currentUser.id,
-                                                firstname = newFirstname.ifEmpty { currentUser.firstname },
-                                                lastname = newLastname.ifEmpty { currentUser.lastname },
-                                                email = newEmail.ifEmpty { currentUser.email },
-                                                password = newPassword.ifEmpty { currentUser.password },
-                                                dob = currentUser.dob,
-                                                gender = currentUser.gender,
-                                                role = currentUser.role
-                                            )
-                                            FirebaseHelper.databaseReference.child("users")
-                                                .child(currentUser.id!!).setValue(updatedUser)
-                                                .addOnSuccessListener {
-                                                    refreshUserProfile()
-                                                    Toast.makeText(context, "Profile Updated", Toast.LENGTH_SHORT).show()
-                                                }.addOnFailureListener {
-                                                    Toast.makeText(
-                                                        context, "Failed to update profile", Toast.LENGTH_SHORT).show()
-                                                }
-
-                                        } else {
-                                            Toast.makeText(context, "Old Password Doesn't Match", Toast.LENGTH_SHORT).show()
-                                        }
-                                    }
-                                }
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = SKyberBlue,
-                                contentColor = Color.White
-                            ),
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(600.dp))
-                                .fillMaxWidth()
-                        ) {
-                            Text(
-                                text = "Confirm Changes",
-                                color = Color.White
-                            )
-                        }
 
                     }//End of main content Column
                 }//End of main content box

@@ -39,7 +39,11 @@ import com.example.skyber.navigationbar.Home
 import com.example.skyber.navigationbar.Portal
 import com.example.skyber.navigationbar.UserProfile
 import com.example.skyber.navigationbar.VolunteerHub
+import com.example.skyber.portalnavigator.Announcement.DetailsAnnouncement
 import com.example.skyber.portalnavigator.Announcement.PostAnnouncement
+import com.example.skyber.portalnavigator.ProjectTransparency.DetailsProject
+import com.example.skyber.portalnavigator.ProjectTransparency.PostProject
+import com.example.skyber.portalnavigator.ProjectTransparency.Projects
 import com.example.skyber.portalnavigator.Reports
 import com.example.skyber.ui.theme.NavBarColor
 import com.example.skyber.ui.theme.SKyberBlue
@@ -60,6 +64,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val uid = FirebaseHelper.auth.currentUser?.uid //Get current user globally
             val userProfile = remember { mutableStateOf<User?>(null) }//hold the user profile data
+
             //global refresher function for changes to user data
             fun refreshUserProfile() {
                 val uid = FirebaseHelper.auth.currentUser?.uid
@@ -128,7 +133,10 @@ class MainActivity : ComponentActivity() {
                         Screens.Reports.screen,
                         Screens.EditProfile.screen,
                         Screens.Feedback.screen,
-
+                        Screens.DetailsAnnouncement.screen,
+                        Screens.Projects.screen,
+                        Screens.PostProject.screen,
+                        Screens.DetailsProject.screen
                     )
 
                     showBottomNav.value = currentRoute in bottomNavRoutes
@@ -145,17 +153,25 @@ class MainActivity : ComponentActivity() {
                         // Main screens
                         composable(Screens.Home.screen) { Home(navController, userProfile = userProfile) }
                         composable(Screens.VolunteerHub.screen) { VolunteerHub() }
-                        composable(Screens.Portal.screen) { Portal(navController) }
+                        composable(Screens.Portal.screen) { Portal(navController,userProfile = userProfile ) }
                         composable(Screens.UserProfile.screen) { UserProfile(navController, userProfile = userProfile) }
                         composable(Screens.Feedback.screen) { Feedback(navController) }
-                        //Screens in Portal
+
+                        //Nested Screens in Portal
                         composable(Screens.Reports.screen){ Reports(navController) }
                         composable(Screens.Announcement.screen) { Announcements(navController) }
 
-                        //Screens in User Profile
-                        composable(Screens.EditProfile.screen){ EditProfile(navController, userProfile = userProfile, ::refreshUserProfile) }
-                        //Screens in Announcement
+                        //Nested Screens in Project
+                        composable(Screens.Projects.screen){ Projects(navController)}
+                        composable(Screens.PostProject.screen){ PostProject(navController, userProfile = userProfile) }
+                        composable(Screens.DetailsProject.screen){ DetailsProject(navController)}
+
+                        //Nested Screens in Announcement
                         composable(Screens.PostAnnouncement.screen){ PostAnnouncement(navController, userProfile = userProfile) }
+                        composable(Screens.DetailsAnnouncement.screen){ DetailsAnnouncement(navController)}
+
+                        //Nested Screens in User Profile
+                        composable(Screens.EditProfile.screen){ EditProfile(navController, userProfile = userProfile, ::refreshUserProfile) }
                     }
                 }
             }

@@ -62,7 +62,7 @@ fun PortalNavPreview() {
 @Preview(showBackground = true)
 @Composable
 fun PortalNavModalPreview() {
-    val mockRoutes = listOf("Reports", "Announcements")
+    val mockRoutes = listOf("Reports", "Announcements", "Projects")
 
     val onDismiss: () -> Unit = {  }
 
@@ -93,7 +93,7 @@ fun PortalNavModal(
         ){
             Column(
                 modifier = Modifier
-                    .padding(12.dp)
+                    .padding(8.dp)
             ){
                 Column(
                     modifier = Modifier
@@ -110,6 +110,8 @@ fun PortalNavModal(
                         color = SKyberBlue,
                         fontSize = 16.sp,
                         modifier = Modifier
+                            .height(30.dp)
+                            .fillMaxWidth()
                             .padding(vertical = 4.dp)
                             .clickable {
                                 onRouteClick(route)
@@ -128,7 +130,8 @@ fun PortalNavHandler(
     fetchRoutes: () -> List<String> = {
         listOf(
             Screens.Announcement.screen,
-            Screens.Reports.screen
+            Screens.Reports.screen,
+            Screens.Projects.screen,
         )
     }
 ) {

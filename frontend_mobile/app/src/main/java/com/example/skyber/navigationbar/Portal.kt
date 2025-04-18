@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.skyber.dataclass.User
 import com.example.skyber.headerbar.HeaderBar
 import com.example.skyber.headerbar.NotificationHandler
 import com.example.skyber.portalnavigator.PortalNav
@@ -35,7 +37,8 @@ import com.example.skyber.userauth.SignupScreen
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Portal(navController: NavHostController) {
+fun Portal(navController: NavHostController,  userProfile: MutableState<User?>) {
+    val user = userProfile.value
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -80,10 +83,11 @@ fun Portal(navController: NavHostController) {
 
     }
 }
-
+/*
 @Preview(showBackground = true)
 @Composable
 fun PortalPreview() {
     val navController = rememberNavController()
     Portal(navController = navController)
 }
+*/

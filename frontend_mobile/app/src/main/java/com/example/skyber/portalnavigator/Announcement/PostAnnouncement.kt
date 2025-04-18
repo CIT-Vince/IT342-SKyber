@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -48,6 +49,8 @@ fun PostAnnouncement(navController: NavHostController, userProfile: MutableState
     val user = userProfile.value
     var title by remember { mutableStateOf("")}
     var content by remember {mutableStateOf("")}
+    var category by remember {mutableStateOf("")}
+    var barangay by remember {mutableStateOf("")}
     val context = LocalContext.current
 
 
@@ -85,34 +88,63 @@ fun PostAnnouncement(navController: NavHostController, userProfile: MutableState
                         .background(White),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    TextField(
-                        value = title,
-                        onValueChange = { title = it },
-                        label = { Text("Title") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    TextField(
-                        value = content,
-                        onValueChange = { content = it },
-                        label = { Text("Content") },
+                ) {
+                    LazyColumn(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp), // Adjust height for multiline
-                        maxLines = 6
-                    )
+                            .fillMaxSize()
+                            .weight(1f)
+                            .padding(14.dp)
+                    ) {
+                        item {
+                            TextField(
+                                value = title,
+                                onValueChange = { title = it },
+                                label = { Text("Title") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
 
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            TextField(
+                                value = barangay,
+                                onValueChange = { barangay = it },
+                                label = { Text("Barangay") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            TextField(
+                                value = category,
+                                onValueChange = { category = it },
+                                label = { Text("Category") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            TextField(
+                                value = content,
+                                onValueChange = { content = it },
+                                label = { Text("Content") },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(150.dp), // Adjust height for multiline
+                                maxLines = 10
+                            )
+                        }
+                    }
                     Spacer(modifier = Modifier.height(16.dp))
+
                     Button(onClick = {
                         // Create Announcement object
                         val newAnnouncement = Announcement(
                             title = title,
                             mainContent = content,
                             datePosted = getCurrentDateTime(), // Assuming this function returns the correct formatted date
-                            author = "${user.firstname} ${user.lastname}" // Full name of the user
+                            author = "${user.firstname} ${user.lastname}",
+                            barangay = barangay,
+                            category = category,// Full name of the user
                         )
 
                         // Upload the announcement and show the toast
@@ -122,6 +154,7 @@ fun PostAnnouncement(navController: NavHostController, userProfile: MutableState
                     }) {
                         Text("Post Announcement")
                     }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
@@ -136,8 +169,7 @@ fun showToast(context: Context, message: String) {
 
 fun uploadAnnouncement(announcement: Announcement, context: Context) {
     val databaseRef = FirebaseHelper.databaseReference.child("Announcements").push()
-    databaseRef.setValue(announcement)
-        .addOnSuccessListener {
+    databaseRef.setValue(announcement).addOnSuccessListener {
             // Show success toast when announcement is uploaded successfully
             showToast(context, "Announcement uploaded successfully")
         }
