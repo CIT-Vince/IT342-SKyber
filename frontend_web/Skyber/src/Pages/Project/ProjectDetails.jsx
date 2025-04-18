@@ -7,6 +7,8 @@ import Navbar from '../../components/Navbar';
 import Vince from '../../assets/proj/vince.png';
 import { Tooltip } from '@mantine/core';
 
+const mockAvatar = "https://i.pravatar.cc/100"; // Mock avatar URL
+
 const AnnouncementPage = () => {
   return (
     <>
@@ -116,7 +118,7 @@ const AnnouncementPage = () => {
                         {Array.from({ length: 6 }).map((_, index) => (
                         <div key={index} className="flex flex-col items-center">
                             <img
-                            src={Vince}
+                            src={mockAvatar}
                             alt={`Team Member ${index + 1}`}
                             className="w-25 h-20 rounded-xl object-cover"
                             />
