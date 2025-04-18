@@ -13,6 +13,12 @@ import ProjectDetails from './Pages/Project/ProjectDetails';
 import Register from './Pages/Authen/Register';
 import Login from './Pages/Authen/Login';
 import RegisterFull from './Pages/Authen/RegisterFull';
+import Profile from './Pages/Profile/Profile';
+import VolunteerHub from './Pages/Project/VolunteerHub';
+import Candidates from './Pages/Project/Candidates';
+import Scholar from './Pages/Project/Scholarship';
+import Job from './Pages/Project/Job';
+
 
 function App() {
   const location = useLocation();
@@ -25,6 +31,7 @@ function App() {
 
         {/* Conditionally render WaveDivider */}
         {location.pathname === '/' && <WaveDivider />}
+        {location.pathname === '/profile' && <WaveDivider />}
         
 
         {/* Routes */}
@@ -40,10 +47,18 @@ function App() {
           <Route path="/registerFull" element={<RegisterFull />} />
           <Route path="/login" element={<Login />} />
 
-          {/* Projects */}
+          {/* Projects  */}
           <Route path="/projects" element={<Projects />} />
           <Route path="/projectDetail" element={<ProjectDetails />} />
 
+          {/* Others */}
+          <Route path="/volunteerHub" element={<VolunteerHub />} />
+          <Route path="/candidates" element={<Candidates />} />
+          <Route path="/scholarship" element={<Scholar />} />
+          <Route path="/job" element={<Job />} />
+
+
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </div>
   );
