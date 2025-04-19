@@ -120,7 +120,7 @@ fun VolunteerHub(navController: NavHostController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "Available",
+                        "Ongoing",
                         fontSize = 24.sp,
                         color = if (selectedTab == "Ongoing") SKyberBlue else Color.Gray,
                         fontWeight = FontWeight.Bold,

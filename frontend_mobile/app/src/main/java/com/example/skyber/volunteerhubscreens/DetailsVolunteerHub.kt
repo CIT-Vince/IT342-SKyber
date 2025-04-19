@@ -253,7 +253,7 @@ fun DetailsVolunteerHub(navController: NavHostController) {
 fun applyToVolunteerEvent(eventId: String, context: Context) {
     val userId = FirebaseHelper.auth.currentUser?.uid ?: return
 
-    val userRef = FirebaseHelper.databaseReference.child("Users").child(userId)
+    val userRef = FirebaseHelper.databaseReference.child("users").child(userId)
 
     userRef.get().addOnSuccessListener { snapshot ->
         val user = snapshot.getValue(User::class.java)
