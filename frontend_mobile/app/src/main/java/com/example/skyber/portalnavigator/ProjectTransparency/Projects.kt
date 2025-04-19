@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.skyber.Cards.ProjectTransparencyCard
+import com.example.skyber.ModularFunctions.ProjectTransparencyCard
 import com.example.skyber.FirebaseHelper
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.Project
@@ -52,8 +52,9 @@ import com.example.skyber.ui.theme.White
 @Composable
 fun Projects(navController: NavHostController) {
     val ProjectReports  = remember { mutableStateListOf<Project>() }
+
     LaunchedEffect(Unit) {
-        FirebaseHelper.databaseReference.child("ProjectTransparency ")
+        FirebaseHelper.databaseReference.child("ProjectTransparency")
             .get().addOnSuccessListener { snapshot ->
                 ProjectReports.clear()
                 snapshot.children.forEach { child ->
@@ -68,6 +69,7 @@ fun Projects(navController: NavHostController) {
                 Log.e("Project Report's Fetch", "Failed to load Reports", it)
             }
     }
+
     Scaffold() {  innerPadding ->
         Column(
             modifier = Modifier

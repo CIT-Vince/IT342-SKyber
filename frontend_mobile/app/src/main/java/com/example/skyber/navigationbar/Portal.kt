@@ -33,7 +33,6 @@ import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlue
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.White
-import com.example.skyber.userauth.SignupScreen
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -48,7 +47,6 @@ fun Portal(navController: NavHostController,  userProfile: MutableState<User?>) 
                 .background(SKyberDarkBlue)
                 .fillMaxHeight()
                 .fillMaxWidth(),
-
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -67,7 +65,7 @@ fun Portal(navController: NavHostController,  userProfile: MutableState<User?>) 
 
             Column(
                 modifier = Modifier
-                    .padding(top = 32.dp)
+                    .padding(top = 14.dp)
                     .fillMaxWidth()
                     .fillMaxHeight()
                     .padding(0.dp)

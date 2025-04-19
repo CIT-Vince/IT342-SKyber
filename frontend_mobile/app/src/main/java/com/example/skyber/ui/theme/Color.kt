@@ -16,3 +16,7 @@ val SKyberYellow = Color(0xFFFFC81F)
 val NavBarColor = Color(0xFFD5D4D4)
 
 val SKyberDarkBlue = Color(0xFF01306B)
+
+val BoxGreen = Color(0xFFA7E3AD)
+val BoxTextGreen = Color(0xFF2E7D32)
+val BoxRed = Color(0xFFFC6B78)

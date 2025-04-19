@@ -37,7 +37,6 @@ import com.example.skyber.ui.theme.White
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-
 fun DetailsAnnouncement(navController: NavHostController){
     val announcement = navController.previousBackStackEntry?.savedStateHandle?.get<Announcement>("announcement")
 

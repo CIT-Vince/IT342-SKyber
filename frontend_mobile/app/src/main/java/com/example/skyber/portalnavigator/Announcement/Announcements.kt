@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.skyber.Cards.AnnouncementCard
+import com.example.skyber.ModularFunctions.AnnouncementCard
 import com.example.skyber.FirebaseHelper
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.Announcement

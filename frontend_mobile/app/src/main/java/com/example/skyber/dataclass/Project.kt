@@ -9,6 +9,7 @@ import kotlinx.parcelize.Parcelize
 data class Project(
     val projectName: String = "",
     val projectDescription: String = "",
+    //Add this part later val projectStatus: String = "",
     val startDate: String = "",
     val endDate: String = "",
     val budget: String = "",

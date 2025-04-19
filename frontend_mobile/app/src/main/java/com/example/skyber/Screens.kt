@@ -8,6 +8,10 @@ sealed class Screens(val screen: String){
     data object Feedback: Screens("Feedback and Polls")
     data object UserProfile: Screens("User Profile")
 
+    //VolunteerHub Screens
+    data object PostVolunteerHub: Screens("Post Volunteer Hub")
+    data object DetailsVolunteerHub: Screens("Details Volunteer Hub")
+
     //Portal nav routes
     data object Reports : Screens("Reports")
 

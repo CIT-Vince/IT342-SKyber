@@ -10,7 +10,8 @@ data class User(
     val gender: String? = null,
     val role: String? = null,
     val phonenumber: String? = null,
-    val address: String? = null
+    val address: String? = null,
+    val volunteeredActivities: List<String> = emptyList()
 )
 
 

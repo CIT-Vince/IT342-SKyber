@@ -9,11 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Hub
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ViewTimeline
+import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,11 +47,12 @@ import com.example.skyber.portalnavigator.ProjectTransparency.Projects
 import com.example.skyber.portalnavigator.Reports
 import com.example.skyber.ui.theme.NavBarColor
 import com.example.skyber.ui.theme.SKyberBlue
-
 import com.example.skyber.ui.theme.SkyberTheme
 import com.example.skyber.userauth.LoginScreen
 import com.example.skyber.userauth.SignupScreen
 import com.example.skyber.userprofilescreens.EditProfile
+import com.example.skyber.volunteerhubscreens.DetailsVolunteerHub
+import com.example.skyber.volunteerhubscreens.PostVolunteerHub
 import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
@@ -126,17 +127,19 @@ class MainActivity : ComponentActivity() {
                     val bottomNavRoutes = listOf(
                         Screens.Home.screen,
                         Screens.VolunteerHub.screen,
+                        Screens.PostVolunteerHub.screen,
+                        Screens.DetailsVolunteerHub.screen,
                         Screens.Portal.screen,
                         Screens.Announcement.screen,
                         Screens.PostAnnouncement.screen,
+                        Screens.DetailsAnnouncement.screen,
                         Screens.UserProfile.screen,
                         Screens.Reports.screen,
                         Screens.EditProfile.screen,
                         Screens.Feedback.screen,
-                        Screens.DetailsAnnouncement.screen,
                         Screens.Projects.screen,
                         Screens.PostProject.screen,
-                        Screens.DetailsProject.screen
+                        Screens.DetailsProject.screen,
                     )
 
                     showBottomNav.value = currentRoute in bottomNavRoutes
@@ -152,7 +155,7 @@ class MainActivity : ComponentActivity() {
 
                         // Main screens
                         composable(Screens.Home.screen) { Home(navController, userProfile = userProfile) }
-                        composable(Screens.VolunteerHub.screen) { VolunteerHub() }
+                        composable(Screens.VolunteerHub.screen) { VolunteerHub(navController) }
                         composable(Screens.Portal.screen) { Portal(navController,userProfile = userProfile ) }
                         composable(Screens.UserProfile.screen) { UserProfile(navController, userProfile = userProfile) }
                         composable(Screens.Feedback.screen) { Feedback(navController) }
@@ -169,6 +172,10 @@ class MainActivity : ComponentActivity() {
                         //Nested Screens in Announcement
                         composable(Screens.PostAnnouncement.screen){ PostAnnouncement(navController, userProfile = userProfile) }
                         composable(Screens.DetailsAnnouncement.screen){ DetailsAnnouncement(navController)}
+
+                        //Nested Screens in VolunteerHub
+                        composable(Screens.PostVolunteerHub.screen){ PostVolunteerHub(navController, userProfile = userProfile) }
+                        composable(Screens.DetailsVolunteerHub.screen){ DetailsVolunteerHub(navController)}
 
                         //Nested Screens in User Profile
                         composable(Screens.EditProfile.screen){ EditProfile(navController, userProfile = userProfile, ::refreshUserProfile) }
@@ -188,10 +195,10 @@ data class NavItem(
 fun BottomNavBar(navController: NavController) {
     val navItems = listOf(
         NavItem(Icons.Filled.Home, Screens.Home.screen),
-        NavItem(Icons.Filled.Hub, Screens.VolunteerHub.screen),
-        NavItem(Icons.AutoMirrored.Filled.TrendingUp, Screens.Portal.screen),
+        NavItem(Icons.Filled.VolunteerActivism, Screens.VolunteerHub.screen),
+        NavItem(Icons.Filled.ViewTimeline, Screens.Portal.screen),
         NavItem(Icons.Filled.Forum, Screens.Feedback.screen),
-        NavItem(Icons.Filled.Person, Screens.UserProfile.screen),
+        NavItem(Icons.Filled.Person, Screens.UserProfile.screen)
     )
 
     val selected = remember { mutableStateOf(Icons.Default.Home) }

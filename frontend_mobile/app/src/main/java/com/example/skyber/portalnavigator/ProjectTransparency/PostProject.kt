@@ -365,7 +365,7 @@ fun showToast(context: Context, message: String) {
 }
 
 fun uploadProject(project: Project, context: Context) {
-    val databaseRef = FirebaseHelper.databaseReference.child("ProjectTransparency ").push()
+    val databaseRef = FirebaseHelper.databaseReference.child("ProjectTransparency").push()
     databaseRef.setValue(project).addOnSuccessListener {
         // Show success toast when announcement is uploaded successfully
         showToast(context, "Project Report uploaded successfully")
@@ -375,6 +375,7 @@ fun uploadProject(project: Project, context: Context) {
             showToast(context, "Failed to Post Project Report")
         }
 }
+
 /*
 @Preview(showBackground = true)//Use this preview for screens that need mock up user data
 @Composable
