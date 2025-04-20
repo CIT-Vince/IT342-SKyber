@@ -33,6 +33,7 @@ import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlue
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.White
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun DetailsProject(navController: NavHostController){

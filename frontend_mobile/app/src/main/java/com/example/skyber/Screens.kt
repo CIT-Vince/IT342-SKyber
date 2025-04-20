@@ -26,6 +26,8 @@ sealed class Screens(val screen: String){
 
     //screens found in user profile
     data object EditProfile: Screens("Edit Profile")
+    data object VolunteerList: Screens("Volunteer List")
+    data object DetailsVolunteerList: Screens("Details Volunteer List")
 
     //Auth Screens
     data object Login : Screens("Login")

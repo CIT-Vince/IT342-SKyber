@@ -62,7 +62,7 @@ fun PortalNavPreview() {
 @Preview(showBackground = true)
 @Composable
 fun PortalNavModalPreview() {
-    val mockRoutes = listOf("Reports", "Announcements", "Projects")
+    val mockRoutes = listOf("Reports", "Announcements", "Projects", "Jobs", "Scholarships")
 
     val onDismiss: () -> Unit = {  }
 
@@ -144,7 +144,7 @@ fun PortalNavHandler(
 
     val currentLabel = routes.find { route ->
         currentRoute?.contains(route, ignoreCase = true) == true
-    } ?: "Portal"
+    } ?: "News And Updates"
 
     // Modal Trigger
     Box(

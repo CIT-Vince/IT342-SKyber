@@ -175,10 +175,11 @@ fun VolunteerHub(navController: NavHostController) {
     }//end of scaffold
 }
 
-
+/*
 @Preview(showBackground = true)
 @Composable
 fun Preview(){
     val navController = rememberNavController()
     VolunteerHub(navController)
 }
+ */

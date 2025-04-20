@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Forum
+import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ViewTimeline
@@ -50,7 +51,9 @@ import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SkyberTheme
 import com.example.skyber.userauth.LoginScreen
 import com.example.skyber.userauth.SignupScreen
+import com.example.skyber.userprofilescreens.DetailsVolunteerList
 import com.example.skyber.userprofilescreens.EditProfile
+import com.example.skyber.userprofilescreens.VolunteerList
 import com.example.skyber.volunteerhubscreens.DetailsVolunteerHub
 import com.example.skyber.volunteerhubscreens.PostVolunteerHub
 import com.google.firebase.FirebaseApp
@@ -140,7 +143,10 @@ class MainActivity : ComponentActivity() {
                         Screens.Projects.screen,
                         Screens.PostProject.screen,
                         Screens.DetailsProject.screen,
+                        Screens.VolunteerList.screen,
+                        Screens.DetailsVolunteerList.screen,
                     )
+
 
                     showBottomNav.value = currentRoute in bottomNavRoutes
 
@@ -179,6 +185,8 @@ class MainActivity : ComponentActivity() {
 
                         //Nested Screens in User Profile
                         composable(Screens.EditProfile.screen){ EditProfile(navController, userProfile = userProfile, ::refreshUserProfile) }
+                        composable(Screens.VolunteerList.screen){ VolunteerList(navController, userProfile = userProfile)}
+                        composable(Screens.DetailsVolunteerList.screen){ DetailsVolunteerList(navController)}
                     }
                 }
             }
@@ -197,7 +205,7 @@ fun BottomNavBar(navController: NavController) {
         NavItem(Icons.Filled.Home, Screens.Home.screen),
         NavItem(Icons.Filled.VolunteerActivism, Screens.VolunteerHub.screen),
         NavItem(Icons.Filled.ViewTimeline, Screens.Portal.screen),
-        NavItem(Icons.Filled.Forum, Screens.Feedback.screen),
+        NavItem(Icons.Filled.Gavel, Screens.Feedback.screen),
         NavItem(Icons.Filled.Person, Screens.UserProfile.screen)
     )
 

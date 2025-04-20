@@ -149,9 +149,11 @@ fun UserProfile(navController: NavHostController, userProfile : MutableState<Use
                                 navController.navigate(Screens.EditProfile.screen)
                             })
                         ListCard(
-                            title = "Volunteers",
+                            title = "Volunteered Events",
                             icon = Icons.Filled.VolunteerActivism,
-                            onCardClick = {})
+                            onCardClick = {
+                                navController.navigate(Screens.VolunteerList.screen)
+                            })
                         ListCard(
                             title = "Logout",
                             icon = Icons.AutoMirrored.Filled.Logout,
