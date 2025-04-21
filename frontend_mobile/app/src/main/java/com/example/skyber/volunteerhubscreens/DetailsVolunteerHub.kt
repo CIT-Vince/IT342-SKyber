@@ -217,6 +217,7 @@ fun DetailsVolunteerHub(navController: NavHostController) {
                         }
 
                     }
+
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()

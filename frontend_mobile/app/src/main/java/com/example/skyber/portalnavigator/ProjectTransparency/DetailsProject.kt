@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
@@ -29,8 +30,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.skyber.dataclass.Project
 import com.example.skyber.headerbar.HeaderBar
 import com.example.skyber.headerbar.NotificationHandler
+import com.example.skyber.ui.theme.BoxGreen
+import com.example.skyber.ui.theme.BoxRed
+import com.example.skyber.ui.theme.BoxTextGreen
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlue
+import com.example.skyber.ui.theme.SKyberRed
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.White
 
@@ -49,6 +54,9 @@ fun DetailsProject(navController: NavHostController){
         }
         return
     }else {
+        val isOngoing = project.status.lowercase() == "ongoing"
+        val backgroundColor = if (isOngoing) BoxGreen else BoxRed
+        val textColor = if (isOngoing) BoxTextGreen else SKyberRed
         Scaffold() { innerPadding ->
             Column(
                 modifier = Modifier.fillMaxSize()
@@ -94,12 +102,32 @@ fun DetailsProject(navController: NavHostController){
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = project.projectName,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 28.sp,
-                        color = SKyberBlue
-                    )
+
+                    Row(){
+                        Text(
+                            text = project.projectName,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 28.sp,
+                            color = SKyberBlue
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(22.dp))
+                                .background(backgroundColor)
+                                .padding(horizontal = 8.dp)
+                                .width(80.dp)
+
+                        ){
+                            Text(
+                                text = project.status,
+                                fontSize = 18.sp,
+                                color = textColor,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+
 
                     Spacer(modifier = Modifier.height(16.dp))
 

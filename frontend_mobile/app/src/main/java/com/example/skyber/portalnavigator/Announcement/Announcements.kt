@@ -44,9 +44,7 @@ import com.example.skyber.headerbar.HeaderBar
 import com.example.skyber.headerbar.NotificationHandler
 import com.example.skyber.portalnavigator.PortalNav
 import com.example.skyber.portalnavigator.PortalNavHandler
-import com.example.skyber.ui.theme.SKyberBlue
-import com.example.skyber.ui.theme.SKyberDarkBlue
-import com.example.skyber.ui.theme.White
+import com.example.skyber.ui.theme.*
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -107,8 +105,8 @@ fun Announcements(navController: NavHostController) {
                 ) {
                     items(announcements.reversed()) { announcement ->
                         AnnouncementCard(
-                            backgroundColor = SKyberBlue,
-                            fontColor = White,
+                            backgroundColor = NewspaperContainer,
+                            fontColor = NewspaperFont,
                             announcement = announcement,
                             onClick = {
                                 navController.currentBackStackEntry?.savedStateHandle?.set("announcement", announcement)

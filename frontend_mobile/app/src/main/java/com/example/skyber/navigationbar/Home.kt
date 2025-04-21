@@ -151,7 +151,7 @@ fun Home(navController: NavHostController, userProfile: MutableState<User?>) {
                     ){
                         Text(text = "Candidates", fontSize = 22.sp, color = White, fontWeight = FontWeight.Bold)
                     }
-                    CandidateCard()
+                    //CandidateCard()
                 }//end part for column for announcements and candidates
 
             }//Main content column

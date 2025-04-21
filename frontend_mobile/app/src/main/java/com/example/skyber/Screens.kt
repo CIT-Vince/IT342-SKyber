@@ -5,7 +5,7 @@ sealed class Screens(val screen: String){
     data object Home: Screens("Home")
     data object VolunteerHub: Screens("Volunteer Hub")
     data object Portal: Screens("Portal")
-    data object Feedback: Screens("Feedback and Polls")
+    data object SKcandidates: Screens("SKcandidates")
     data object UserProfile: Screens("User Profile")
 
     //VolunteerHub Screens
@@ -19,7 +19,17 @@ sealed class Screens(val screen: String){
     data object PostProject: Screens("Post Projects")
     data object DetailsProject: Screens("Details Projects")
 
-    //data object JobsAndScholarships : Screens("Signup")
+    //data object Job: Screens("Job List" )
+    //data object PostJob: Screens("Post Job")
+    //data object DetailsJob: Screens("Details Job")
+
+    //data object Scholarship: Screens("Scholarships List" )
+    //data object PostScholarship: Screens("Post Scholarship")
+    //data object DetailsScholarship: Screens("Details Scholarship")
+
+    data object PostSKcandidates: Screens("Post SKCandidates")//SK candidates nested screens
+    data object DetailsSKcandidates: Screens("Details SKCandidates")
+
     data object Announcement: Screens("Announcement")//Announcement and Nested Screens in Announcement
     data object PostAnnouncement: Screens("Post Announcement")
     data object DetailsAnnouncement: Screens("Details Announcement")

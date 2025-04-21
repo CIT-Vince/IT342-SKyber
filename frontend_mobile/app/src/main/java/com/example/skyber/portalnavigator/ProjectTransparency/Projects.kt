@@ -46,6 +46,8 @@ import com.example.skyber.portalnavigator.PortalNav
 import com.example.skyber.portalnavigator.PortalNavHandler
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlue
+import com.example.skyber.ui.theme.SoftCardContainerBrown
+import com.example.skyber.ui.theme.SoftCardFontBrown
 import com.example.skyber.ui.theme.White
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -108,13 +110,13 @@ fun Projects(navController: NavHostController) {
                         .fillMaxWidth(),
                     contentPadding = PaddingValues(12.dp)
                 ) {
-                    items(ProjectReports.reversed()) { Project ->
+                    items(ProjectReports.reversed()) { project ->
                         ProjectTransparencyCard(
-                            backgroundColor = SKyberBlue,
-                            fontColor = White,
-                            project = Project,
+                            backgroundColor = SoftCardContainerBrown,
+                            fontColor = SoftCardFontBrown,
+                            project = project,
                             onClick = {
-                                navController.currentBackStackEntry?.savedStateHandle?.set("project", Project)
+                                navController.currentBackStackEntry?.savedStateHandle?.set("project", project)
                                 navController.navigate(Screens.DetailsProject.screen)
                             }
                         )

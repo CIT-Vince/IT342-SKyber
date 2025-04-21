@@ -1,8 +1,11 @@
 package com.example.skyber.ModularFunctions
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -36,12 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.example.skyber.R
-import com.example.skyber.dataclass.Announcement
-import com.example.skyber.dataclass.Project
-import com.example.skyber.dataclass.VolunteerPost
-import com.example.skyber.ui.theme.SKyberBlue
-import com.example.skyber.ui.theme.White
-
+import com.example.skyber.dataclass.*
+import com.example.skyber.ui.theme.*
 
 @Composable
 fun AnnouncementCard(backgroundColor: Color = White,
@@ -50,6 +50,8 @@ fun AnnouncementCard(backgroundColor: Color = White,
                      onClick: () -> Unit){
     Card(
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        elevation = CardDefaults.cardElevation(6.dp),
+        border = BorderStroke(1.dp, NewspaperFont),
         shape = RoundedCornerShape(38.dp),
         modifier = Modifier
             .clickable { onClick() }
@@ -57,100 +59,133 @@ fun AnnouncementCard(backgroundColor: Color = White,
             .fillMaxWidth()
             .padding(10.dp),
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(2.dp)
-        ){
             Column(
                 modifier = Modifier
                     .padding(16.dp)
-                    .height(200.dp)
-                    .width(210.dp),
-                verticalArrangement = Arrangement.SpaceBetween,
+                    .fillMaxSize()
+                //verticalArrangement = Arrangement.SpaceBetween,
             ){
                 Text(
                     modifier = Modifier
                         .fillMaxWidth(),
                     text = announcement.title,
-                    fontSize = 24.sp,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     color = fontColor,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-
-                Text(
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    text = announcement.author,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${announcement.author}",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 20.sp,
+                        color = fontColor,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = announcement.datePosted,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 20.sp,
+                        color = fontColor,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = announcement.category,
                     fontSize = 20.sp,
                     color = fontColor,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis
                 )
-
-            }
-
-            Image(
-                painter = painterResource(id = R.drawable.image),
-                contentDescription = "Logo",
-                modifier = Modifier
-                    .height(120.dp)
-                    .width(100.dp)
-                    .padding(6.dp)
-                    .clip(RoundedCornerShape(20.dp)),
-                contentScale = ContentScale.Fit
-            )
         }
     }
 }
 
 @Composable
-fun CandidateCard(/*Retrieve candidate profile image and first and last name */){
+fun CandidateCard(backgroundColor: Color = White,
+                  fontColor: Color = Black,
+                  candidateProfile: CandidateProfile,
+                  onClick: () -> Unit){
+
     Card(
-        colors = CardDefaults.cardColors(containerColor = White),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        elevation = CardDefaults.cardElevation(6.dp),
+        border = BorderStroke(1.dp, SKyberDarkBlue),
         shape = RoundedCornerShape(38.dp),
         modifier = Modifier
-            .height(150.dp)
+            .clickable { onClick() }
+            .wrapContentHeight()
             .fillMaxWidth()
             .padding(10.dp),
     ) {
-
-        Row(
-            modifier = Modifier.fillMaxSize()
-        ){
-            Image(
-                painter = painterResource(id = R.drawable.image),
-                contentDescription = "Logo",
+        Column(
+            modifier = Modifier
+                .padding(17.dp)
+                .wrapContentHeight()
+                .fillMaxWidth(),
+            //verticalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Row(
                 modifier = Modifier
-                    .height(150.dp)
-                    .width(110.dp)
-                    .padding(6.dp)
-                    .clip(RoundedCornerShape(20.dp)),
-                contentScale = ContentScale.Fit
-            )
-
-            Column(
-                modifier = Modifier
-                    .padding(vertical = 38.dp, horizontal = 6.dp)
-                    .width(210.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Start
-            ){
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.Start
+            ) {
                 Text(
-                    text = "firstname, lastname",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Barangay",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
+                    text = "${candidateProfile.firstname} ${candidateProfile.lastname},",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = fontColor,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                 )
 
+                Spacer(modifier = Modifier.width(20.dp))
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(22.dp))
+                        .background(BoxOrange)
+                        .padding(horizontal = 8.dp)
+                        .wrapContentWidth()
+
+                ) {
+                    /*Text(
+                        text = "${candidateProfile.status}",
+                        fontSize = 22.sp,
+                        color = BoxTextOrange,
+                        fontWeight = FontWeight.SemiBold
+                    )*/
+                }
             }
 
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "${candidateProfile.partylist}",
+                fontSize = 24.sp,
+                color = SoftCardFontGreen,
+                fontWeight = FontWeight.SemiBold,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "${candidateProfile.address}",
+                fontSize = 22.sp,
+                color = SoftCardFontGreen,
+                fontWeight = FontWeight.SemiBold,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
     }
 }
@@ -203,8 +238,14 @@ fun ProjectTransparencyCard(backgroundColor: Color = White,
                             fontColor: Color = Black,
                             project: Project,
                             onClick: () -> Unit){
+    val isOngoing = project.status.lowercase() == "ongoing"
+    val StatusColor = if (isOngoing) BoxOrange else BoxGreen
+    val textColor = if (isOngoing) BoxTextOrange else BoxTextGreen
+
     Card(
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        elevation = CardDefaults.cardElevation(6.dp),
+        border = BorderStroke(1.dp, SKyberDarkBlue),
         shape = RoundedCornerShape(38.dp),
         modifier = Modifier
             .clickable { onClick() }
@@ -212,64 +253,104 @@ fun ProjectTransparencyCard(backgroundColor: Color = White,
             .fillMaxWidth()
             .padding(10.dp),
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(2.dp)
-        ){
             Column(
                 modifier = Modifier
                     .padding(16.dp)
-                    .height(200.dp)
-                    .width(210.dp),
-                verticalArrangement = Arrangement.SpaceBetween,
+                    .height(220.dp)
+                    .fillMaxWidth(),
+                //verticalArrangement = Arrangement.SpaceBetween,
             ){
-                Text(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    text = project.projectName,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = fontColor,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = project.projectName,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = fontColor,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
 
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    text = project.projectManager,
-                    fontSize = 20.sp,
-                    color = fontColor,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis
-                )
+                    Spacer(modifier = Modifier.width(26.dp))
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(22.dp))
+                            .background(StatusColor)
+                            .padding(horizontal = 8.dp)
+                            .wrapContentWidth()
 
-                /*Text(
+                    ){
+                        Text(
+                            text = project.status,
+                            fontSize = 22.sp,
+                            color = textColor,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Row(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    text = project.status,
-                    fontSize = 20.sp,
-                    color = fontColor,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis
-                )*/
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = project.projectManager,
+                        fontSize = 20.sp,
+                        color = fontColor,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    Spacer(modifier = Modifier.width(26.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(22.dp))
+                            .background(BoxGreen)
+                            .padding(horizontal = 8.dp)
+                            .wrapContentWidth()
+
+                    ){
+                        Text(
+                            text = "₱${project.budget}",
+                            fontSize = 20.sp,
+                            color = BoxTextGreen,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${project.startDate} ",
+                        fontSize = 18.sp,
+                        color = fontColor,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(modifier = Modifier.width(18.dp))
+                    Text(
+                        text = " ${project.endDate}",
+                        fontSize = 18.sp,
+                        color = fontColor,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
 
             }
-            /*
-            Image(
-                painter = painterResource(id = R.drawable.image),
-                contentDescription = "Logo",
-                modifier = Modifier
-                    .height(120.dp)
-                    .width(100.dp)
-                    .padding(6.dp)
-                    .clip(RoundedCornerShape(20.dp)),
-                contentScale = ContentScale.Fit
-            )
 
-            */
-        }
     }
 }
 
@@ -278,38 +359,66 @@ fun VolunteerCard(backgroundColor: Color = White,
                      fontColor: Color = Black,
                      volunteerPost: VolunteerPost,
                      onClick: () -> Unit){
+
+    val isOngoing = volunteerPost.status.lowercase() == "ongoing"
+    val StatusColor = if (isOngoing) BoxGreen else BoxRed
+    val textColor = if (isOngoing) BoxTextGreen else SKyberRed
+
     Card(
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         shape = RoundedCornerShape(38.dp),
+        elevation = CardDefaults.cardElevation(6.dp),
+        border = BorderStroke(1.dp, SKyberDarkBlue),
         modifier = Modifier
             .clickable { onClick() }
-            .height(150.dp)
+            .wrapContentHeight()
             .fillMaxWidth()
-            .padding(10.dp),
+            .padding(8.dp),
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(2.dp)
-        ){
+
             Column(
                 modifier = Modifier
                     .padding(16.dp)
-                    .height(200.dp)
+                    .fillMaxHeight()
                     .fillMaxWidth()//width(210.dp),
                 //verticalArrangement = Arrangement.SpaceBetween,
             ){
-                Text(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    text = volunteerPost.title,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = fontColor,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Text(
+                        //modifier = Modifier.fillMaxWidth(),
+                        text = volunteerPost.title,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = fontColor,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(modifier = Modifier.width(26.dp))
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(22.dp))
+                            .background(StatusColor)
+                            .padding(horizontal = 8.dp)
+                            .wrapContentWidth()
+
+                    ){
+                        Text(
+                            text = volunteerPost.status,
+                            fontSize = 18.sp,
+                            color = textColor,
+                            fontWeight = FontWeight.SemiBold,
+                            overflow = TextOverflow.Ellipsis
+
+                        )
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(4.dp))
+
                 Text(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -330,19 +439,65 @@ fun VolunteerCard(backgroundColor: Color = White,
                     overflow = TextOverflow.Ellipsis
                 )
             }
-        }
+
     }
 }
 
 
 
+@Preview(showBackground = true)
+@Composable
+fun Preview() {
+     CandidateCard(
+        backgroundColor = SoftCardContainerGreen,
+        fontColor = SoftCardFontGreen,
+        candidateProfile = CandidateProfile(
+            firstname = "Isagi",
+            lastname = "Yoichi",
+            partylist = "Heads Up",
+            age = "19",
+            //status = "Coming",
+            address = "Cebu City"
+        ),
+        onClick = {} // Simple empty lambda for preview
+    )
+}
+
 /*
 @Preview(showBackground = true)
 @Composable
 fun Preview() {
-    //val navController = rememberNavController()
-    VolunteerCard(backgroundColor= White,
-        fontColor = Black, onClick = {})
+    ProjectTransparencyCard(
+        backgroundColor = SoftCardContainerBrown,
+        fontColor = SoftCardFontBrown,
+        project = Project(
+            projectName = "Road Repair",
+            status = "Ongoing",
+            projectManager = "Jv Bayona",
+            budget = "8000",
+            startDate = "21/04/2025",
+            endDate = "29/04/2025"
+        ),
+        onClick = {} // Simple empty lambda for preview
+    )
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun VolunteerCardPreview() {
+    VolunteerCard(
+        backgroundColor = SoftCardContainer,
+        fontColor = SoftCardFont,
+        volunteerPost = VolunteerPost(
+            title = "Tree Planting",
+            contactperson = "Ethan",
+            contact = "0921938",
+            status = "Ongoing",
+            location = "Cebu",
+            eventdate = "04/21/2025"
+        ),
+        onClick = {} // Simple empty lambda for preview
+    )
 }
 */
-

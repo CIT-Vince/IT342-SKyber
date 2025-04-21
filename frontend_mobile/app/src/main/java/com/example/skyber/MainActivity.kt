@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -34,10 +33,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.skyber.dataclass.User
-import com.example.skyber.navigationbar.Feedback
 import com.example.skyber.portalnavigator.Announcement.Announcements
 import com.example.skyber.navigationbar.Home
 import com.example.skyber.navigationbar.Portal
+import com.example.skyber.navigationbar.SKcandidates
 import com.example.skyber.navigationbar.UserProfile
 import com.example.skyber.navigationbar.VolunteerHub
 import com.example.skyber.portalnavigator.Announcement.DetailsAnnouncement
@@ -46,6 +45,8 @@ import com.example.skyber.portalnavigator.ProjectTransparency.DetailsProject
 import com.example.skyber.portalnavigator.ProjectTransparency.PostProject
 import com.example.skyber.portalnavigator.ProjectTransparency.Projects
 import com.example.skyber.portalnavigator.Reports
+import com.example.skyber.skprofilescreens.DetailsSKcandidates
+import com.example.skyber.skprofilescreens.PostSKcandidates
 import com.example.skyber.ui.theme.NavBarColor
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SkyberTheme
@@ -139,7 +140,9 @@ class MainActivity : ComponentActivity() {
                         Screens.UserProfile.screen,
                         Screens.Reports.screen,
                         Screens.EditProfile.screen,
-                        Screens.Feedback.screen,
+                        Screens.SKcandidates.screen,
+                        Screens.PostSKcandidates.screen,
+                        Screens.DetailsSKcandidates.screen,
                         Screens.Projects.screen,
                         Screens.PostProject.screen,
                         Screens.DetailsProject.screen,
@@ -164,7 +167,11 @@ class MainActivity : ComponentActivity() {
                         composable(Screens.VolunteerHub.screen) { VolunteerHub(navController) }
                         composable(Screens.Portal.screen) { Portal(navController,userProfile = userProfile ) }
                         composable(Screens.UserProfile.screen) { UserProfile(navController, userProfile = userProfile) }
-                        composable(Screens.Feedback.screen) { Feedback(navController) }
+                        composable(Screens.SKcandidates.screen) { SKcandidates(navController) }
+
+                        //Nested screens for SKcandidates
+                        composable(Screens.PostSKcandidates.screen) { PostSKcandidates(navController, userProfile = userProfile) }
+                        composable(Screens.DetailsSKcandidates.screen) { DetailsSKcandidates(navController) }
 
                         //Nested Screens in Portal
                         composable(Screens.Reports.screen){ Reports(navController) }
@@ -205,7 +212,7 @@ fun BottomNavBar(navController: NavController) {
         NavItem(Icons.Filled.Home, Screens.Home.screen),
         NavItem(Icons.Filled.VolunteerActivism, Screens.VolunteerHub.screen),
         NavItem(Icons.Filled.ViewTimeline, Screens.Portal.screen),
-        NavItem(Icons.Filled.Gavel, Screens.Feedback.screen),
+        NavItem(Icons.Filled.Gavel, Screens.SKcandidates.screen),
         NavItem(Icons.Filled.Person, Screens.UserProfile.screen)
     )
 

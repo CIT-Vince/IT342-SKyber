@@ -338,6 +338,7 @@ fun PostProject(navController: NavHostController, userProfile: MutableState<User
                                 val newProject = Project(
                                     projectName = projectname,
                                     projectDescription = projectdescription,
+                                    status = "Ongoing",
                                     startDate = startdate,
                                     endDate = enddate,
                                     budget = budget,

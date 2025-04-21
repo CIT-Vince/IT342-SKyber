@@ -48,9 +48,7 @@ import com.example.skyber.Screens
 import com.example.skyber.dataclass.VolunteerPost
 import com.example.skyber.headerbar.HeaderBar
 import com.example.skyber.headerbar.NotificationHandler
-import com.example.skyber.ui.theme.SKyberBlue
-import com.example.skyber.ui.theme.SKyberDarkBlue
-import com.example.skyber.ui.theme.White
+import com.example.skyber.ui.theme.*
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -102,15 +100,21 @@ fun VolunteerHub(navController: NavHostController) {
 
             Column(
                 modifier = Modifier
-                    .padding(top = 14.dp)
                     .fillMaxWidth()
                     .fillMaxHeight()
                     .padding(0.dp)
-                    .clip(RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp))
+                    .clip(RoundedCornerShape(topStart = 14.dp, topEnd = 14.dp))
                     .background(White),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Text(
+                    "Volunteer Hub",
+                    fontSize = 24.sp,
+                    color = SKyberBlue,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
                 Row(
                     modifier = Modifier
                         .width(300.dp)
@@ -135,23 +139,30 @@ fun VolunteerHub(navController: NavHostController) {
                     )
                 }
 
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                    contentPadding = PaddingValues(12.dp)
-                ) {
-                    items(filteredPosts.reversed()) { event ->
-                        VolunteerCard(volunteerPost = event,
-                            backgroundColor = SKyberBlue,
-                            fontColor = White,
-                            onClick = {
-                                navController.currentBackStackEntry?.savedStateHandle?.set("volunteerPost", event)
-                                navController.navigate(Screens.DetailsVolunteerHub.screen)
-                            })
-                        Spacer(modifier = Modifier.height(8.dp))
+                if(allVolunteerPosts.isEmpty()){
+                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                        Text("No Events Right Now", color = SKyberRed, fontWeight = FontWeight.Bold, fontSize = 24.sp)
+                    }
+                }else{
+                    LazyColumn(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        contentPadding = PaddingValues(12.dp)
+                    ) {
+                        items(filteredPosts.reversed()) { event ->
+                            VolunteerCard(volunteerPost = event,
+                                backgroundColor = SoftCardContainerBlue,
+                                fontColor = SoftCardFontBlue,
+                                onClick = {
+                                    navController.currentBackStackEntry?.savedStateHandle?.set("volunteerPost", event)
+                                    navController.navigate(Screens.DetailsVolunteerHub.screen)
+                                })
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
                     }
                 }
+
 
                 Button(
                     onClick = {
@@ -175,11 +186,10 @@ fun VolunteerHub(navController: NavHostController) {
     }//end of scaffold
 }
 
-/*
+
 @Preview(showBackground = true)
 @Composable
 fun Preview(){
     val navController = rememberNavController()
     VolunteerHub(navController)
 }
- */
