@@ -45,7 +45,7 @@ fun HeaderBar(
             .fillMaxWidth()
             .padding(horizontal = 2.dp)
             .height(80.dp),
-        verticalAlignment = Alignment.Top,
+        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Image(
@@ -77,7 +77,7 @@ fun HeaderBarPreview() {
                 tint = Color.Black,
                 modifier = Modifier
                     .size(30.dp)
-                    .offset(x = -4.dp, y = 7.dp) // Adjust this offset if needed
+                    .offset(x = -4.dp, y = -8.dp) // Adjust this offset if needed
             )
         }
     )
@@ -126,9 +126,9 @@ fun NotificationHandler(
         contentDescription = "Notifications",
         tint = Color.White,
         modifier = modifier
-            .size(35.dp)
+            .size(36.dp)
             .clickable { showModal = true }
-            .offset(x = -12.dp, y = 14.dp)
+            .offset(x = -6.dp, y = -8.dp)
     )
 
     // Show Modal
