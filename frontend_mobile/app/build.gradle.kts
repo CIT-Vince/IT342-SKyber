@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.androidx.media3.common.ktx)
     implementation(libs.androidx.foundation.layout.android)
+    implementation(libs.androidx.foundation.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -72,8 +73,15 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-database:21.0.0")
+    implementation ("com.google.firebase:firebase-auth")
 
     //JetPack Compose
     implementation (libs.androidx.material.icons.extended)
     implementation (libs.ui)
+
+    //Google Auth
+    implementation(libs.play.services.auth)
+    implementation("androidx.credentials:credentials:1.5.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 }

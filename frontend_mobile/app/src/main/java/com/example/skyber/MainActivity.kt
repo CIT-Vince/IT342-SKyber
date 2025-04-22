@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.credentials.GetCredentialRequest
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -70,12 +71,26 @@ import com.example.skyber.userprofilescreens.EditProfile
 import com.example.skyber.userprofilescreens.VolunteerList
 import com.example.skyber.volunteerhubscreens.DetailsVolunteerHub
 import com.example.skyber.volunteerhubscreens.PostVolunteerHub
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
+        // Instantiate a Google sign-in request
+        val googleIdOption = GetGoogleIdOption.Builder()
+            // Your server's client ID, not your Android client ID.
+            .setServerClientId(getString(R.string.default_web_client_id))
+            // Only show accounts previously used to sign in.
+            .setFilterByAuthorizedAccounts(true)
+            .build()
+
+        // Create the Credential Manager request
+        val request = GetCredentialRequest.Builder()
+            .addCredentialOption(googleIdOption)
+            .build()
 
         enableEdgeToEdge()
         setContent {
@@ -193,7 +208,7 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.padding(innerPadding)
                         ) {
                             // Auth screens
-                            composable(Screens.Login.screen) { LoginScreen(navController) }
+                            composable(Screens.Login.screen) { LoginScreen(navController, ::refreshUserProfile) }
                             composable(Screens.SignUp.screen) { SignupScreen(navController) }
 
                             // Main screens
@@ -303,3 +318,5 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+

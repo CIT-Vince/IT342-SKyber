@@ -18,6 +18,7 @@ firebaseAuthKtx = "23.2.0"
 ui = "1.7.8"
 media3CommonKtx = "1.6.1"
 foundationLayoutAndroid = "1.7.2"
+foundationAndroid = "1.7.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -40,9 +41,11 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth" }
 ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3CommonKtx" }
 androidx-foundation-layout-android = { group = "androidx.compose.foundation", name = "foundation-layout-android", version.ref = "foundationLayoutAndroid" }
+androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

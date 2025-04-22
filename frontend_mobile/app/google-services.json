@@ -13,7 +13,20 @@
           "package_name": "com.example.skyber"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "627178043013-sasfhatjeueo2kdhrk8g0v55bu62vpf3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.skyber",
+            "certificate_hash": "d210d7a765a3dd4d0fa556be558f1dfd3b68180f"
+          }
+        },
+        {
+          "client_id": "627178043013-00bqt95127q8fpucvfu68mjc8n8ahmaj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyC6coSgXfERrqc_IboW3GU0-LH03A_1Gnw"
@@ -21,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "627178043013-00bqt95127q8fpucvfu68mjc8n8ahmaj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -1,5 +1,6 @@
 package com.example.skyber.userauth
 
+import android.app.Activity
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
@@ -22,6 +23,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.credentials.Credential
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import com.example.skyber.FirebaseHelper
 import com.example.skyber.R
@@ -30,15 +37,45 @@ import com.example.skyber.dataclass.User
 import com.example.skyber.ui.theme.SKyberDarkBlue
 import com.example.skyber.ui.theme.SKyberRed
 import com.example.skyber.ui.theme.SKyberYellow
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(navController: NavHostController, refreshUserProfile: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val context = LocalContext.current
 
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val auth = FirebaseHelper.auth
+
+    fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        FirebaseHelper.auth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("GoogleSignIn", "signInWithCredential:success")
+                    refreshUserProfile()
+                    navController.navigate(Screens.Home.screen)
+                } else {
+                    Log.w("GoogleSignIn", "signInWithCredential:failure", task.exception)
+                }
+            }
+    }
+
+    fun handleSignIn(credential: Credential) {
+        if (credential is CustomCredential && credential.type == TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+            firebaseAuthWithGoogle(googleIdTokenCredential.idToken)
+        } else {
+            Log.d("Credential Type Error", "Credential is not of type Google ID!")
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -173,8 +210,43 @@ fun LoginScreen(navController: NavHostController) {
         }) {
             Text("Don't have an account? Sign up", color = SKyberYellow )
         }
+
+        TextButton(onClick = {
+            val credentialManager = CredentialManager.create(context)
+
+            val googleIdOption = GetGoogleIdOption.Builder()
+                .setServerClientId(context.getString(R.string.default_web_client_id))
+                .setFilterByAuthorizedAccounts(false) // or true, depending on your UX
+                .build()
+
+            val request = GetCredentialRequest.Builder()
+                .addCredentialOption(googleIdOption)
+                .build()
+
+            lifecycleOwner.lifecycleScope.launch {
+                try {
+                    val result = credentialManager.getCredential(
+                        request = request,
+                        context = context
+                    )
+
+                    val credential = result.credential
+                    handleSignIn(credential)
+
+                } catch (e: Exception) {
+                    Log.e("GoogleSignIn", "Error getting credential", e)
+                }
+            }
+        }) {
+            Text("Sign in with Google", color = SKyberYellow)
+        }
+
     }
 }
+
+
+
+
 /*
 @Preview(showBackground = true)
 @Composable
