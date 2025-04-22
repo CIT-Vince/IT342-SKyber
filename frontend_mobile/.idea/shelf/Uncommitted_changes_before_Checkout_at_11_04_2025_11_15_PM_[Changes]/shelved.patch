@@ -1,0 +1,343 @@
+Index: app/build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>plugins {\r\n    alias(libs.plugins.android.application)\r\n    alias(libs.plugins.kotlin.android)\r\n    alias(libs.plugins.kotlin.compose)\r\n}\r\n\r\nandroid {\r\n    namespace = \"com.example.skyber\"\r\n    compileSdk = 35\r\n\r\n    defaultConfig {\r\n        applicationId = \"com.example.skyber\"\r\n        minSdk = 24\r\n        targetSdk = 35\r\n        versionCode = 1\r\n        versionName = \"1.0\"\r\n\r\n        testInstrumentationRunner = \"androidx.test.runner.AndroidJUnitRunner\"\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            isMinifyEnabled = false\r\n            proguardFiles(\r\n                getDefaultProguardFile(\"proguard-android-optimize.txt\"),\r\n                \"proguard-rules.pro\"\r\n            )\r\n        }\r\n    }\r\n    compileOptions {\r\n        sourceCompatibility = JavaVersion.VERSION_11\r\n        targetCompatibility = JavaVersion.VERSION_11\r\n    }\r\n    kotlinOptions {\r\n        jvmTarget = \"11\"\r\n    }\r\n    buildFeatures {\r\n        compose = true\r\n    }\r\n}\r\n\r\ndependencies {\r\n\r\n    implementation(libs.androidx.core.ktx)\r\n    implementation(libs.androidx.lifecycle.runtime.ktx)\r\n    implementation(libs.androidx.activity.compose)\r\n    implementation(platform(libs.androidx.compose.bom))\r\n    implementation(libs.androidx.ui)\r\n    implementation(libs.androidx.ui.graphics)\r\n    implementation(libs.androidx.ui.tooling.preview)\r\n    implementation(libs.androidx.material3)\r\n    testImplementation(libs.junit)\r\n    androidTestImplementation(libs.androidx.junit)\r\n    androidTestImplementation(libs.androidx.espresso.core)\r\n    androidTestImplementation(platform(libs.androidx.compose.bom))\r\n    androidTestImplementation(libs.androidx.ui.test.junit4)\r\n    debugImplementation(libs.androidx.ui.tooling)\r\n    debugImplementation(libs.androidx.ui.test.manifest)\r\n}
+===================================================================
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+--- a/app/build.gradle.kts	(revision 48659b3b79f0b11a55eac33532df933a3f3bca1e)
++++ b/app/build.gradle.kts	(date 1744359982495)
+@@ -40,7 +40,7 @@
+ }
+ 
+ dependencies {
+-
++    //core libraries
+     implementation(libs.androidx.core.ktx)
+     implementation(libs.androidx.lifecycle.runtime.ktx)
+     implementation(libs.androidx.activity.compose)
+@@ -49,6 +49,7 @@
+     implementation(libs.androidx.ui.graphics)
+     implementation(libs.androidx.ui.tooling.preview)
+     implementation(libs.androidx.material3)
++    implementation(libs.androidx.appcompat)
+     testImplementation(libs.junit)
+     androidTestImplementation(libs.androidx.junit)
+     androidTestImplementation(libs.androidx.espresso.core)
+@@ -56,4 +57,16 @@
+     androidTestImplementation(libs.androidx.ui.test.junit4)
+     debugImplementation(libs.androidx.ui.tooling)
+     debugImplementation(libs.androidx.ui.test.manifest)
++
++    // Material3 library
++    implementation(libs.androidx.material3)
++
++    // Material Components for Bottom Navigation
++    implementation ("com.google.android.material:material:1.9.0")
++    implementation("androidx.navigation:navigation-compose:2.8.9")
++
++    //retrofit interface
++    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
++    // gson converter
++    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+ }
+\ No newline at end of file
+Index: app/src/main/java/com/example/skyber/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.skyber\r\n\r\nimport android.os.Bundle\r\nimport androidx.activity.ComponentActivity\r\nimport androidx.activity.compose.setContent\r\nimport androidx.activity.enableEdgeToEdge\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.material3.Scaffold\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport com.example.skyber.ui.theme.SkyberTheme\r\n\r\nclass MainActivity : ComponentActivity() {\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        enableEdgeToEdge()\r\n        setContent {\r\n            SkyberTheme {\r\n                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->\r\n                    Greeting(\r\n                        name = \"Android\",\r\n                        modifier = Modifier.padding(innerPadding)\r\n                    )\r\n                }\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n@Composable\r\nfun Greeting(name: String, modifier: Modifier = Modifier) {\r\n    Text(\r\n        text = \"Hello $name!\",\r\n        modifier = modifier\r\n    )\r\n}\r\n\r\n@Preview(showBackground = true)\r\n@Composable\r\nfun GreetingPreview() {\r\n    SkyberTheme {\r\n        Greeting(\"Android\")\r\n    }\r\n}
+===================================================================
+diff --git a/app/src/main/java/com/example/skyber/MainActivity.kt b/app/src/main/java/com/example/skyber/MainActivity.kt
+--- a/app/src/main/java/com/example/skyber/MainActivity.kt	(revision 48659b3b79f0b11a55eac33532df933a3f3bca1e)
++++ b/app/src/main/java/com/example/skyber/MainActivity.kt	(date 1744359803357)
+@@ -1,47 +1,129 @@
+-package com.example.skyber
++ package com.example.skyber
+ 
+ import android.os.Bundle
+ import androidx.activity.ComponentActivity
+ import androidx.activity.compose.setContent
+ import androidx.activity.enableEdgeToEdge
+ import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.foundation.layout.fillMaxWidth
++import androidx.compose.foundation.layout.height
+ import androidx.compose.foundation.layout.padding
+-import androidx.compose.material3.Scaffold
+-import androidx.compose.material3.Text
++import androidx.compose.foundation.layout.size
++import androidx.compose.foundation.shape.RoundedCornerShape
++import androidx.compose.material3.MaterialTheme
++import androidx.compose.material3.Surface
+ import androidx.compose.runtime.Composable
++import androidx.compose.runtime.mutableStateOf
++import androidx.compose.runtime.remember
+ import androidx.compose.ui.Modifier
+-import androidx.compose.ui.tooling.preview.Preview
++import androidx.navigation.compose.rememberNavController
+ import com.example.skyber.ui.theme.SkyberTheme
++import androidx.compose.material.icons.filled.Home
++import androidx.compose.material3.BottomAppBar
++import androidx.compose.material3.Icon
++import androidx.compose.material3.IconButton
++import androidx.compose.material.icons.Icons
++import androidx.compose.material.icons.filled.DateRange
++import androidx.compose.material.icons.filled.KeyboardArrowUp
++import androidx.compose.material.icons.filled.Person
++import androidx.compose.material.icons.filled.Search
++import androidx.compose.material3.Scaffold
++import androidx.compose.ui.draw.clip
++import androidx.compose.ui.graphics.Color
++import androidx.compose.ui.graphics.vector.ImageVector
++import androidx.compose.ui.unit.dp
++import androidx.navigation.compose.NavHost
++import androidx.navigation.compose.composable
++import com.example.skyber.NavigationBar.Analytics
++import com.example.skyber.NavigationBar.Announcements
++import com.example.skyber.NavigationBar.Home
++import com.example.skyber.NavigationBar.Screens
++import com.example.skyber.NavigationBar.UserProfile
++import com.example.skyber.NavigationBar.VolunteerHub
++import com.example.skyber.ui.theme.NavBarColor
++import com.example.skyber.ui.theme.SkyberBlue
+ 
+-class MainActivity : ComponentActivity() {
++ class MainActivity : ComponentActivity() {
+     override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
+         enableEdgeToEdge()
+         setContent {
+             SkyberTheme {
+-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+-                    Greeting(
+-                        name = "Android",
+-                        modifier = Modifier.padding(innerPadding)
+-                    )
++                Surface(
++                    modifier = Modifier.fillMaxSize(),
++                    color = MaterialTheme.colorScheme.background
++                ){
++                    BottomNavBar()
+                 }
+             }
++
++
+         }
+     }
+ }
+ 
+-@Composable
+-fun Greeting(name: String, modifier: Modifier = Modifier) {
+-    Text(
+-        text = "Hello $name!",
+-        modifier = modifier
+-    )
+-}
++ data class NavItem(
++     val icon: ImageVector,
++     val destination: String
++ )
+ 
+-@Preview(showBackground = true)
+-@Composable
+-fun GreetingPreview() {
+-    SkyberTheme {
+-        Greeting("Android")
+-    }
+-}
+\ No newline at end of file
++ val navItems = listOf(
++     NavItem(Icons.Filled.Home, Screens.Home.screen),
++     NavItem(Icons.Filled.DateRange, Screens.VolunteerHub.screen),
++     NavItem(Icons.Filled.KeyboardArrowUp, Screens.Analytics.screen),
++     NavItem(Icons.Filled.Search, Screens.Announcement.screen),
++     NavItem(Icons.Filled.Person, Screens.UserProfile.screen)
++ )
++ @Composable
++ fun BottomNavBar(){
++    val navigationController = rememberNavController()
++     val selected = remember {
++         mutableStateOf(Icons.Default.Home)
++     }
++     Scaffold (
++         bottomBar = {
++             BottomAppBar(containerColor = NavBarColor,
++                 tonalElevation = 4.dp,
++
++                 modifier = Modifier.height(140.dp).
++                 fillMaxWidth().clip(RoundedCornerShape(
++                     topStart = 50.dp,
++                     topEnd = 50.dp,
++                     bottomStart = 0.dp,
++                     bottomEnd = 0.dp
++                     )))  {
++                 navItems.forEach { item ->
++                     IconButton(
++                         onClick = {
++                             selected.value = item.icon
++                             navigationController.navigate(item.destination) {
++                                 popUpTo(0)
++                             }
++                         },
++                         modifier = Modifier.weight(1f)
++                     ) {
++                         Icon(
++                             imageVector = item.icon,
++                             contentDescription = null,
++                             modifier = Modifier.size(80.dp),
++                             tint = if (selected.value == item.icon) SkyberBlue else Color.DarkGray
++                         )
++                     }
++                 }
++             }
++         }
++     ){ paddingValues
++         -> NavHost(navController = navigationController,
++            startDestination = Screens.Home.screen,
++            modifier = Modifier.padding(paddingValues)){
++            composable(Screens.Home.screen){ Home() }
++            composable(Screens.VolunteerHub.screen){ VolunteerHub() }
++            composable(Screens.Announcement.screen){ Announcements() }
++            composable(Screens.Analytics.screen){ Analytics() }
++            composable(Screens.UserProfile.screen){ UserProfile() }
++        }
++
++        }
++ }
++
++
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ExternalStorageConfigurationManager\" enabled=\"true\" />\r\n  <component name=\"ProjectRootManager\" version=\"2\" languageLevel=\"JDK_1_7\">\r\n    <output url=\"file://$PROJECT_DIR$/build/classes\" />\r\n  </component>\r\n  <component name=\"ProjectType\">\r\n    <option name=\"id\" value=\"Android\" />\r\n  </component>\r\n</project>
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision 48659b3b79f0b11a55eac33532df933a3f3bca1e)
++++ b/.idea/misc.xml	(date 1744384250490)
+@@ -1,7 +1,6 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="ExternalStorageConfigurationManager" enabled="true" />
+-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7">
++  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="jbr-21" project-jdk-type="JavaSDK">
+     <output url="file://$PROJECT_DIR$/build/classes" />
+   </component>
+   <component name="ProjectType">
+Index: app/src/main/java/com/example/skyber/ui/theme/Color.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.skyber.ui.theme\r\n\r\nimport androidx.compose.ui.graphics.Color\r\n\r\nval Purple80 = Color(0xFFD0BCFF)\r\nval PurpleGrey80 = Color(0xFFCCC2DC)\r\nval Pink80 = Color(0xFFEFB8C8)\r\n\r\nval Purple40 = Color(0xFF6650a4)\r\nval PurpleGrey40 = Color(0xFF625b71)\r\nval Pink40 = Color(0xFF7D5260)
+===================================================================
+diff --git a/app/src/main/java/com/example/skyber/ui/theme/Color.kt b/app/src/main/java/com/example/skyber/ui/theme/Color.kt
+--- a/app/src/main/java/com/example/skyber/ui/theme/Color.kt	(revision 48659b3b79f0b11a55eac33532df933a3f3bca1e)
++++ b/app/src/main/java/com/example/skyber/ui/theme/Color.kt	(date 1744187226513)
+@@ -8,4 +8,11 @@
+ 
+ val Purple40 = Color(0xFF6650a4)
+ val PurpleGrey40 = Color(0xFF625b71)
+-val Pink40 = Color(0xFF7D5260)
+\ No newline at end of file
++val Pink40 = Color(0xFF7D5260)
++
++val SkyberBlue = Color(0xFF0F43FF)
++val SkyberYellow = Color(0xFFFFB812)
++val SkyberRed = Color(0xFFFF222A)
++
++val SelectedColor = Color(0xFF3F51B5)
++val NavBarColor = Color(0xFFDACAD1)
+\ No newline at end of file
+Index: gradle/libs.versions.toml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>[versions]\r\nagp = \"8.8.1\"\r\nkotlin = \"2.0.0\"\r\ncoreKtx = \"1.15.0\"\r\njunit = \"4.13.2\"\r\njunitVersion = \"1.2.1\"\r\nespressoCore = \"3.6.1\"\r\nlifecycleRuntimeKtx = \"2.8.7\"\r\nactivityCompose = \"1.10.1\"\r\ncomposeBom = \"2024.04.01\"\r\n\r\n[libraries]\r\nandroidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\r\njunit = { group = \"junit\", name = \"junit\", version.ref = \"junit\" }\r\nandroidx-junit = { group = \"androidx.test.ext\", name = \"junit\", version.ref = \"junitVersion\" }\r\nandroidx-espresso-core = { group = \"androidx.test.espresso\", name = \"espresso-core\", version.ref = \"espressoCore\" }\r\nandroidx-lifecycle-runtime-ktx = { group = \"androidx.lifecycle\", name = \"lifecycle-runtime-ktx\", version.ref = \"lifecycleRuntimeKtx\" }\r\nandroidx-activity-compose = { group = \"androidx.activity\", name = \"activity-compose\", version.ref = \"activityCompose\" }\r\nandroidx-compose-bom = { group = \"androidx.compose\", name = \"compose-bom\", version.ref = \"composeBom\" }\r\nandroidx-ui = { group = \"androidx.compose.ui\", name = \"ui\" }\r\nandroidx-ui-graphics = { group = \"androidx.compose.ui\", name = \"ui-graphics\" }\r\nandroidx-ui-tooling = { group = \"androidx.compose.ui\", name = \"ui-tooling\" }\r\nandroidx-ui-tooling-preview = { group = \"androidx.compose.ui\", name = \"ui-tooling-preview\" }\r\nandroidx-ui-test-manifest = { group = \"androidx.compose.ui\", name = \"ui-test-manifest\" }\r\nandroidx-ui-test-junit4 = { group = \"androidx.compose.ui\", name = \"ui-test-junit4\" }\r\nandroidx-material3 = { group = \"androidx.compose.material3\", name = \"material3\" }\r\n\r\n[plugins]\r\nandroid-application = { id = \"com.android.application\", version.ref = \"agp\" }\r\nkotlin-android = { id = \"org.jetbrains.kotlin.android\", version.ref = \"kotlin\" }\r\nkotlin-compose = { id = \"org.jetbrains.kotlin.plugin.compose\", version.ref = \"kotlin\" }\r\n\r\n
+===================================================================
+diff --git a/gradle/libs.versions.toml b/gradle/libs.versions.toml
+--- a/gradle/libs.versions.toml	(revision 48659b3b79f0b11a55eac33532df933a3f3bca1e)
++++ b/gradle/libs.versions.toml	(date 1744175942948)
+@@ -8,6 +8,7 @@
+ lifecycleRuntimeKtx = "2.8.7"
+ activityCompose = "1.10.1"
+ composeBom = "2024.04.01"
++appcompat = "1.7.0"
+ 
+ [libraries]
+ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+@@ -24,6 +25,7 @@
+ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+ androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
++androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+ 
+ [plugins]
+ android-application = { id = "com.android.application", version.ref = "agp" }
+Index: .idea/gradle.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"GradleSettings\">\r\n    <option name=\"linkedExternalProjectsSettings\">\r\n      <GradleProjectSettings>\r\n        <option name=\"testRunner\" value=\"CHOOSE_PER_TEST\" />\r\n        <option name=\"externalProjectPath\" value=\"$PROJECT_DIR$\" />\r\n        <option name=\"gradleJvm\" value=\"#GRADLE_LOCAL_JAVA_HOME\" />\r\n        <option name=\"resolveExternalAnnotations\" value=\"false\" />\r\n      </GradleProjectSettings>\r\n    </option>\r\n  </component>\r\n</project>
+===================================================================
+diff --git a/.idea/gradle.xml b/.idea/gradle.xml
+--- a/.idea/gradle.xml	(revision 48659b3b79f0b11a55eac33532df933a3f3bca1e)
++++ b/.idea/gradle.xml	(date 1744037033175)
+@@ -1,11 +1,18 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
++  <component name="GradleMigrationSettings" migrationVersion="1" />
+   <component name="GradleSettings">
+     <option name="linkedExternalProjectsSettings">
+       <GradleProjectSettings>
+         <option name="testRunner" value="CHOOSE_PER_TEST" />
+         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+         <option name="gradleJvm" value="#GRADLE_LOCAL_JAVA_HOME" />
++        <option name="modules">
++          <set>
++            <option value="$PROJECT_DIR$" />
++            <option value="$PROJECT_DIR$/app" />
++          </set>
++        </option>
+         <option name="resolveExternalAnnotations" value="false" />
+       </GradleProjectSettings>
+     </option>
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\">\r\n\r\n    <application\r\n        android:allowBackup=\"true\"\r\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\r\n        android:fullBackupContent=\"@xml/backup_rules\"\r\n        android:icon=\"@mipmap/ic_launcher\"\r\n        android:label=\"@string/app_name\"\r\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/Theme.Skyber\"\r\n        tools:targetApi=\"31\">\r\n        <activity\r\n            android:name=\".MainActivity\"\r\n            android:exported=\"true\"\r\n            android:label=\"@string/app_name\"\r\n            android:theme=\"@style/Theme.Skyber\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n        </activity>\r\n    </application>\r\n\r\n</manifest>
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml	(revision 48659b3b79f0b11a55eac33532df933a3f3bca1e)
++++ b/app/src/main/AndroidManifest.xml	(date 1744360000535)
+@@ -1,7 +1,7 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:tools="http://schemas.android.com/tools">
+-
++    <uses-permission android:name="android.permission.INTERNET"/>
+     <application
+         android:allowBackup="true"
+         android:dataExtractionRules="@xml/data_extraction_rules"
+@@ -12,17 +12,25 @@
+         android:supportsRtl="true"
+         android:theme="@style/Theme.Skyber"
+         tools:targetApi="31">
++
+         <activity
+             android:name=".MainActivity"
+-            android:exported="true"
+             android:label="@string/app_name"
++            android:exported="true"
+             android:theme="@style/Theme.Skyber">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+-
+                 <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
++
+         </activity>
++
++        <activity android:name=".SignupActivity" />
++        <activity
++            android:name=".LoginActivity"/>
++
++
++
+     </application>
+ 
+ </manifest>
+\ No newline at end of file
