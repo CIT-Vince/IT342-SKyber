@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+    }
+    .user-details {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+    button {
+      padding: 8px 16px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .loading {
+      display: none; /* Hide the loading indicators by default */
+    }
+    .data-container {
+      display: none; /* Hide data until it's loaded */
+    }
+  </style>
+</head>
+<body>
+  <h2>Welcome, <span id="userName"></span>!</h2>
+  <div id="loadingMessage">Fetching your information...</div>
+  
+  <div id="dataContainer" class="user-details data-container">
+    <p><strong>Email:</strong> <span id="userEmail"></span></p>
+    <p><strong>First Name:</strong> <span id="firstName"></span></p>
+    <p><strong>Last Name:</strong> <span id="lastName"></span></p>
+    <p><strong>Gender:</strong> <span id="gender"></span></p>
+    <p><strong>Age:</strong> <span id="age"></span></p>
+    <p><strong>Phone Number:</strong> <span id="phoneNumber"></span></p>
+    <p><strong>Address:</strong> <span id="address"></span></p>
+  </div>
+  <button id="logoutBtn">Logout</button>
+  <button id="announcementBtn" style="background: #3498db; margin-right: 10px;">View Announcements</button>
+
+  <script type="module">
+    // Import necessary Firebase modules
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+
+    // Firebase config (replace with your project settings)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAuF4fCivSrXo8wHnmzXzYbaxGdZBdlDAo",
+      authDomain: "skyber-57fa5.firebaseapp.com",
+      projectId: "skyber-57fa5",
+      storageBucket: "skyber-57fa5.appspot.com",
+      messagingSenderId: "627178043013",
+      appId: "1:627178043013:android:eb879a84075c6dbccf9bec",
+      databaseURL: "https://skyber-57fa5-default-rtdb.asia-southeast1.firebasedatabase.app"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+
+    // Use onAuthStateChanged instead of directly checking auth.currentUser
+    // This ensures Firebase auth has fully initialized before checking
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // User is signed in, get user data
+        console.log("User is signed in:", user.uid);
+        
+        try {
+          // Get ID token for API authentication
+          const idToken = await user.getIdToken(true);
+          
+          // Try to get data from either backend or Firebase
+          let userData = null;
+          
+          try {
+            // First attempt to get data from Spring Boot backend
+            userData = await getUserDataFromBackend(user.uid, idToken);
+          } catch (backendError) {
+            console.log("Backend fetch failed, trying Firebase:", backendError);
+            // Backend failed, try Firebase as fallback
+            userData = await getUserDataFromFirebase(user);
+          }
+          
+          if (userData) {
+            // Show data container once we have data
+            document.getElementById("loadingMessage").style.display = "none";
+            document.getElementById("dataContainer").style.display = "block";
+          }
+        } catch (error) {
+          console.error("All data fetching methods failed:", error);
+          // If both requests fail, at least show email
+          document.getElementById("loadingMessage").style.display = "none";
+          document.getElementById("dataContainer").style.display = "block";
+          document.getElementById("userEmail").textContent = user.email || "Not available";
+          document.getElementById("userName").textContent = user.displayName || "User";
+        }
+      } else {
+        // User is signed out, redirect to login
+        console.log("No user signed in, redirecting to login");
+        window.location.href = "login.html";
+      }
+    });
+
+    // Get user data from Spring Boot backend
+    async function getUserDataFromBackend(uid, idToken) {
+      try {
+        console.log("Fetching user data from backend for UID:", uid);
+        const response = await fetch(`http://localhost:8080/api/users/get/${uid}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + idToken
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Backend API error: ${response.status}`);
+        }
+
+        const userData = await response.json();
+        console.log("User data from backend API:", userData);
+        
+        // Update UI with backend data
+        updateUIWithUserData(userData);
+        return userData;
+      } catch (error) {
+        console.error("Error fetching from backend API:", error);
+        throw error; // Re-throw to allow fallback
+      }
+    }
+
+    // Get user data from Firebase
+    async function getUserDataFromFirebase(user) {
+      try {
+        console.log("Fetching user data from Firebase for UID:", user.uid);
+        const userRef = ref(database, 'users/' + user.uid);
+        const snapshot = await get(userRef);
+
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          console.log("User data from Firebase:", userData);
+          
+          // Update UI with Firebase data
+          updateUIWithUserData(userData);
+          return userData;
+        } else {
+          console.log("No user data found in Firebase for UID:", user.uid);
+          // At least show the email
+          const minimalUserData = { 
+            email: user.email,
+            displayName: user.displayName || "User"
+          };
+          updateUIWithUserData(minimalUserData);
+          return minimalUserData;
+        }
+      } catch (error) {
+        console.error("Error fetching from Firebase:", error);
+        throw error;
+      }
+    }
+    
+    // Update UI with user data
+    function updateUIWithUserData(userData) {
+      if (!userData) return;
+      
+      // Update the UI with the user data
+      document.getElementById("userName").textContent = 
+        userData.firstName && userData.lastName 
+          ? `${userData.firstName} ${userData.lastName}` 
+          : (userData.displayName || "User");
+      
+      document.getElementById("userEmail").textContent = userData.email || "";
+      document.getElementById("firstName").textContent = userData.firstName || "";
+      document.getElementById("lastName").textContent = userData.lastName || "";
+      document.getElementById("gender").textContent = userData.gender || "";
+      document.getElementById("age").textContent = userData.age || "";
+      document.getElementById("phoneNumber").textContent = userData.phoneNumber || "";
+      document.getElementById("address").textContent = userData.address || "";
+    }
+
+    // Add logout functionality
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        // Redirect will happen automatically due to onAuthStateChanged
+        console.log("User signed out successfully");
+      } catch (error) {
+        console.error("Error signing out:", error);
+        alert("Error signing out: " + error.message);
+      }
+    });
+
+    // Add announcement page redirection
+    document.getElementById("announcementBtn").addEventListener("click", () => {
+      window.location.href = "announcement.html";
+    });
+  </script>
+</body>
+</html>

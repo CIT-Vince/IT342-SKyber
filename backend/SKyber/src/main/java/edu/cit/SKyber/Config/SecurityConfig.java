@@ -1,31 +1,39 @@
 package edu.cit.SKyber.Config;
-import edu.cit.SKyber.Filter.JwtAuthFilter;
 
+import edu.cit.SKyber.Filter.FirebaseAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final JwtAuthFilter jwtAuthFilter;
-    private final UserDetailsService userDetailsService;
+    private final FirebaseAuthFilter firebaseAuthFilter;
 
+<<<<<<< HEAD
+    public SecurityConfig(@Lazy FirebaseAuthFilter firebaseAuthFilter) {
+        this.firebaseAuthFilter = firebaseAuthFilter;
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(requests -> requests
+                        .requestMatchers("/api/users/**", "/register.html", "/login.html", "/welcome.html").permitAll()  // Allow unauthenticated access to login and register pages
+                         .anyRequest().permitAll()  // All other requests need authentication
+                )
+                .addFilterBefore(firebaseAuthFilter, UsernamePasswordAuthenticationFilter.class);  // Add FirebaseAuthFilter before the default authentication filter
+
+        return http.build();
+=======
     // Constructor injection for required dependencies
     public SecurityConfig(@Lazy JwtAuthFilter jwtAuthFilter, 
                         @Lazy UserDetailsService userDetailsService) {
@@ -62,6 +70,7 @@ SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+>>>>>>> 2a39962afdc48ed0d92a81f2f2e6f603c052b843
     }
 
     /* 
@@ -69,6 +78,12 @@ SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
      * Links UserDetailsService and PasswordEncoder
      */
     @Bean
+<<<<<<< HEAD
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();  // BCrypt is a commonly used password encoder
+    }
+}
+=======
     AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
@@ -96,3 +111,4 @@ SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return source;
     }
 }
+>>>>>>> 2a39962afdc48ed0d92a81f2f2e6f603c052b843

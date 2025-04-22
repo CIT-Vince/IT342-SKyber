@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcement Management</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .announcements-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .announcement-card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        .announcement-card:hover {
+            transform: translateY(-5px);
+        }
+        .announcement-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .announcement-content {
+            padding: 15px;
+        }
+        .announcement-title {
+            font-size: 18px;
+            margin-top: 0;
+            color: #333;
+        }
+        .announcement-info {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .announcement-text {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        button, .button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        .primary {
+            background-color: #3498db;
+            color: white;
+        }
+        .danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .warning {
+            background-color: #f39c12;
+            color: white;
+        }
+        .primary:hover {
+            background-color: #2980b9;
+        }
+        .danger:hover {
+            background-color: #c0392b;
+        }
+        .warning:hover {
+            background-color: #d35400;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 5px;
+            width: 50%;
+            max-width: 500px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Announcement Management System</h1>
+        </div>
+        
+        <div class="form-container">
+            <h2 id="form-title">Create New Announcement</h2>
+            <form id="announcement-form">
+                <input type="hidden" id="announcement-id">
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="content">Content</label>
+                    <textarea id="content" name="content" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="barangay">Barangay</label>
+                    <input type="text" id="barangay" name="barangay" required>
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="category" required>
+                        <option value="">Select Category</option>
+                        <option value="News">News</option>
+                        <option value="Event">Event</option>
+                        <option value="Notice">Notice</option>
+                        <option value="Emergency">Emergency</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="image">Image</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="primary">Submit</button>
+                    <button type="reset" class="warning" id="reset-btn">Reset</button>
+                </div>
+            </form>
+        </div>
+        
+        <h2>All Announcements</h2>
+        <div class="announcements-container" id="announcements-list">
+            <!-- Announcements will be loaded here -->
+        </div>
+    </div>
+
+    <!-- View Announcement Modal -->
+    <div id="view-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="close-view">&times;</span>
+            <h2 id="modal-title"></h2>
+            <p id="modal-info"></p>
+            <div id="modal-image-container">
+                <img id="modal-image" style="max-width: 100%;">
+            </div>
+            <p id="modal-content"></p>
+        </div>
+    </div>
+
+    <script>
+        // API URL
+        const API_BASE_URL = '/api/announcements';
+        
+        // DOM Elements
+        const form = document.getElementById('announcement-form');
+        const formTitle = document.getElementById('form-title');
+        const announcementsList = document.getElementById('announcements-list');
+        const idInput = document.getElementById('announcement-id');
+        const resetBtn = document.getElementById('reset-btn');
+        const viewModal = document.getElementById('view-modal');
+        const closeView = document.getElementById('close-view');
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', loadAnnouncements);
+        form.addEventListener('submit', submitForm);
+        resetBtn.addEventListener('click', resetForm);
+        closeView.addEventListener('click', () => viewModal.style.display = 'none');
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target === viewModal) {
+                viewModal.style.display = 'none';
+            }
+        };
+
+        // Load all announcements
+        async function loadAnnouncements() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/getAllAnnouncements`); // updated URL
+        if (response.ok) {
+            const announcements = await response.json();
+            displayAnnouncements(announcements);
+        } else {
+            const errorText = await response.text();
+            console.error('Failed to fetch announcements:', errorText);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+
+        // Display announcements
+        function displayAnnouncements(announcements) {
+            announcementsList.innerHTML = '';
+            
+            announcements.forEach(announcement => {
+                const card = document.createElement('div');
+                card.className = 'announcement-card';
+                
+                let imageHTML = '';
+                if (announcement.imageData) {
+                    imageHTML = `<img src="data:image/jpeg;base64,${announcement.imageData}" alt="${announcement.title}" class="announcement-image">`;
+                }
+                
+                card.innerHTML = `
+                    ${imageHTML}
+                    <div class="announcement-content">
+                        <h3 class="announcement-title">${announcement.title}</h3>
+                        <p class="announcement-info">
+                            <strong>Barangay:</strong> ${announcement.barangay} | 
+                            <strong>Category:</strong> ${announcement.category} | 
+                            <strong>Posted:</strong> ${announcement.postedAt}
+                        </p>
+                        <p class="announcement-text">${announcement.content.length > 100 ? announcement.content.substring(0, 100) + '...' : announcement.content}</p>
+                        <div class="button-group">
+                            <button class="primary view-btn" data-id="${announcement.id}">View</button>
+                            <button class="warning edit-btn" data-id="${announcement.id}">Edit</button>
+                            <button class="danger delete-btn" data-id="${announcement.id}">Delete</button>
+                        </div>
+                    </div>
+                `;
+                
+                announcementsList.appendChild(card);
+            });
+
+            // Add event listeners to buttons
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', () => viewAnnouncement(btn.dataset.id));
+            });
+            
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => editAnnouncement(btn.dataset.id));
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => deleteAnnouncement(btn.dataset.id));
+            });
+        }
+
+        // View announcement details
+        async function viewAnnouncement(id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/getAnnouncements/${id}`);
+                if (response.ok) {
+                    const announcement = await response.json();
+                    
+                    // Populate modal
+                    document.getElementById('modal-title').textContent = announcement.title;
+                    document.getElementById('modal-info').innerHTML = `
+                        <strong>Barangay:</strong> ${announcement.barangay} | 
+                        <strong>Category:</strong> ${announcement.category} | 
+                        <strong>Posted:</strong> ${announcement.postedAt}
+                    `;
+                    document.getElementById('modal-content').textContent = announcement.content;
+                    
+                    const modalImage = document.getElementById('modal-image');
+                    const imageContainer = document.getElementById('modal-image-container');
+                    
+                    if (announcement.imageData) {
+                        modalImage.src = `data:image/jpeg;base64,${announcement.imageData}`;
+                        imageContainer.style.display = 'block';
+                    } else {
+                        imageContainer.style.display = 'none';
+                    }
+                    
+                    // Show modal
+                    viewModal.style.display = 'block';
+                } else {
+                    console.error('Failed to fetch announcement details');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Load announcement data for editing
+        async function editAnnouncement(id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/getAnnouncements/${id}`);
+                if (response.ok) {
+                    const announcement = await response.json();
+                    
+                    // Populate form
+                    idInput.value = announcement.id;
+                    document.getElementById('title').value = announcement.title;
+                    document.getElementById('content').value = announcement.content;
+                    document.getElementById('barangay').value = announcement.barangay;
+                    document.getElementById('category').value = announcement.category;
+                    
+                    // Change form title
+                    formTitle.textContent = 'Edit Announcement';
+                    
+                    // Scroll to form
+                    form.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    console.error('Failed to fetch announcement details');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Delete announcement
+        async function deleteAnnouncement(id) {
+            if (confirm('Are you sure you want to delete this announcement?')) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/deleteAnnouncement/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        alert('Announcement deleted successfully');
+                        loadAnnouncements();
+                    } else {
+                        console.error('Failed to delete announcement');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+        }
+
+        // Submit form (create or update)
+        async function submitForm(e) {
+            e.preventDefault();
+            
+            const id = idInput.value;
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            const barangay = document.getElementById('barangay').value;
+            const category = document.getElementById('category').value;
+            const imageFile = document.getElementById('image').files[0];
+            
+            try {
+                let response;
+                
+                if (imageFile) {
+                    // Create with image
+                    const formData = new FormData();
+                    formData.append('title', title);
+                    formData.append('content', content);
+                    formData.append('barangay', barangay);
+                    formData.append('category', category);
+                    formData.append('image', imageFile);
+                    
+                    response = await fetch(`${API_BASE_URL}/createWithImage`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                } else if (id) {
+                    // Update existing announcement
+                    response = await fetch(`${API_BASE_URL}/updateAnnouncement/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id: id,
+                            title: title,
+                            content: content,
+                            barangay: barangay,
+                            category: category
+                        })
+                    });
+                } else {
+                    // Create without image
+                    response = await fetch(`${API_BASE_URL}/createAnnouncements`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            title: title,
+                            content: content,
+                            barangay: barangay,
+                            category: category
+                        })
+                    });
+                }
+                
+                if (response.ok) {
+                    alert(id ? 'Announcement updated successfully' : 'Announcement created successfully');
+                    resetForm();
+                    loadAnnouncements();
+                } else {
+                    console.error('Failed to save announcement');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Reset form
+        function resetForm() {
+            form.reset();
+            idInput.value = '';
+            formTitle.textContent = 'Create New Announcement';
+        }
+    </script>
+</body>
+</html>
