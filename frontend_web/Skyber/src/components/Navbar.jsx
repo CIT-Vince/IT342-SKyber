@@ -65,6 +65,9 @@ const Navbar = () => {
               <Menu.Item>
                 <Link to="/job" className="block w-full h-full">Job Listings</Link>
               </Menu.Item>
+              <Menu.Item>
+                <Link to="/sk" className="block w-full h-full">SK Profile</Link>
+              </Menu.Item>
             </Menu.Dropdown>
           </Menu>
         </li>

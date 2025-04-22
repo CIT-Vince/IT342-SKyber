@@ -4,6 +4,7 @@ import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 import { Notifications } from '@mantine/notifications';
 import './index.css'
+import 'atropos/css'
 import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 import '@mantine/notifications/styles.css'; 
@@ -19,3 +20,16 @@ createRoot(document.getElementById('root')).render(
     </MantineProvider>
   </StrictMode>,
 )
+
+const removePreloader = () => {
+  const preloader = document.getElementById('pre-loader')
+  if (preloader) {
+    preloader.style.opacity = '0'
+    preloader.style.transition = 'opacity 0.5s'
+    setTimeout(() => {
+      preloader?.remove()
+    }, 500)
+  }
+}
+
+removePreloader()

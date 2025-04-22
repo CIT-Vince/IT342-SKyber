@@ -18,12 +18,24 @@ import VolunteerHub from './Pages/Project/VolunteerHub';
 import Candidates from './Pages/Project/Candidates';
 import Scholar from './Pages/Project/Scholarship';
 import Job from './Pages/Project/Job';
-
+import Sk from './Pages/Project/Sk.Profile';
+import LoadingScreen from './components/Loading';
+import { LoadingProvider, useLoading  } from './components/LoadingProvider';
 
 function App() {
   const location = useLocation();
+  const { loading, loadingMessage, logoSrc } = useLoading();
+
   return (
       <div className="min-h-screen relative">
+      {/* Show loading screen when loading is true */}
+      {loading && (
+        <LoadingScreen 
+          logoSrc={logoSrc} 
+          message={loadingMessage}
+        />
+      )}
+
         {/* Persistent components */}
         <ParticlesComponent />
         {/* <Navbar />
@@ -56,6 +68,8 @@ function App() {
           <Route path="/candidates" element={<Candidates />} />
           <Route path="/scholarship" element={<Scholar />} />
           <Route path="/job" element={<Job />} />
+          <Route path="/sk" element={<Sk />} />
+
 
 
           <Route path="/profile" element={<Profile />} />
@@ -65,7 +79,9 @@ function App() {
 }
 const AppWrapper = () => (
   <Router>
+    <LoadingProvider>
     <App />
+    </LoadingProvider>
   </Router>
 );
 
