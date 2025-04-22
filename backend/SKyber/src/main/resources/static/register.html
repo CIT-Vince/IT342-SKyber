@@ -1,131 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
-    <style>
-        /* Basic styles for the registration form */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .register-form {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
-        }
-        .register-form h2 {
-            margin-bottom: 20px;
-        }
-        .register-form input, .register-form select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .register-form button {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .register-form button:hover {
-            background-color: #45a049;
-        }
-        #errorMessage {
-            color: red;
-            display: none;
-        }
-        #successMessage {
-            color: green;
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firebase Registration</title>
 </head>
 <body>
+  <h2>Register</h2>
+  <form id="registerForm">
+    <input type="text" id="firstName" placeholder="First Name" required /><br/>
+    <input type="text" id="lastName" placeholder="Last Name" required /><br/>
+    <input type="date" id="birthdate" required /><br/>
+    <input type="text" id="gender" placeholder="Gender" required /><br/>
+    <input type="text" id="phoneNumber" placeholder="Phone Number" required /><br/>
+    <input type="text" id="address" placeholder="Address" required /><br/>
+    <input type="email" id="email" placeholder="Email" required /><br/>
+    <input type="number" id="age" placeholder="Age" required /><br/>
+    <input type="password" id="password" placeholder="Password" required /><br/>
+    <button type="submit">Register</button>
+  </form>
 
-<div class="register-form">
-    <h2>Register</h2>
-    <form id="registerForm">
-        <input type="text" id="firstName" placeholder="First Name" required />
-        <input type="text" id="lastName" placeholder="Last Name" required />
-        <input type="email" id="email" placeholder="Email" required />
-        <input type="password" id="password" placeholder="Password" required />
-        <input type="date" id="birthdate" placeholder="Birthdate" required />
-        
-        <select id="gender" required>
-            <option value="">Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-        </select>
+  <script type="module">
+    // Import necessary Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
-        <input type="number" id="age" placeholder="Age" required />
-        <input type="text" id="phoneNumber" placeholder="Phone Number" required />
-        <input type="text" id="address" placeholder="Address" required />
+    // Firebase config (replace with your project settings)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAuF4fCivSrXo8wHnmzXzYbaxGdZBdlDAo",
+      authDomain: "skyber-57fa5.firebaseapp.com",
+      projectId: "skyber-57fa5",
+      storageBucket: "skyber-57fa5.appspot.com",
+      messagingSenderId: "627178043013",
+      appId: "1:627178043013:android:eb879a84075c6dbccf9bec",
+      databaseURL: "https://skyber-57fa5-default-rtdb.asia-southeast1.firebasedatabase.app"
+    };
 
-        <button type="submit">Register</button>
-    </form>
-    <p id="errorMessage">Error registering user, please try again.</p>
-    <p id="successMessage">User registered successfully! Redirecting to login page...</p>
-</div>
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
 
-<script>
-    document.getElementById("registerForm").addEventListener("submit", function(event) {
-        event.preventDefault();
+    // Register form submission
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-        // Capture values from the form
-        const firstName = document.getElementById("firstName").value;
-        const lastName = document.getElementById("lastName").value;
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-        const birthdate = document.getElementById("birthdate").value;
-        const gender = document.getElementById("gender").value;
-        const age = document.getElementById("age").value;
-        const phoneNumber = document.getElementById("phoneNumber").value;
-        const address = document.getElementById("address").value;
+      // Get form values
+      const firstName = document.getElementById("firstName").value;
+      const lastName = document.getElementById("lastName").value;
+      const birthdate = document.getElementById("birthdate").value;
+      const gender = document.getElementById("gender").value;
+      const phoneNumber = document.getElementById("phoneNumber").value;
+      const address = document.getElementById("address").value;
+      const email = document.getElementById("email").value;
+      const age = document.getElementById("age").value;
+      const password = document.getElementById("password").value;
 
-        // Make an API request to register the user
-        fetch("/auth/register", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-        firstName, lastName, email, password, birthdate, gender, age, phoneNumber, address
-    }),
-})
-.then(response => {
-    if (response.ok) {
-        return response.json();  // Parse response as JSON
-    } else {
-        throw new Error("Error registering user");
-    }
-})
-.then(data => {
-    alert(data.message);  // Display the success or error message from the server
-    if (data.message === "User added successfully!") {
-        window.location.href = "/login.html";  // Redirect to login page
-    }
-})
-.catch(error => {
-    document.getElementById("errorMessage").style.display = "block";
-});
+      try {
+        // Create user with email and password using Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;  // Get user details (including UID)
 
+        // Prepare user data
+        const userData = {
+          firstName,
+          lastName,
+          birthdate,
+          gender,
+          phoneNumber,
+          address,
+          email, // Make sure to include email in Firebase data
+          age,
+          uid: user.uid,  // Firebase UID for linking
+          role: "USER"    // Default role as USER
+        };
+
+        // Save user data to Firebase Realtime Database
+        await set(ref(database, 'users/' + user.uid), userData);
+
+        // Send data to Spring Boot backend (Optional: Use JWT for user identification)
+        const idToken = await userCredential.user.getIdToken();
+
+        const response = await fetch("http://localhost:8080/api/users/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + idToken
+          },
+          body: JSON.stringify({
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            email,
+            password,
+            birthdate: userData.birthdate,
+            gender: userData.gender,
+            age: userData.age,
+            phoneNumber: userData.phoneNumber,
+            address: userData.address,
+            uid: userCredential.user.uid // Firebase UID
+          })
+        });
+
+        // Use response.text() to get the raw response as text
+        const textResponse = await response.text();  
+        console.log(textResponse);  // Log the raw response
+
+        // Check if the response text contains success message
+        if (textResponse.includes("success") || textResponse.includes("User registered")) {
+          alert("Registration successful! Redirecting to login page...");
+          window.location.href = "login.html";  // Redirect to login
+        } else {
+          // If not a success message, check if it's JSON
+          try {
+            if (textResponse.trim().startsWith('{') || textResponse.trim().startsWith('[')) {
+              const result = JSON.parse(textResponse);
+              if (result.success) {
+                alert("Registration successful! Redirecting to login page...");
+                window.location.href = "login.html";
+              } else {
+                alert("Registration failed: " + (result.message || "Unknown error"));
+              }
+            } else {
+              // Not JSON and not a success message
+              alert("Registration response: " + textResponse);
+            }
+          } catch (e) {
+            console.error("Invalid JSON response", e);
+            // Even with JSON parse error, if response is OK, consider it successful
+            if (response.ok) {
+              alert("Registration completed. Redirecting to login...");
+              window.location.href = "login.html";
+            } else {
+              alert("Registration issue: " + textResponse);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
+        alert("Registration failed: " + error.message);
+      }
     });
-</script>
-
+  </script>
 </body>
 </html>
