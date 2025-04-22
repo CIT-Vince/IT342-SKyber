@@ -52,6 +52,7 @@ import com.example.skyber.ui.theme.SKyberDarkBlue
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.White
 import com.example.skyber.volunteerhubscreens.uploadVolunteerPost
+import com.google.firebase.database.DatabaseReference
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -159,6 +160,24 @@ fun PostSKcandidates(navController: NavHostController, userProfile: MutableState
 
                             Spacer(modifier = Modifier.height(12.dp))
 
+                            TextField(
+                                value = age,
+                                onValueChange = { age = it },
+                                label = { Text("Age") },
+                                modifier = Modifier
+                                    //.weight(1f)
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(40.dp))
+                                    .background(Color.White),
+                                colors = TextFieldDefaults.textFieldColors(
+                                    focusedIndicatorColor = SKyberYellow,
+                                    unfocusedIndicatorColor = SKyberYellow,
+                                    focusedLabelColor = SKyberYellow,
+                                    unfocusedLabelColor = SKyberYellow
+                                )
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+
                             /*Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -181,24 +200,8 @@ fun PostSKcandidates(navController: NavHostController, userProfile: MutableState
 
                                 //Spacer(modifier = Modifier.width(8.dp))
 
-                                TextField(
-                                    value = age,
-                                    onValueChange = { age = it },
-                                    label = { Text("Age") },
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clip(RoundedCornerShape(40.dp))
-                                        .background(Color.White),
-                                    colors = TextFieldDefaults.textFieldColors(
-                                        focusedIndicatorColor = SKyberYellow,
-                                        unfocusedIndicatorColor = SKyberYellow,
-                                        focusedLabelColor = SKyberYellow,
-                                        unfocusedLabelColor = SKyberYellow
-                                    )
-                                )
                             //}
 
-                            Spacer(modifier = Modifier.height(12.dp))
 
                             TextField(
                                 value = platform,
@@ -286,21 +289,21 @@ fun PostSKcandidates(navController: NavHostController, userProfile: MutableState
                                     }else if (ageNumber == null || ageNumber <= 0)  {
                                         showToast(context, "Please enter a valid age")
                                     } else {
-                                        val databaseRef =FirebaseHelper.databaseReference.child("SKcandidates").push()
+                                        val databaseRef = FirebaseHelper.databaseReference.child("CandidateProfile").push()
                                         val candidateId = databaseRef.key
                                         val newCandidateProfile = CandidateProfile(
                                             candidateId = candidateId,
                                             firstname = firstname,
                                             lastname = lastname,
-                                            //status = status,
                                             email = email,
                                             age = age,
                                             partylist = partylist,
                                             platform = platform,
                                             address = address,
+                                            //status = status
                                         )
-                                        // Upload new candidate profile
-                                        uploadCandidateProfile(newCandidateProfile,context,navController)
+
+                                        uploadCandidateProfile(newCandidateProfile, context, navController, databaseRef)
                                     }
                                 }) {
                                 Text("Post Candidate Profile")
@@ -315,9 +318,14 @@ fun PostSKcandidates(navController: NavHostController, userProfile: MutableState
     }
 }
 
+fun showToast(context: Context, message: String) {
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+}
 
-fun uploadCandidateProfile(candidateProfile: CandidateProfile, context: Context, navController: NavHostController) {
-    val databaseRef = FirebaseHelper.databaseReference.child("CandidateProfile").push()
+fun uploadCandidateProfile(candidateProfile: CandidateProfile
+                           , context: Context
+                           , navController: NavHostController
+                           , databaseRef: DatabaseReference) {
     databaseRef.setValue(candidateProfile)
             .addOnSuccessListener {
                 showToast(context, "Candidate Profile uploaded successfully")// Show success toast when announcement is uploaded successfully

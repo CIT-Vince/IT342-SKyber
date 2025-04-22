@@ -41,3 +41,6 @@ val SoftCardFontBrown = Color(0xFF7B3F00)      // peachy tan and cocoa brown
 
 val NewspaperContainer = Color(0xFFB9B1AD)     // soft cream
 val NewspaperFont= Color(0xFF3E3E3E)     // newspaper black
+
+val SoftCardContainerMaroon = Color(0xFF7E1215)
+val SoftCardFontGold = Color(0xFFECB23B)
