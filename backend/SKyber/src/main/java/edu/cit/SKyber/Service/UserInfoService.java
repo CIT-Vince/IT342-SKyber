@@ -12,6 +12,7 @@ import java.util.concurrent.CountDownLatch;
 @Service
 public class UserInfoService {
 
+<<<<<<< HEAD
     @Autowired
     private FirebaseAuth firebaseAuth;
 
@@ -29,6 +30,15 @@ public class UserInfoService {
         } catch (Exception e) {
             throw new RuntimeException("Error registering user", e);
         }
+=======
+    private final UserInfoRepository repository;
+    private final PasswordEncoder encoder;
+
+    // Constructor-based dependency injection
+    public UserInfoService(UserInfoRepository repository, PasswordEncoder encoder) {
+        this.repository = repository;
+        this.encoder = encoder;
+>>>>>>> 2a39962afdc48ed0d92a81f2f2e6f603c052b843
     }
 
     // Get user info from Firebase by UID
@@ -59,6 +69,7 @@ public class UserInfoService {
         return userInfo[0]; // Return the UserInfo object
     }
 
+<<<<<<< HEAD
     // Update user info in Firebase
     public String updateUserInfo(String uid, UserInfo updatedUserInfo) {
         try {
@@ -91,5 +102,11 @@ public class UserInfoService {
         } catch (Exception e) {
             throw new RuntimeException("Invalid or expired token", e);
         }
+=======
+    public String addUser(UserInfo userInfo) {
+        userInfo.setPassword(encoder.encode(userInfo.getPassword()));
+        repository.save(userInfo);
+        return "User Added Successfully";
+>>>>>>> 2a39962afdc48ed0d92a81f2f2e6f603c052b843
     }
 }
