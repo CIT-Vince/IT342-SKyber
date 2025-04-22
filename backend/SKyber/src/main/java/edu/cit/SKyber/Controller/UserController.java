@@ -1,23 +1,12 @@
 package edu.cit.SKyber.Controller;
 
 import edu.cit.SKyber.Entity.UserInfo;
-<<<<<<< HEAD
 import edu.cit.SKyber.Service.UserInfoService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-=======
-import edu.cit.SKyber.Entity.AuthRequest;
-import edu.cit.SKyber.Service.JwtService;
-import edu.cit.SKyber.Service.UserInfoService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
->>>>>>> 2a39962afdc48ed0d92a81f2f2e6f603c052b843
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,7 +16,6 @@ public class UserController {
     @Autowired
     private UserInfoService userInfoService;
 
-<<<<<<< HEAD
     // Register a new user
     @PostMapping("/register")
     public String registerUser(@RequestBody UserInfo userInfo) {
@@ -82,29 +70,4 @@ public class UserController {
                     .body("Invalid or expired Firebase token");
         }
     }
-=======
-    @GetMapping("/welcome")
-    public String welcome() {
-        return "Welcome this endpoint is not secure";
-    }
-
-    @PostMapping("/addNewUser")
-    public String addNewUser(@RequestBody UserInfo userInfo) {
-        return service.addUser(userInfo);
-    }
-
-    // Removed the role checks here as they are already managed in SecurityConfig
-
-    @PostMapping("/generateToken")
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
-        );
-        if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(authRequest.getUsername());
-        } else {
-            throw new UsernameNotFoundException("Invalid user request!");
-        }
-    }
->>>>>>> 2a39962afdc48ed0d92a81f2f2e6f603c052b843
 }
