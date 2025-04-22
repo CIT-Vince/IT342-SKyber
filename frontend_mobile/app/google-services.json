@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "627178043013",
+    "firebase_url": "https://skyber-57fa5-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "skyber-57fa5",
+    "storage_bucket": "skyber-57fa5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:627178043013:android:eb879a84075c6dbccf9bec",
+        "android_client_info": {
+          "package_name": "com.example.skyber"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6coSgXfERrqc_IboW3GU0-LH03A_1Gnw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
