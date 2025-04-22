@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -361,7 +362,7 @@ fun VolunteerCard(backgroundColor: Color = White,
                      onClick: () -> Unit){
 
     val isOngoing = volunteerPost.status.lowercase() == "ongoing"
-    val StatusColor = if (isOngoing) BoxGreen else BoxRed
+    val statusColor = if (isOngoing) BoxGreen else BoxRed
     val textColor = if (isOngoing) BoxTextGreen else SKyberRed
 
     Card(
@@ -401,7 +402,7 @@ fun VolunteerCard(backgroundColor: Color = White,
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(22.dp))
-                            .background(StatusColor)
+                            .background(statusColor)
                             .padding(horizontal = 8.dp)
                             .wrapContentWidth()
 
@@ -545,19 +546,102 @@ fun JobListingCard(backgroundColor: Color = White,
 }
 
 
+@Composable
+fun ScholarshipCard(backgroundColor: Color = White,
+                  fontColor: Color = Black,
+                  scholarship: Scholarship,
+                  onClick: () -> Unit){
+
+    val category = scholarship.category.lowercase()
+    val (statusColor,textColor) = when (category){
+        "all" -> BoxGreen to BoxTextGreen
+        "private" -> SoftCardContainerMaroon to SoftCardFontGold
+        "public" ->  SoftCardContainerBlue to SoftCardFontBlue
+        else -> Color.LightGray to Color.DarkGray
+    }
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        shape = RoundedCornerShape(38.dp),
+        elevation = CardDefaults.cardElevation(6.dp),
+        border = BorderStroke(1.dp, SKyberDarkBlue),
+        modifier = Modifier
+            .clickable { onClick() }
+            .wrapContentHeight()
+            .fillMaxWidth()
+            .padding(8.dp),
+    ) {
+
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .wrapContentHeight()
+                .fillMaxWidth()//width(210.dp),
+            //verticalArrangement = Arrangement.SpaceBetween,
+        ){
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Text(
+                    //modifier = Modifier.fillMaxWidth(),
+                    text = scholarship.title,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = fontColor,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.width(26.dp))
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(22.dp))
+                        .background(statusColor)
+                        .padding(horizontal = 8.dp)
+                        .wrapContentWidth()
+                        .defaultMinSize(40.dp),
+                    contentAlignment = Alignment.Center
+                ){
+                    Text(
+                        text = scholarship.category,
+                        fontSize = 22.sp,
+                        color = textColor,
+                        fontWeight = FontWeight.SemiBold,
+                        overflow = TextOverflow.Ellipsis
+
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                //modifier = Modifier.fillMaxWidth(),
+                text = scholarship.institution,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = fontColor,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+        }
+
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
 fun Preview() {
-     JobListingCard(
-        backgroundColor = SoftCardContainerLavender,
-        fontColor = SoftCardFontGreen,
-        joblisting = JobListing(
-            jobtitle = "College Professor",
-            companyname = "CIT-U",
-            category =  "Part-Time",
-            contact = "092213132",
-            contactperson = "CIT-U HelpDesk"
+     ScholarshipCard(
+        backgroundColor = SoftCardContainerPast,
+        fontColor = SoftCardFontPast,
+        scholarship = Scholarship(
+            title = "College Professor",
+            institution = "CIT-U",
+            category =  "Public",
         ),
         onClick = {} // Simple empty lambda for preview
     )

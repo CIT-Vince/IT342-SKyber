@@ -73,7 +73,7 @@ fun PostJob(navController: NavHostController, userProfile: MutableState<User?>){
 
     val context = LocalContext.current
 
-        if (user == null) {
+        if (user == null){
             // Show a loading spinner while waiting for user data
             Box(
                 modifier = Modifier.fillMaxSize(),

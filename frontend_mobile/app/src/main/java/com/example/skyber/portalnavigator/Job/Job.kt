@@ -137,13 +137,7 @@ fun Job(navController: NavHostController) {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        "Job Listings",
-                        fontSize = 24.sp,
-                        color = SKyberBlue,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
+
                     Row(
                         modifier = Modifier
                             .width(300.dp)

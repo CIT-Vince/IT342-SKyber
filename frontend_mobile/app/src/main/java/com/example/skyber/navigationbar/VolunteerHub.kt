@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -56,6 +57,8 @@ import com.example.skyber.ui.theme.*
 fun VolunteerHub(navController: NavHostController) {
     var selectedTab by remember { mutableStateOf("Ongoing") }
     val allVolunteerPosts = remember { mutableStateListOf<VolunteerPost>() }
+    var isLoading by remember { mutableStateOf(true) }
+
     // Filter for event status on selected tab
     val filteredPosts = when (selectedTab) {
         "Ongoing" -> allVolunteerPosts.filter { it.status == "Ongoing" }
@@ -70,123 +73,142 @@ fun VolunteerHub(navController: NavHostController) {
                 snapshot.children.forEach { child ->
                     val event = child.getValue(VolunteerPost::class.java)
                     Log.d("VolunteerEventItem", event.toString())
-                    if (event!= null) {
+                    if (event != null) {
                         allVolunteerPosts.add(event)
+                        isLoading = false
                     }
                 }
             }
             .addOnFailureListener {
                 Log.e("VolunteerHubFetch", "Failed to load volunteer events", it)
+                isLoading = false
             }
     }
-
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier.fillMaxSize()
-                .background(SKyberDarkBlue)
-                .fillMaxHeight()
-                .fillMaxWidth(),
-
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
+    if (isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(SKyberDarkBlue),
+            contentAlignment = Alignment.Center
         ) {
-            HeaderBar(
-                trailingContent = {
-                    NotificationHandler()
-                }
-            )
-
+            CircularProgressIndicator(color = SKyberYellow)
+        }
+    } else {
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+        ) { innerPadding ->
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxSize()
+                    .background(SKyberDarkBlue)
                     .fillMaxHeight()
-                    .padding(0.dp)
-                    .clip(RoundedCornerShape(topStart = 14.dp, topEnd = 14.dp))
-                    .background(White),
+                    .fillMaxWidth(),
+
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    "Volunteer Hub",
-                    fontSize = 24.sp,
-                    color = SKyberBlue,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 8.dp)
+                HeaderBar(
+                    trailingContent = {
+                        NotificationHandler()
+                    }
                 )
-                Row(
+
+                Column(
                     modifier = Modifier
-                        .width(300.dp)
-                        .clip(RoundedCornerShape(22.dp))
-                        .padding(top = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(0.dp)
+                        .clip(RoundedCornerShape(topStart = 14.dp, topEnd = 14.dp))
+                        .background(White),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "Ongoing",
+                        "Volunteer Hub",
                         fontSize = 24.sp,
-                        color = if (selectedTab == "Ongoing") SKyberBlue else Color.Gray,
+                        color = SKyberBlue,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.clickable { selectedTab = "Ongoing" }
+                        modifier = Modifier.padding(top = 8.dp)
                     )
-                    Text(
-                        "Closed",
-                        fontSize = 24.sp,
-                        color = if (selectedTab == "Completed") SKyberBlue else Color.Gray,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.clickable { selectedTab = "Completed" }
-                    )
-                }
-
-                if(allVolunteerPosts.isEmpty()){
-                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                        Text("No Events Right Now", color = SKyberRed, fontWeight = FontWeight.Bold, fontSize = 24.sp)
-                    }
-                }else{
-                    LazyColumn(
+                    Row(
                         modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth(),
-                        contentPadding = PaddingValues(12.dp)
+                            .width(300.dp)
+                            .clip(RoundedCornerShape(22.dp))
+                            .padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        items(filteredPosts.reversed()) { event ->
-                            VolunteerCard(volunteerPost = event,
-                                backgroundColor = SoftCardContainerBlue,
-                                fontColor = SoftCardFontBlue,
-                                onClick = {
-                                    navController.currentBackStackEntry?.savedStateHandle?.set("volunteerPost", event)
-                                    navController.navigate(Screens.DetailsVolunteerHub.screen)
-                                })
-                            Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            "Ongoing",
+                            fontSize = 24.sp,
+                            color = if (selectedTab == "Ongoing") SKyberBlue else Color.Gray,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.clickable { selectedTab = "Ongoing" }
+                        )
+                        Text(
+                            "Closed",
+                            fontSize = 24.sp,
+                            color = if (selectedTab == "Completed") SKyberBlue else Color.Gray,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.clickable { selectedTab = "Completed" }
+                        )
+                    }
+
+                    if (allVolunteerPosts.isEmpty()) {
+                        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            Text(
+                                "No Events Right Now",
+                                color = SKyberRed,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 24.sp
+                            )
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth(),
+                            contentPadding = PaddingValues(12.dp)
+                        ) {
+                            items(filteredPosts.reversed()) { event ->
+                                VolunteerCard(volunteerPost = event,
+                                    backgroundColor = SoftCardContainerBlue,
+                                    fontColor = SoftCardFontBlue,
+                                    onClick = {
+                                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                                            "volunteerPost",
+                                            event
+                                        )
+                                        navController.navigate(Screens.DetailsVolunteerHub.screen)
+                                    })
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
                         }
                     }
-                }
 
 
-                Button(
-                    onClick = {
-                        navController.navigate(Screens.PostVolunteerHub.screen)
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = SKyberBlue),
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .width(250.dp)
-                ) {
-                    Text(text = "Post Event")
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Icon(
-                        imageVector = Icons.Filled.AddCircle,
-                        contentDescription = "add event"
-                    )
-                }
+                    Button(
+                        onClick = {
+                            navController.navigate(Screens.PostVolunteerHub.screen)
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = SKyberBlue),
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .width(250.dp)
+                    ) {
+                        Text(text = "Post Event")
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Icon(
+                            imageVector = Icons.Filled.AddCircle,
+                            contentDescription = "add event"
+                        )
+                    }
 
-            }//End of content column
-        }//end of Main column layout
-    }//end of scaffold
+                }//End of content column
+            }//end of Main column layout
+        }//end of scaffold
+    }
 }
-
 
 @Preview(showBackground = true)
 @Composable

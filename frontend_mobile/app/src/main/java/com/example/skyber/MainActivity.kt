@@ -5,6 +5,9 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,6 +18,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ViewTimeline
 import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -23,6 +27,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -47,11 +53,14 @@ import com.example.skyber.portalnavigator.Job.PostJob
 import com.example.skyber.portalnavigator.ProjectTransparency.DetailsProject
 import com.example.skyber.portalnavigator.ProjectTransparency.PostProject
 import com.example.skyber.portalnavigator.ProjectTransparency.Projects
-import com.example.skyber.portalnavigator.Reports
+import com.example.skyber.portalnavigator.Scholarships.PostScholarship
+import com.example.skyber.portalnavigator.Scholarships.Scholarships
 import com.example.skyber.skprofilescreens.DetailsSKcandidates
 import com.example.skyber.skprofilescreens.PostSKcandidates
 import com.example.skyber.ui.theme.NavBarColor
 import com.example.skyber.ui.theme.SKyberBlue
+import com.example.skyber.ui.theme.SKyberDarkBlue
+import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.SkyberTheme
 import com.example.skyber.userauth.LoginScreen
 import com.example.skyber.userauth.SignupScreen
@@ -67,11 +76,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
 
-
         enableEdgeToEdge()
         setContent {
             val uid = FirebaseHelper.auth.currentUser?.uid //Get current user globally
             val userProfile = remember { mutableStateOf<User?>(null) }//hold the user profile data
+            var isLoading by remember { mutableStateOf(true) }
 
             //global refresher function for changes to user data
             fun refreshUserProfile() {
@@ -82,9 +91,11 @@ class MainActivity : ComponentActivity() {
                         .addOnSuccessListener { snapshot ->
                             val user = snapshot.getValue(User::class.java)
                             userProfile.value = user
+                            isLoading = false
                         }
                         .addOnFailureListener {
                             Log.e("MainActivity", "Failed to refresh user profile", it)
+                            isLoading = false
                         }
                 }
             }
@@ -98,12 +109,15 @@ class MainActivity : ComponentActivity() {
                             val user = snapshot.getValue(User::class.java)
                             userProfile.value = user
                             Log.d("LoginDebug", "Parsed user profile: $user")
+                            isLoading = false
                         }
                         .addOnFailureListener { e ->
                             Log.e("LoginDebug", "Failed to fetch user profile", e)
+                            isLoading = false
                         }
                 } else {
                     Log.w("LoginDebug", "UID is null when trying to fetch user profile")
+                    isLoading = false
                 }
             }
 
@@ -113,143 +127,233 @@ class MainActivity : ComponentActivity() {
             } else {
                 Screens.Login.screen
             }
-            
+
             SkyberTheme {
-                val navController = rememberNavController()
-                val showBottomNav = remember { mutableStateOf(true) }
-                Scaffold(
-                    bottomBar = {
-                        // Manages visibility of the bottom navigation bar
-                        if (showBottomNav.value) {
-                            BottomNavBar(navController = navController)
-                        }
-                    }
-                ) { innerPadding ->
-                    // Main navigation and content handling
-                    // Navigation logic same as react routers
-                    val currentBackStackEntry by navController.currentBackStackEntryAsState()
-                    val currentRoute = currentBackStackEntry?.destination?.route
-
-                    // logic for showing the bottom nav when not in login or the signup screens
-                    val bottomNavRoutes = listOf(
-                        Screens.Home.screen,
-                        Screens.VolunteerHub.screen,
-                        Screens.PostVolunteerHub.screen,
-                        Screens.DetailsVolunteerHub.screen,
-                        Screens.Portal.screen,
-                        Screens.Announcement.screen,
-                        Screens.PostAnnouncement.screen,
-                        Screens.DetailsAnnouncement.screen,
-                        Screens.UserProfile.screen,
-                        Screens.Reports.screen,
-                        Screens.EditProfile.screen,
-                        Screens.SKcandidates.screen,
-                        Screens.PostSKcandidates.screen,
-                        Screens.DetailsSKcandidates.screen,
-                        Screens.Projects.screen,
-                        Screens.PostProject.screen,
-                        Screens.DetailsProject.screen,
-                        Screens.VolunteerList.screen,
-                        Screens.DetailsVolunteerList.screen,
-                        Screens.Job.screen,
-                        Screens.PostJob.screen,
-                        Screens.DetailsJob.screen
-                    )
-
-
-                    showBottomNav.value = currentRoute in bottomNavRoutes
-
-                    NavHost(
-                        navController = navController,
-                        startDestination = startDestination,
-                        modifier = Modifier.padding(innerPadding)
+                if (isLoading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(SKyberDarkBlue),
+                        contentAlignment = Alignment.Center
                     ) {
-                        // Auth screens
-                        composable(Screens.Login.screen) { LoginScreen(navController) }
-                        composable(Screens.SignUp.screen) { SignupScreen(navController) }
+                        CircularProgressIndicator(color = SKyberYellow)
+                    }
+                } else {
+                    val navController = rememberNavController()
+                    val showBottomNav = remember { mutableStateOf(true) }
+                    Scaffold(
+                        bottomBar = {
+                            // Manages visibility of the bottom navigation bar
+                            if (showBottomNav.value) {
+                                BottomNavBar(navController = navController)
+                            }
+                        }
+                    ) { innerPadding ->
+                        // Main navigation and content handling
+                        // Navigation logic same as react routers
+                        val currentBackStackEntry by navController.currentBackStackEntryAsState()
+                        val currentRoute = currentBackStackEntry?.destination?.route
 
-                        // Main screens
-                        composable(Screens.Home.screen) { Home(navController, userProfile = userProfile) }
-                        composable(Screens.VolunteerHub.screen) { VolunteerHub(navController) }
-                        composable(Screens.Portal.screen) { Portal(navController,userProfile = userProfile ) }
-                        composable(Screens.UserProfile.screen) { UserProfile(navController, userProfile = userProfile) }
-                        composable(Screens.SKcandidates.screen) { SKcandidates(navController) }
+                        // logic for showing the bottom nav when not in login or the signup screens
+                        val bottomNavRoutes = listOf(
+                            Screens.Home.screen,
+                            Screens.VolunteerHub.screen,
+                            Screens.PostVolunteerHub.screen,
+                            Screens.DetailsVolunteerHub.screen,
+                            Screens.Portal.screen,
+                            Screens.Announcement.screen,
+                            Screens.PostAnnouncement.screen,
+                            Screens.DetailsAnnouncement.screen,
+                            Screens.UserProfile.screen,
+                            Screens.Reports.screen,
+                            Screens.EditProfile.screen,
+                            Screens.SKcandidates.screen,
+                            Screens.PostSKcandidates.screen,
+                            Screens.DetailsSKcandidates.screen,
+                            Screens.Projects.screen,
+                            Screens.PostProject.screen,
+                            Screens.DetailsProject.screen,
+                            Screens.VolunteerList.screen,
+                            Screens.DetailsVolunteerList.screen,
+                            Screens.Job.screen,
+                            Screens.PostJob.screen,
+                            Screens.DetailsJob.screen,
+                            Screens.Scholarship.screen,
+                            Screens.PostScholarship.screen,
+                            Screens.DetailsScholarship.screen,
+                        )
 
-                        //Nested screens for SKcandidates
-                        composable(Screens.PostSKcandidates.screen) { PostSKcandidates(navController, userProfile = userProfile) }
-                        composable(Screens.DetailsSKcandidates.screen) { DetailsSKcandidates(navController) }
 
-                        //Nested Screens in Portal
-                        composable(Screens.Reports.screen){ Reports(navController) }
-                        composable(Screens.Announcement.screen) { Announcements(navController) }
+                        showBottomNav.value = currentRoute in bottomNavRoutes
 
-                        //Nested Screens in J0b
-                        composable(Screens.Job.screen){ Job(navController)}
-                        composable(Screens.PostJob.screen){ PostJob(navController, userProfile = userProfile) }
-                        composable(Screens.DetailsJob.screen){ DetailsJob(navController)}
+                        NavHost(
+                            navController = navController,
+                            startDestination = startDestination,
+                            modifier = Modifier.padding(innerPadding)
+                        ) {
+                            // Auth screens
+                            composable(Screens.Login.screen) { LoginScreen(navController) }
+                            composable(Screens.SignUp.screen) { SignupScreen(navController) }
 
-                        //Nested Screens in Project
-                        composable(Screens.Projects.screen){ Projects(navController)}
-                        composable(Screens.PostProject.screen){ PostProject(navController, userProfile = userProfile) }
-                        composable(Screens.DetailsProject.screen){ DetailsProject(navController)}
+                            // Main screens
+                            composable(Screens.Home.screen) {
+                                Home(
+                                    navController,
+                                    userProfile = userProfile
+                                )
+                            }
+                            composable(Screens.VolunteerHub.screen) { VolunteerHub(navController) }
+                            composable(Screens.Portal.screen) {
+                                Portal(
+                                    navController,
+                                    userProfile = userProfile
+                                )
+                            }
+                            composable(Screens.UserProfile.screen) {
+                                UserProfile(
+                                    navController,
+                                    userProfile = userProfile
+                                )
+                            }
+                            composable(Screens.SKcandidates.screen) { SKcandidates(navController) }
 
-                        //Nested Screens in Announcement
-                        composable(Screens.PostAnnouncement.screen){ PostAnnouncement(navController, userProfile = userProfile) }
-                        composable(Screens.DetailsAnnouncement.screen){ DetailsAnnouncement(navController)}
+                            //Nested screens for SKcandidates
+                            composable(Screens.PostSKcandidates.screen) {
+                                PostSKcandidates(
+                                    navController,
+                                    userProfile = userProfile
+                                )
+                            }
+                            composable(Screens.DetailsSKcandidates.screen) {
+                                DetailsSKcandidates(
+                                    navController
+                                )
+                            }
 
-                        //Nested Screens in VolunteerHub
-                        composable(Screens.PostVolunteerHub.screen){ PostVolunteerHub(navController, userProfile = userProfile) }
-                        composable(Screens.DetailsVolunteerHub.screen){ DetailsVolunteerHub(navController)}
+                            //Nested Screens in Portal
+                            composable(Screens.Announcement.screen) { Announcements(navController) }
+                            composable(Screens.Job.screen) { Job(navController) }
+                            composable(Screens.Projects.screen) { Projects(navController) }
+                            composable(Screens.Scholarship.screen) { Scholarships(navController) }
 
-                        //Nested Screens in User Profile
-                        composable(Screens.EditProfile.screen){ EditProfile(navController, userProfile = userProfile, ::refreshUserProfile) }
-                        composable(Screens.VolunteerList.screen){ VolunteerList(navController, userProfile = userProfile)}
-                        composable(Screens.DetailsVolunteerList.screen){ DetailsVolunteerList(navController)}
+                            //Nested Screens in Scholarship
+                            composable(Screens.PostScholarship.screen) {
+                                PostScholarship(
+                                    navController,
+                                    userProfile = userProfile
+                                )
+                            }
+                            //composable(Screens.DetailsScholarship.screen){ DetailsScholarship(navController)}
+
+                            //Nested Screens in Job
+                            composable(Screens.PostJob.screen) {
+                                PostJob(
+                                    navController,
+                                    userProfile = userProfile
+                                )
+                            }
+                            composable(Screens.DetailsJob.screen) { DetailsJob(navController) }
+
+                            //Nested Screens in Project
+                            composable(Screens.PostProject.screen) {
+                                PostProject(
+                                    navController,
+                                    userProfile = userProfile
+                                )
+                            }
+                            composable(Screens.DetailsProject.screen) { DetailsProject(navController) }
+
+                            //Nested Screens in Announcement
+                            composable(Screens.PostAnnouncement.screen) {
+                                PostAnnouncement(
+                                    navController,
+                                    userProfile = userProfile
+                                )
+                            }
+                            composable(Screens.DetailsAnnouncement.screen) {
+                                DetailsAnnouncement(
+                                    navController
+                                )
+                            }
+
+                            //Nested Screens in VolunteerHub
+                            composable(Screens.PostVolunteerHub.screen) {
+                                PostVolunteerHub(
+                                    navController,
+                                    userProfile = userProfile
+                                )
+                            }
+                            composable(Screens.DetailsVolunteerHub.screen) {
+                                DetailsVolunteerHub(
+                                    navController
+                                )
+                            }
+
+                            //Nested Screens in User Profile
+                            composable(Screens.EditProfile.screen) {
+                                EditProfile(
+                                    navController,
+                                    userProfile = userProfile,
+                                    ::refreshUserProfile
+                                )
+                            }
+                            composable(Screens.VolunteerList.screen) {
+                                VolunteerList(
+                                    navController,
+                                    userProfile = userProfile
+                                )
+                            }
+                            composable(Screens.DetailsVolunteerList.screen) {
+                                DetailsVolunteerList(
+                                    navController
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
     }
-}
 
-data class NavItem(
-    val icon: ImageVector,
-    val destination: String
-)
-
-@Composable
-fun BottomNavBar(navController: NavController) {
-    val navItems = listOf(
-        NavItem(Icons.Filled.Home, Screens.Home.screen),
-        NavItem(Icons.Filled.VolunteerActivism, Screens.VolunteerHub.screen),
-        NavItem(Icons.Filled.ViewTimeline, Screens.Portal.screen),
-        NavItem(Icons.Filled.Gavel, Screens.SKcandidates.screen),
-        NavItem(Icons.Filled.Person, Screens.UserProfile.screen)
+    data class NavItem(
+        val icon: ImageVector,
+        val destination: String
     )
 
-    val selected = remember { mutableStateOf(Icons.Default.Home) }
+    @Composable
+    fun BottomNavBar(navController: NavController) {
+        val navItems = listOf(
+            NavItem(Icons.Filled.Home, Screens.Home.screen),
+            NavItem(Icons.Filled.VolunteerActivism, Screens.VolunteerHub.screen),
+            NavItem(Icons.Filled.ViewTimeline, Screens.Portal.screen),
+            NavItem(Icons.Filled.Gavel, Screens.SKcandidates.screen),
+            NavItem(Icons.Filled.Person, Screens.UserProfile.screen)
+        )
 
-    BottomAppBar(
-        containerColor = NavBarColor,
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        navItems.forEach { item ->
-            IconButton(
-                onClick = {
-                    selected.value = item.icon
-                    navController.navigate(item.destination) {
-                        popUpTo(0)
-                    }
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Icon(
-                    imageVector = item.icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(26.dp),
-                    tint = if (selected.value == item.icon) SKyberBlue else Color.DarkGray
-                )
+        val selected = remember { mutableStateOf(Icons.Default.Home) }
+
+        BottomAppBar(
+            containerColor = NavBarColor,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            navItems.forEach { item ->
+                IconButton(
+                    onClick = {
+                        selected.value = item.icon
+                        navController.navigate(item.destination) {
+                            popUpTo(0)
+                        }
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(
+                        imageVector = item.icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(26.dp),
+                        tint = if (selected.value == item.icon) SKyberBlue else Color.DarkGray
+                    )
+                }
             }
         }
     }

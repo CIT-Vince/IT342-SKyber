@@ -8,8 +8,9 @@ import kotlinx.parcelize.Parcelize
 @IgnoreExtraProperties
 data class Scholarship (
     val title: String = "",
+    val institution: String = "",
     val description: String = "",
     val contactemail: String = "",
     val applicationlink: String ="",
-    val category: String = "",//Part-Time or Full-Time
+    val category: String = "",//Private or Public or institution-type Agnostic
 ): Parcelable
