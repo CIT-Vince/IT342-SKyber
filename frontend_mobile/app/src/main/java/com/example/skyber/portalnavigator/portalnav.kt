@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Surface
@@ -62,7 +63,7 @@ fun PortalNavPreview() {
 @Preview(showBackground = true)
 @Composable
 fun PortalNavModalPreview() {
-    val mockRoutes = listOf("Reports", "Announcements", "Projects", "Jobs", "Scholarships")
+    val mockRoutes = listOf("Announcements", "Projects", "Jobs", "Scholarships")
 
     val onDismiss: () -> Unit = {  }
 
@@ -97,26 +98,26 @@ fun PortalNavModal(
             ){
                 Column(
                     modifier = Modifier
-                        .height(28.dp)
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
-                    Text(text = "Portal Navigation", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = SKyberBlue)
+                    Text(text = "Portal Navigation", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = SKyberBlue)
                 }
                 Spacer(Modifier.height(8.dp))
                 navRoutes.forEach { route ->
                     Text(
                         text = "$route",
                         color = SKyberBlue,
-                        fontSize = 16.sp,
+                        fontSize = 24.sp,
                         modifier = Modifier
-                            .height(30.dp)
+                            .height(34.dp)
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                             .clickable {
                                 onRouteClick(route)
                             }
                     )
+                    Spacer(Modifier.height(8.dp))
                 }
             }
         }
@@ -132,7 +133,7 @@ fun PortalNavHandler(
             Screens.Announcement.screen,
             Screens.Reports.screen,
             Screens.Projects.screen,
-            //Screens.Job.screen,
+            Screens.Job.screen,
             //Screens.Scholarship.screen
         )
     }
@@ -159,7 +160,7 @@ fun PortalNavHandler(
         Text(
             text = currentLabel,
             color = Color.Black,
-            fontSize = 18.sp
+            fontSize = 30.sp
         )
     }
 

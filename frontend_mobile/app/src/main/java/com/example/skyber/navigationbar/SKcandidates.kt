@@ -57,7 +57,7 @@ fun SKcandidates(navController: NavHostController) {
         FirebaseHelper.databaseReference.child("CandidateProfile")
             .get().addOnSuccessListener { snapshot ->
                 allCandidates.clear()
-                snapshot.children.reversed().forEach { child ->
+                snapshot.children.forEach { child ->
                     val candidate = child.getValue(CandidateProfile::class.java)
                     Log.d("Candidate Fetch", candidate.toString())
                     if (candidate!= null) {

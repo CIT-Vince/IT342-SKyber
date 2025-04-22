@@ -41,6 +41,9 @@ import com.example.skyber.navigationbar.UserProfile
 import com.example.skyber.navigationbar.VolunteerHub
 import com.example.skyber.portalnavigator.Announcement.DetailsAnnouncement
 import com.example.skyber.portalnavigator.Announcement.PostAnnouncement
+import com.example.skyber.portalnavigator.Job.DetailsJob
+import com.example.skyber.portalnavigator.Job.Job
+import com.example.skyber.portalnavigator.Job.PostJob
 import com.example.skyber.portalnavigator.ProjectTransparency.DetailsProject
 import com.example.skyber.portalnavigator.ProjectTransparency.PostProject
 import com.example.skyber.portalnavigator.ProjectTransparency.Projects
@@ -148,6 +151,9 @@ class MainActivity : ComponentActivity() {
                         Screens.DetailsProject.screen,
                         Screens.VolunteerList.screen,
                         Screens.DetailsVolunteerList.screen,
+                        Screens.Job.screen,
+                        Screens.PostJob.screen,
+                        Screens.DetailsJob.screen
                     )
 
 
@@ -176,6 +182,11 @@ class MainActivity : ComponentActivity() {
                         //Nested Screens in Portal
                         composable(Screens.Reports.screen){ Reports(navController) }
                         composable(Screens.Announcement.screen) { Announcements(navController) }
+
+                        //Nested Screens in J0b
+                        composable(Screens.Job.screen){ Job(navController)}
+                        composable(Screens.PostJob.screen){ PostJob(navController, userProfile = userProfile) }
+                        composable(Screens.DetailsJob.screen){ DetailsJob(navController)}
 
                         //Nested Screens in Project
                         composable(Screens.Projects.screen){ Projects(navController)}

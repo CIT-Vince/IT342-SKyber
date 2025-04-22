@@ -82,7 +82,7 @@ fun AnnouncementCard(backgroundColor: Color = White,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "${announcement.author}",
+                        text = announcement.author,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 20.sp,
                         color = fontColor,
@@ -444,20 +444,120 @@ fun VolunteerCard(backgroundColor: Color = White,
 }
 
 
+@Composable
+fun JobListingCard(backgroundColor: Color = White,
+                            fontColor: Color = Black,
+                            joblisting: JobListing,
+                            onClick: () -> Unit){
+    val jobCategory = joblisting.category.lowercase() == "full-time"
+    val statusColor = if (jobCategory) BoxGreen else SoftCardContainerBlue
+    val textColor = if (jobCategory)  BoxTextGreen else SoftCardFontBlue
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        elevation = CardDefaults.cardElevation(6.dp),
+        border = BorderStroke(1.dp, SKyberDarkBlue),
+        shape = RoundedCornerShape(38.dp),
+        modifier = Modifier
+            .clickable { onClick() }
+            .height(150.dp)
+            .fillMaxWidth()
+            .padding(10.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .height(220.dp)
+                .fillMaxWidth(),
+            //verticalArrangement = Arrangement.SpaceBetween,
+        ){
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = joblisting.companyname,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = fontColor,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+
+                Spacer(modifier = Modifier.width(26.dp))
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(22.dp))
+                        .background(statusColor)
+                        .padding(horizontal = 8.dp)
+                        .wrapContentWidth()
+
+                ){
+                    Text(
+                        text = joblisting.category,
+                        fontSize = 22.sp,
+                        color = textColor,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+
+            Text(
+                text = joblisting.jobtitle,
+                fontSize = 22.sp,
+                color = fontColor,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                    text = joblisting.contactperson,
+                    fontSize = 18.sp,
+                    color = fontColor,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.width(18.dp))
+
+                Text(
+                    text = joblisting.contact,
+                    fontSize = 18.sp,
+                    color = fontColor,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+        }
+    }
+}
+
+
 
 @Preview(showBackground = true)
 @Composable
 fun Preview() {
-     CandidateCard(
-        backgroundColor = SoftCardContainerGreen,
+     JobListingCard(
+        backgroundColor = SoftCardContainerLavender,
         fontColor = SoftCardFontGreen,
-        candidateProfile = CandidateProfile(
-            firstname = "Isagi",
-            lastname = "Yoichi",
-            partylist = "Heads Up",
-            age = "19",
-            //status = "Coming",
-            address = "Cebu City"
+        joblisting = JobListing(
+            jobtitle = "College Professor",
+            companyname = "CIT-U",
+            category =  "Part-Time",
+            contact = "092213132",
+            contactperson = "CIT-U HelpDesk"
         ),
         onClick = {} // Simple empty lambda for preview
     )

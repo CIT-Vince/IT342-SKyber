@@ -16,4 +16,4 @@ data class CandidateProfile (
     val partylist: String? = "",
     val platform: String? = "",
     val address: String? = "",
-    ): Parcelable
+): Parcelable

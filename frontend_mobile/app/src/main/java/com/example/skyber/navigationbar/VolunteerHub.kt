@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -54,7 +55,7 @@ import com.example.skyber.ui.theme.*
 @Composable
 fun VolunteerHub(navController: NavHostController) {
     var selectedTab by remember { mutableStateOf("Ongoing") }
-    val allVolunteerPosts = remember { mutableListOf<VolunteerPost>() }
+    val allVolunteerPosts = remember { mutableStateListOf<VolunteerPost>() }
     // Filter for event status on selected tab
     val filteredPosts = when (selectedTab) {
         "Ongoing" -> allVolunteerPosts.filter { it.status == "Ongoing" }
