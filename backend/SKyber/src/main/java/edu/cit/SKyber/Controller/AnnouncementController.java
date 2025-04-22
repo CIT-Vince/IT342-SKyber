@@ -3,12 +3,9 @@ package edu.cit.SKyber.Controller;
 import edu.cit.SKyber.Entity.Announcement;
 import edu.cit.SKyber.Service.AnnouncementService;
 import org.springframework.beans.factory.annotation.Autowired;
-<<<<<<< HEAD
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-=======
->>>>>>> 2a39962afdc48ed0d92a81f2f2e6f603c052b843
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +22,6 @@ public class AnnouncementController {
     private static final Logger logger = Logger.getLogger(AnnouncementController.class.getName());
     
     @Autowired
-<<<<<<< HEAD
     private AnnouncementService announcementService;
     
     // Create a new announcement
@@ -43,27 +39,6 @@ public class AnnouncementController {
     // Create announcement with image upload
     @PostMapping(value = "/createWithImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createAnnouncementWithImage(
-=======
-    public AnnouncementController(AnnouncementService announcementService) {
-        this.announcementService = announcementService;
-    }
-
-    // Fetch all announcements
-    @GetMapping
-    public List<Announcement> getAnnouncements() {
-        return announcementService.getAllAnnouncements();
-    }
-
-    // Fetch a single announcement by ID
-    @GetMapping("/{id}")
-    public Announcement getAnnouncementById(@PathVariable("id") Long id) {
-        return announcementService.getAnnouncementById(id);
-    }
-
-    // Create a new announcement
-    @PostMapping
-    public Announcement createAnnouncement(
->>>>>>> 2a39962afdc48ed0d92a81f2f2e6f603c052b843
             @RequestParam("title") String title,
             @RequestParam("content") String content,
             @RequestParam("barangay") String barangay,
@@ -92,7 +67,6 @@ public class AnnouncementController {
                                       HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-<<<<<<< HEAD
     
     // Get all announcements
     @GetMapping("/getAllAnnouncements")
@@ -121,33 +95,6 @@ public class AnnouncementController {
             return new ResponseEntity<>("Error retrieving announcement: " + e.getMessage(), 
                                       HttpStatus.INTERNAL_SERVER_ERROR);
         }
-=======
-
-    // Update an existing announcement
-    @PutMapping("/{id}")
-    public Announcement updateAnnouncement(
-            @PathVariable("id") Long id,
-            @RequestParam("title") String title,
-            @RequestParam("content") String content,
-            @RequestParam("barangay") String barangay,
-            @RequestParam("category") String category,
-            @RequestParam("images") MultipartFile[] images) throws IOException {
-
-        Announcement announcement = announcementService.getAnnouncementById(id);
-        announcement.setTitle(title);
-        announcement.setContent(content);
-        announcement.setBarangay(barangay);
-        announcement.setCategory(category);
-        announcement.setPostedAt(LocalDateTime.now());
-
-        return announcementService.saveAnnouncement(announcement);
-    }
-
-    // Delete an announcement by ID
-    @DeleteMapping("/{id}")
-    public void deleteAnnouncement(@PathVariable("id") Long id) {
-        announcementService.deleteAnnouncement(id);
->>>>>>> 2a39962afdc48ed0d92a81f2f2e6f603c052b843
     }
     
     // Update an announcement

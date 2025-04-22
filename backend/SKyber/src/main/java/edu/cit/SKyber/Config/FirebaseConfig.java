@@ -25,7 +25,7 @@ public class FirebaseConfig {
         InputStream serviceAccount = new ClassPathResource("firebase-service-account.json").getInputStream();
 
         // Build Firebase options with credentials and database URL
-        FirebaseOptions options = new FirebaseOptions.Builder()
+        FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                 .setDatabaseUrl(firebaseDatabaseUrl)
                 .build();
