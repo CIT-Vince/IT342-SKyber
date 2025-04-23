@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { MantineProvider } from '@mantine/core';
 import { ModalsProvider } from '@mantine/modals';
 import { Notifications } from '@mantine/notifications';
+import { AuthProvider } from './contexts/AuthContext'
 import './index.css'
 import 'atropos/css'
 import '@mantine/core/styles.css';
@@ -14,9 +15,11 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <MantineProvider withGlobalStyles withNormalizeCSS>
     <Notifications position="top-right" />
-    <ModalsProvider>
-    <App />
-    </ModalsProvider>
+      <ModalsProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </ModalsProvider>
     </MantineProvider>
   </StrictMode>,
 )

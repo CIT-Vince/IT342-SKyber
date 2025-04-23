@@ -1,16 +1,68 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import skyberLogo from '../assets/skyber.svg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Menu } from '@mantine/core';
+import { auth } from '../firebase/firebase';
+import { signOut } from 'firebase/auth';
+import { useAuth } from '../contexts/AuthContext';
+import { showNotification } from '@mantine/notifications';
+import defaultAvatar from '../assets/default-avatar.jpg'; // Add a default avatar image
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { currentUser } = useAuth(); // Get current user from context
+  const [userData, setUserData] = useState(null);
+  const navigate = useNavigate();
+  
+  // Fetch user data when currentUser changes
+  useEffect(() => {
+    if (currentUser) {
+      // Option 1: Get data from Firebase Realtime Database
+      const fetchUserData = async () => {
+        try {
+          const { getDatabase, ref, get } = await import('firebase/database');
+          const db = getDatabase();
+          const userRef = ref(db, `users/${currentUser.uid}`);
+          const snapshot = await get(userRef);
+          
+          if (snapshot.exists()) {
+            setUserData(snapshot.val());
+          } else {
+            // Fallback to basic Firebase Auth user data
+            setUserData({
+              firstName: currentUser.displayName?.split(' ')[0] || 'User',
+              lastName: currentUser.displayName?.split(' ')[1] || '',
+              email: currentUser.email,
+              photoURL: currentUser.photoURL
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+      
+      fetchUserData();
+    } else {
+      setUserData(null);
+    }
+  }, [currentUser]);
 
-  // Kawaii mock user data!
-  const mockUser = {
-    name: "Jane-chan",
-    avatar: "https://i.pravatar.cc/100"
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      showNotification({
+        title: 'Logged Out',
+        message: 'You have been successfully logged out',
+        color: 'blue',
+      });
+      navigate('/');
+    } catch (error) {
+      showNotification({
+        title: 'Error',
+        message: 'Failed to log out',
+        color: 'red',
+      });
+    }
   };
 
   return (
@@ -73,28 +125,35 @@ const Navbar = () => {
         </li>
       </ul>
 
-      {/* Kawaii CTA/User Button */}
+      {/* User Button */}
       <div className="w-full md:w-auto flex justify-center mt-2 md:mt-0">
-        {!isLoggedIn ? (
+        {!currentUser ? (
           <Link
-            to="/register"
+            to="/login"
             className="bg-gradient-to-r from-yellow-500 to-yellow-400 text-white px-6 py-2 rounded-full shadow hover:scale-105 transition w-full md:w-auto text-center"
           >
-            Sign Up
+            Sign In
           </Link>
         ) : (
           <Menu shadow="md" width={180} withinPortal withArrow>
             <Menu.Target withArrow>
               <button className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-full shadow hover:scale-105 transition">
-                <img src={mockUser.avatar} alt="avatar" className="w-8 h-8 rounded-full" />
-                <span className="hidden md:inline">{mockUser.name}</span>
+                <img 
+                  src={userData?.photoURL || defaultAvatar} 
+                  alt="avatar" 
+                  className="w-8 h-8 rounded-full object-cover"
+                  onError={(e) => { e.target.src = defaultAvatar }} 
+                />
+                <span className="hidden md:inline">
+                  {userData ? `${userData.firstName || ''}` : 'Loading...'}
+                </span>
               </button>
             </Menu.Target>
             <Menu.Dropdown>
               <Menu.Item>
                 <Link to="/profile" className="block w-full h-full">Profile</Link>
               </Menu.Item>
-              <Menu.Item onClick={() => setIsLoggedIn(false)}>
+              <Menu.Item onClick={handleLogout}>
                 Log out
               </Menu.Item>
             </Menu.Dropdown>
@@ -102,13 +161,7 @@ const Navbar = () => {
         )}
       </div>
 
-      {/* Kawaii toggle for demo~! */}
-      <button
-        onClick={() => setIsLoggedIn((prev) => !prev)}
-        className="absolute top-2 right-2 bg-pink-400 text-white px-2 py-1 rounded text-xs shadow"
-      >
-        {isLoggedIn ? "Log out (uwu)" : "Log in (owo)"}
-      </button>
+      {/* Remove the demo toggle button */}
     </nav>
   );
 };
