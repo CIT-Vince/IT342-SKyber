@@ -2,6 +2,7 @@ package edu.cit.SKyber.Controller;
 
 import edu.cit.SKyber.Entity.ProjectTransparency;
 import edu.cit.SKyber.Service.PTService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class PTController {
     @Autowired
     private PTService ptService;
 
-    // Get all projects
+    // Get all projects - UPDATED to match '/all' endpoint
     @GetMapping("/all")
     public ResponseEntity<?> getAllProjects() {
         try {
@@ -33,6 +34,7 @@ public class PTController {
             return ResponseEntity.ok(projects);
         } catch (Exception e) {
             logger.severe("Error retrieving projects: " + e.getMessage());
+            e.printStackTrace(); // Add this for better debugging
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error retrieving projects: " + e.getMessage());
         }
@@ -50,6 +52,7 @@ public class PTController {
             return ResponseEntity.ok(project);
         } catch (Exception e) {
             logger.severe("Error retrieving project: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error retrieving project: " + e.getMessage());
         }
@@ -63,6 +66,7 @@ public class PTController {
             return ResponseEntity.status(HttpStatus.CREATED).body(createdProject);
         } catch (Exception e) {
             logger.severe("Error creating project: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error creating project: " + e.getMessage());
         }
@@ -91,10 +95,12 @@ public class PTController {
             return ResponseEntity.status(HttpStatus.CREATED).body(createdProject);
         } catch (IOException e) {
             logger.severe("Error processing image: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Error processing image: " + e.getMessage());
         } catch (Exception e) {
             logger.severe("Error creating project: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error creating project: " + e.getMessage());
         }
@@ -110,25 +116,48 @@ public class PTController {
             return ResponseEntity.ok(updatedProject);
         } catch (Exception e) {
             logger.severe("Error updating project: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error updating project: " + e.getMessage());
         }
     }
 
-    // Update project image
+    // Update project image - improved version
     @PostMapping("/{id}/updateImage")
     public ResponseEntity<?> updateProjectImage(
             @PathVariable String id,
             @RequestParam("image") MultipartFile image) {
+        
+        logger.info("Image update request for project: " + id);
+        
         try {
+            if (image == null || image.isEmpty()) {
+                return ResponseEntity.badRequest().body("No image provided");
+            }
+            
+            // Log image details to help debug
+            logger.info("Image details - Name: " + image.getOriginalFilename() + 
+                        ", Size: " + image.getSize() + 
+                        ", Content Type: " + image.getContentType());
+            
             ProjectTransparency updatedProject = ptService.updateProjectImage(id, image);
+            
+            if (updatedProject == null) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Failed to update image - null response from service");
+            }
+            
+            logger.info("Image updated successfully for project: " + id);
             return ResponseEntity.ok(updatedProject);
+            
         } catch (IOException e) {
             logger.severe("Error processing image: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Error processing image: " + e.getMessage());
         } catch (Exception e) {
             logger.severe("Error updating project image: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error updating project image: " + e.getMessage());
         }
@@ -149,6 +178,7 @@ public class PTController {
             }
         } catch (Exception e) {
             logger.severe("Error deleting project: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error deleting project: " + e.getMessage());
         }

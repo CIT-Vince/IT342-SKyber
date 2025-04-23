@@ -340,6 +340,32 @@
             loadProjects();
         }
 
+        // Add this helper function
+
+        // Convert Firebase string key to numeric ID
+        function keyToId(key) {
+            return key.hashCode(); // You'll need to implement a hashCode function
+        }
+
+        // Implementation of a simple hashCode function for strings
+        String.prototype.hashCode = function() {
+            let hash = 0;
+            for (let i = 0; i < this.length; i++) {
+                const char = this.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32bit integer
+            }
+            return hash;
+        };
+
+        // Convert numeric ID back to Firebase key (this is approximate)
+        // Use this when you need to get a project by ID
+        function findKeyForId(id) {
+            // This is a simplified approach - in a real app you would 
+            // probably store and retrieve the mapping
+            return id.toString();
+        }
+
         // Load all projects
         async function loadProjects() {
             // Show loading message, hide error and projects
@@ -378,10 +404,10 @@
             }
         }
         
-        // Get projects from Firebase
+        // Get projects from Firebase - update table name
         function getProjectsFromFirebase() {
             return new Promise((resolve, reject) => {
-                const projectsRef = ref(database, 'projects');
+                const projectsRef = ref(database, 'ProjectTransparency');
                 
                 onValue(projectsRef, (snapshot) => {
                     if (snapshot.exists()) {
@@ -640,6 +666,7 @@
         // Edit project
         async function editProject(id) {
             showLoading();
+            console.log("Edit request for project ID:", id);
             
             try {
                 // First, get the project details
@@ -649,30 +676,39 @@
                     throw new Error('Project not found');
                 }
                 
-                // Populate form with project data
-                projectId.value = project.id;
+                console.log("Loaded project for editing:", project);
+                
+                // Populate form with project data (ensure ID is set correctly)
+                projectId.value = project.id; // This should be the string ID
                 projectNameInput.value = project.projectName || '';
                 descriptionInput.value = project.description || '';
                 
                 // Format dates for input
                 if (project.startDate) {
                     try {
-                        const startDate = new Date(project.startDate);
+                        // Handle both Date object and string formats
+                        const startDate = typeof project.startDate === 'string' ? 
+                            new Date(project.startDate) : project.startDate;
                         startDateInput.value = startDate.toISOString().split('T')[0];
                     } catch (e) {
+                        console.warn("Error formatting start date:", e);
                         startDateInput.value = '';
                     }
                 }
                 
                 if (project.endDate) {
                     try {
-                        const endDate = new Date(project.endDate);
+                        // Handle both Date object and string formats
+                        const endDate = typeof project.endDate === 'string' ? 
+                            new Date(project.endDate) : project.endDate;
                         endDateInput.value = endDate.toISOString().split('T')[0];
                     } catch (e) {
+                        console.warn("Error formatting end date:", e);
                         endDateInput.value = '';
                     }
                 }
                 
+                // Update remaining form fields
                 budgetInput.value = project.budget || '';
                 statusInput.value = project.status || '';
                 projectManagerInput.value = project.projectManager || '';
@@ -698,46 +734,53 @@
                 projectForm.scrollIntoView({ behavior: 'smooth' });
             } catch (error) {
                 console.error('Error editing project:', error);
-                showAlert('Failed to load project for editing', 'danger');
+                showAlert('Failed to load project for editing: ' + error.message, 'danger');
             } finally {
                 hideLoading();
             }
         }
         
-        // Get project by ID (try API first, then Firebase)
+        // Get project by ID - update table name
         async function getProjectById(id) {
             try {
+                console.log("Fetching project with ID:", id);
+                
                 // Try from API first
                 const response = await fetch(`${API_BASE_URL}/${id}`);
                 
                 if (!response.ok) {
+                    const errorText = await response.text();
+                    console.warn(`API error (${response.status}): ${errorText}`);
                     throw new Error(`API error: ${response.status}`);
                 }
                 
                 return await response.json();
             } catch (apiError) {
-                console.error('API fetch failed, trying Firebase', apiError);
+                console.log('API fetch failed, trying Firebase for ID:', id);
                 
-                // Try from Firebase as fallback
+                // Try from Firebase as fallback with updated table name
                 return new Promise((resolve, reject) => {
-                    const projectRef = ref(database, `projects/${id}`);
+                    const projectRef = ref(database, `ProjectTransparency/${id}`);
                     
                     get(projectRef).then((snapshot) => {
                         if (snapshot.exists()) {
                             const data = snapshot.val();
-                            data.id = snapshot.key;
+                            data.id = snapshot.key; // Use key directly as ID
+                            console.log("Found project in Firebase:", data);
                             resolve(data);
                         } else {
+                            console.error("Project not found in Firebase either");
                             reject(new Error('Project not found'));
                         }
                     }).catch((error) => {
+                        console.error("Firebase fetch error:", error);
                         reject(error);
                     });
                 });
             }
         }
         
-        // Handle form submission
+        // Handle form submission - fix the missing create project branch
         async function submitForm(e) {
             e.preventDefault();
             showLoading();
@@ -745,6 +788,9 @@
             try {
                 const id = projectId.value;
                 const isEditing = !!id;
+                
+                // Debug info
+                console.log("Form submission - isEditing:", isEditing, "ID:", id);
                 
                 // Get form values
                 const projectData = {
@@ -760,37 +806,102 @@
                     sustainabilityGoals: sustainabilityGoalsInput.value
                 };
                 
-                // Keep existing image if editing and no new image selected
-                if (isEditing && !projectImageInput.files[0] && existingImageData.value) {
-                    projectData.projectImage = existingImageData.value;
-                }
-                
-                let response;
-                
                 // Handle different submission paths (create/update, with/without image)
                 if (isEditing) {
-                    // Update existing project
+                    // Existing edit logic
+                    console.log("Updating existing project with ID:", id);
+                    
+                    let updatedImageData = null;
+                    
+                    // Check if we have a new image to upload
                     if (projectImageInput.files[0]) {
-                        // Update with new image
-                        const formData = new FormData();
-                        formData.append('image', projectImageInput.files[0]);
+                        console.log("New image selected, updating image first");
                         
-                        await fetch(`${API_BASE_URL}/${id}/updateImage`, {
-                            method: 'POST',
-                            body: formData
-                        });
+                        try {
+                            // First update the image
+                            const formData = new FormData();
+                            formData.append('image', projectImageInput.files[0]);
+                            
+                            // Log image details to help debug
+                            console.log("Image details:", {
+                                name: projectImageInput.files[0].name,
+                                size: projectImageInput.files[0].size,
+                                type: projectImageInput.files[0].type
+                            });
+                            
+                            // Try image upload
+                            const imageResponse = await fetch(`${API_BASE_URL}/${id}/updateImage`, {
+                                method: 'POST',
+                                body: formData
+                            });
+                            
+                            if (!imageResponse.ok) {
+                                const errorText = await imageResponse.text();
+                                console.error("Failed to update image:", errorText);
+                                throw new Error(`Failed to update image: ${imageResponse.status} - ${errorText}`);
+                            }
+                            
+                            const updatedProject = await imageResponse.json();
+                            console.log("Image updated successfully");
+                            
+                            // Store the updated image for Firebase
+                            if (updatedProject && updatedProject.projectImage) {
+                                updatedImageData = updatedProject.projectImage;
+                                projectData.projectImage = updatedProject.projectImage;
+                            }
+                        } catch (imageError) {
+                            console.error("Error updating image:", imageError);
+                            
+                            // Still proceed with updating other fields
+                            showAlert(`Image update failed: ${imageError.message}. Other fields will still be updated.`, 'warning');
+                        }
+                    } else if (existingImageData.value) {
+                        // Keep existing image if no new one is provided
+                        projectData.projectImage = existingImageData.value;
                     }
                     
-                    // Update project data
-                    response = await fetch(`${API_BASE_URL}/${id}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(projectData)
-                    });
+                    // Then update the rest of the project data
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/${id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(projectData)
+                        });
+                        
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            throw new Error(`API error (${response.status}): ${errorText}`);
+                        }
+                        
+                        const updatedProject = await response.json();
+                        console.log("Project data updated successfully");
+                        
+                        // Update Firebase
+                        try {
+                            // Make sure to use the image we got earlier if available
+                            saveToFirebase(id, {
+                                ...projectData,
+                                id: id,
+                                projectImage: updatedImageData || projectData.projectImage
+                            });
+                        } catch (firebaseError) {
+                            console.error("Firebase update error:", firebaseError);
+                        }
+                        
+                        showAlert('Project updated successfully', 'success');
+                        resetForm();
+                        loadProjects();
+                    } catch (updateError) {
+                        console.error("Error updating project data:", updateError);
+                        showAlert(`Error updating project: ${updateError.message}`, 'danger');
+                    }
                 } else {
-                    // Create new project
+                    // CREATE NEW PROJECT - THIS WAS MISSING
+                    console.log("Creating new project");
+                    let response;
+                    
                     if (projectImageInput.files[0]) {
                         // Create with image
                         const formData = new FormData();
@@ -806,12 +917,16 @@
                         formData.append('sustainabilityGoals', projectData.sustainabilityGoals);
                         formData.append('image', projectImageInput.files[0]);
                         
+                        console.log("Submitting with image, form data contains:", 
+                            [...formData.entries()].map(e => `${e[0]}: ${e[1]}`));
+                        
                         response = await fetch(`${API_BASE_URL}/createWithImage`, {
                             method: 'POST',
                             body: formData
                         });
                     } else {
                         // Create without image
+                        console.log("Submitting without image, JSON data:", projectData);
                         response = await fetch(`${API_BASE_URL}/create`, {
                             method: 'POST',
                             headers: {
@@ -820,50 +935,56 @@
                             body: JSON.stringify(projectData)
                         });
                     }
-                }
-                
-                // Handle API response
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`API error (${response.status}): ${errorText}`);
-                }
-                
-                // Save to Firebase as backup
-                try {
-                    const createdProject = await response.json();
                     
-                    // Extract ID for saving to Firebase
-                    const firebaseId = createdProject.id || `temp-${Date.now()}`;
-                    
-                    // If the image is a file object, convert to Base64
-                    if (projectImageInput.files[0]) {
-                        const reader = new FileReader();
-                        reader.readAsDataURL(projectImageInput.files[0]);
-                        reader.onload = () => {
-                            // Extract base64 data (remove data:image/xxx;base64, prefix)
-                            const base64String = reader.result.split(',')[1];
-                            projectData.projectImage = base64String;
-                            
-                            // Save to Firebase
-                            saveToFirebase(firebaseId, projectData);
-                        };
-                    } else {
-                        // Save to Firebase
-                        saveToFirebase(firebaseId, projectData);
+                    // Handle API response for create
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error(`API error (${response.status}): ${errorText}`);
+                        throw new Error(`API error (${response.status}): ${errorText}`);
                     }
-                } catch (fbError) {
-                    console.error('Error saving to Firebase:', fbError);
+                    
+                    // Parse the response
+                    const createdProject = await response.json();
+                    console.log("Project created successfully:", createdProject);
+                    
+                    // Save to Firebase for redundancy
+                    try {
+                        // Extract ID for saving to Firebase
+                        const firebaseId = createdProject.id || `temp-${Date.now()}`;
+                        
+                        // If we have an image file, convert to base64 for Firebase
+                        if (projectImageInput.files[0]) {
+                            const reader = new FileReader();
+                            reader.readAsDataURL(projectImageInput.files[0]);
+                            reader.onload = () => {
+                                // Extract base64 data (remove data:image/xxx;base64, prefix)
+                                const base64String = reader.result.split(',')[1];
+                                projectData.projectImage = base64String;
+                                
+                                // Save to Firebase
+                                saveToFirebase(firebaseId, {
+                                    ...projectData,
+                                    id: firebaseId
+                                });
+                            };
+                        } else {
+                            // Save to Firebase without image
+                            saveToFirebase(firebaseId, {
+                                ...projectData,
+                                id: firebaseId
+                            });
+                        }
+                        
+                        showAlert('Project created successfully', 'success');
+                    } catch (fbError) {
+                        console.error('Error saving to Firebase:', fbError);
+                        // Still show success since the API call worked
+                        showAlert('Project created, but backup failed', 'warning');
+                    }
+                    
+                    resetForm();
+                    loadProjects();
                 }
-                
-                // Show success message and reset
-                showAlert(
-                    isEditing ? 'Project updated successfully' : 'Project created successfully',
-                    'success'
-                );
-                resetForm();
-                
-                // Reload projects
-                loadProjects();
             } catch (error) {
                 console.error('Error submitting form:', error);
                 showAlert(`Error: ${error.message}`, 'danger');
@@ -872,9 +993,9 @@
             }
         }
         
-        // Save project to Firebase
+        // Save project to Firebase - update table name
         function saveToFirebase(id, projectData) {
-            const projectRef = ref(database, `projects/${id}`);
+            const projectRef = ref(database, `ProjectTransparency/${id}`);
             
             // Add ID to project data
             projectData.id = id;
@@ -896,23 +1017,34 @@
             }
         }
         
-        // Delete project
+        // Delete project - update table name
         async function deleteProject(id) {
             showLoading();
             
             try {
+                console.log("Attempting to delete project with ID:", id);
+                
                 // Try API delete
                 const response = await fetch(`${API_BASE_URL}/${id}`, {
                     method: 'DELETE'
                 });
                 
                 if (!response.ok) {
-                    throw new Error(`API error: ${response.status}`);
+                    const errorText = await response.text();
+                    console.error(`API delete failed with status ${response.status}: ${errorText}`);
+                    
+                    // Even if API fails, try to delete from Firebase
+                    console.log("Attempting Firebase delete as fallback");
+                    const projectRef = ref(database, `ProjectTransparency/${id}`);
+                    await remove(projectRef);
+                    showAlert('Project deleted from local cache', 'warning');
+                    loadProjects();
+                    return;
                 }
                 
                 // Delete from Firebase as well
                 try {
-                    const projectRef = ref(database, `projects/${id}`);
+                    const projectRef = ref(database, `ProjectTransparency/${id}`);
                     await remove(projectRef);
                 } catch (fbError) {
                     console.error('Error deleting from Firebase:', fbError);
@@ -922,7 +1054,7 @@
                 loadProjects();
             } catch (error) {
                 console.error('Error deleting project:', error);
-                showAlert(`Error deleting project: ${error.message}`, 'danger');
+                showAlert(`Error deleting project: ${error.message}. Try again later.`, 'danger');
             } finally {
                 hideLoading();
             }
@@ -946,10 +1078,16 @@
                 reader.onload = (e) => {
                     imagePreview.src = e.target.result;
                     imagePreviewContainer.classList.remove('d-none');
+                    
+                    // Clear any existing image data to ensure we use the new image
+                    existingImageData.value = '';
                 };
                 reader.readAsDataURL(file);
             } else {
-                imagePreviewContainer.classList.add('d-none');
+                // If no file is selected, keep showing the existing image if available
+                if (!existingImageData.value) {
+                    imagePreviewContainer.classList.add('d-none');
+                }
             }
         }
         
