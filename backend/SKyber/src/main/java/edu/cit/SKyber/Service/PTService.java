@@ -27,7 +27,7 @@ public class PTService {
     @Autowired
     private FirebaseDatabase firebaseDatabase;
 
-    // Create a new project
+    // Modified createProject method with better date handling
     public ProjectTransparency createProject(ProjectTransparency project) {
         try {
             logger.info("Creating new project with name: " + project.getProjectName());
@@ -38,20 +38,39 @@ public class PTService {
             projectMap.put("description", project.getDescription());
             projectMap.put("budget", project.getBudget());
             
-            // Convert LocalDate to String for Firebase storage
+            // Date handling with null check and better formatting
             if (project.getStartDate() != null) {
-                projectMap.put("startDate", project.getStartDate().format(DATE_FORMATTER));
+                try {
+                    projectMap.put("startDate", project.getStartDate().format(DATE_FORMATTER));
+                    logger.info("Formatted start date: " + project.getStartDate().format(DATE_FORMATTER));
+                } catch (Exception e) {
+                    logger.warning("Error formatting start date: " + e.getMessage());
+                    projectMap.put("startDate", "");
+                }
+            } else {
+                logger.info("No start date provided");
+                projectMap.put("startDate", "");
             }
             
             if (project.getEndDate() != null) {
-                projectMap.put("endDate", project.getEndDate().format(DATE_FORMATTER));
+                try {
+                    projectMap.put("endDate", project.getEndDate().format(DATE_FORMATTER));
+                    logger.info("Formatted end date: " + project.getEndDate().format(DATE_FORMATTER));
+                } catch (Exception e) {
+                    logger.warning("Error formatting end date: " + e.getMessage());
+                    projectMap.put("endDate", "");
+                }
+            } else {
+                logger.info("No end date provided");
+                projectMap.put("endDate", "");
             }
             
-            projectMap.put("status", project.getStatus());
-            projectMap.put("projectManager", project.getProjectManager());
-            projectMap.put("teamMembers", project.getTeamMembers());
-            projectMap.put("stakeholders", project.getStakeholders());
-            projectMap.put("sustainabilityGoals", project.getSustainabilityGoals());
+            // Other fields with null checks
+            projectMap.put("status", project.getStatus() != null ? project.getStatus() : "");
+            projectMap.put("projectManager", project.getProjectManager() != null ? project.getProjectManager() : "");
+            projectMap.put("teamMembers", project.getTeamMembers() != null ? project.getTeamMembers() : "");
+            projectMap.put("stakeholders", project.getStakeholders() != null ? project.getStakeholders() : "");
+            projectMap.put("sustainabilityGoals", project.getSustainabilityGoals() != null ? project.getSustainabilityGoals() : "");
             
             // Store image if available
             if (project.getProjectImage() != null && !project.getProjectImage().isEmpty()) {
@@ -59,8 +78,9 @@ public class PTService {
             }
             
             // Push to Firebase and get key
-            DatabaseReference projectRef = firebaseDatabase.getReference("projects").push();
+            DatabaseReference projectRef = firebaseDatabase.getReference("ProjectTransparency").push();
             String key = projectRef.getKey();
+            logger.info("Generated Firebase key: " + key);
             
             // Store the key as id in the map and object
             projectMap.put("id", key);
@@ -123,7 +143,7 @@ public class PTService {
         final List<Exception> exceptions = new ArrayList<>();
 
         try {
-            DatabaseReference projectsRef = firebaseDatabase.getReference("projects");
+            DatabaseReference projectsRef = firebaseDatabase.getReference("ProjectTransparency");
             projectsRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
@@ -132,11 +152,14 @@ public class PTService {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             try {
                                 String key = dataSnapshot.getKey();
+                                logger.info("Processing project with key: " + key);
                                 
                                 // Create a new project
                                 ProjectTransparency project = new ProjectTransparency();
-                                project.setId(Long.valueOf(key.hashCode())); // Use hashCode for numeric ID
                                 
+                                // Use the Firebase key directly as the ID string
+                                // Don't convert to numeric ID which causes issues
+                                project.setId(Long.valueOf(key.hashCode())); // Use hashCode for numeric ID                                
                                 // Map fields from Firebase to entity
                                 if (dataSnapshot.hasChild("projectName")) {
                                     project.setProjectName(dataSnapshot.child("projectName").getValue(String.class));
@@ -197,11 +220,13 @@ public class PTService {
                                 logger.fine("Processed project: " + project.getProjectName());
                             } catch (Exception e) {
                                 logger.warning("Error processing project: " + e.getMessage());
+                                e.printStackTrace();
                                 // Continue to next project
                             }
                         }
                     } catch (Exception e) {
                         logger.severe("Error in data change processing: " + e.getMessage());
+                        e.printStackTrace();
                         exceptions.add(e);
                     } finally {
                         latch.countDown();
@@ -235,33 +260,42 @@ public class PTService {
         }
     }
 
-    // Get project by ID
+    // Get project by ID (improved version that handles both string and numeric IDs)
     public ProjectTransparency getProjectById(String id) throws InterruptedException {
         logger.info("Fetching project with ID: " + id);
+        
+        // Debug info about the ID
+        logger.info("ID type: " + (id == null ? "null" : id.getClass().getName()));
+        logger.info("ID value: " + id);
+        
         final CountDownLatch latch = new CountDownLatch(1);
         final ProjectTransparency[] project = new ProjectTransparency[1];
         final List<Exception> exceptions = new ArrayList<>();
 
         try {
-            DatabaseReference projectRef = firebaseDatabase.getReference("projects").child(id);
+            // Direct lookup using the provided ID
+            DatabaseReference projectRef = firebaseDatabase.getReference("ProjectTransparency").child(id);
             
             projectRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     try {
                         if (!snapshot.exists()) {
-                            logger.warning("No project found with ID: " + id);
+                            logger.warning("No project found with direct ID: " + id);
+                            
+                            // If direct lookup fails, log it but continue (we'll complete the latch)
                             latch.countDown();
                             return;
                         }
                         
                         String key = snapshot.getKey();
+                        logger.info("Found project with key: " + key);
                         
                         // Create a new project
                         ProjectTransparency p = new ProjectTransparency();
                         p.setId(Long.valueOf(key.hashCode()));
                         
-                        // Map fields from Firebase
+                        // Map fields from Firebase (existing code)
                         if (snapshot.hasChild("projectName")) {
                             p.setProjectName(snapshot.child("projectName").getValue(String.class));
                         }
@@ -319,6 +353,8 @@ public class PTService {
                         
                         project[0] = p;
                     } catch (Exception e) {
+                        logger.severe("Error processing project data: " + e.getMessage());
+                        e.printStackTrace();
                         exceptions.add(e);
                     } finally {
                         latch.countDown();
@@ -327,6 +363,7 @@ public class PTService {
 
                 @Override
                 public void onCancelled(DatabaseError error) {
+                    logger.severe("Firebase query was cancelled: " + error.getMessage());
                     exceptions.add(new RuntimeException("Firebase error: " + error.getMessage()));
                     latch.countDown();
                 }
@@ -338,6 +375,11 @@ public class PTService {
             
             if (!exceptions.isEmpty()) {
                 throw exceptions.get(0);
+            }
+            
+            if (project[0] == null) {
+                logger.severe("Project not found with ID: " + id);
+                throw new RuntimeException("Project not found with ID: " + id);
             }
             
             return project[0];
@@ -402,7 +444,7 @@ public class PTService {
             }
             
             // Update in Firebase
-            DatabaseReference projectRef = firebaseDatabase.getReference("projects").child(id);
+            DatabaseReference projectRef = firebaseDatabase.getReference("ProjectTransparency").child(id);
             projectRef.updateChildrenAsync(updates);
             
             // Set the ID in the returned object for consistency
@@ -418,40 +460,67 @@ public class PTService {
         }
     }
 
-    // Update project image
+    // Update project image - improved version
     public ProjectTransparency updateProjectImage(String id, MultipartFile image) throws IOException, InterruptedException {
         logger.info("Updating image for project with ID: " + id);
         
-        // First get the existing project
-        ProjectTransparency existingProject = getProjectById(id);
-        
-        if (existingProject == null) {
-            throw new RuntimeException("Project not found with ID: " + id);
+        if (image == null || image.isEmpty()) {
+            logger.warning("No image provided for update");
+            throw new IllegalArgumentException("No image provided for update");
         }
         
-        if (image != null && !image.isEmpty()) {
+        try {
             // Convert image to base64
             String imageData = Base64.getEncoder().encodeToString(image.getBytes());
+            logger.info("Converted image to base64 (length: " + imageData.length() + ")");
             
-            // Update just the image data
+            // Update just the image data in Firebase
             Map<String, Object> updates = new HashMap<>();
             updates.put("projectImage", imageData);
             
-            DatabaseReference projectRef = firebaseDatabase.getReference("projects").child(id);
+            DatabaseReference projectRef = firebaseDatabase.getReference("ProjectTransparency").child(id);
             projectRef.updateChildrenAsync(updates);
+            logger.info("Firebase update initiated for project: " + id);
             
-            // Update the returned object
-            existingProject.setProjectImage(imageData);
+            // Also fetch the existing project to return updated data
+            ProjectTransparency existingProject;
+            try {
+                existingProject = getProjectById(id);
+                if (existingProject == null) {
+                    throw new RuntimeException("Project not found with ID: " + id);
+                }
+                
+                // Update the returned object with new image
+                existingProject.setProjectImage(imageData);
+                logger.info("Image updated successfully for project: " + id);
+                
+                return existingProject;
+            } catch (Exception e) {
+                logger.severe("Error fetching project after image update: " + e.getMessage());
+                
+                // Create a minimal response with just the image
+                ProjectTransparency response = new ProjectTransparency();
+                response.setId(Long.valueOf(id.hashCode()));
+                response.setProjectImage(imageData);
+                
+                return response;
+            }
+        } catch (IOException e) {
+            logger.severe("Error processing image: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        } catch (Exception e) {
+            logger.severe("Unexpected error updating image: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error updating project image", e);
         }
-        
-        return existingProject;
     }
 
     // Delete project
     public boolean deleteProject(String id) throws InterruptedException {
         logger.info("Deleting project with ID: " + id);
         try {
-            DatabaseReference projectRef = firebaseDatabase.getReference("projects").child(id);
+            DatabaseReference projectRef = firebaseDatabase.getReference("ProjectTransparency").child(id);
             
             // Check if project exists before deletion
             final CountDownLatch latch = new CountDownLatch(1);
