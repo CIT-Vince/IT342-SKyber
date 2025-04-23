@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   TextInput, 
@@ -10,32 +10,80 @@ import {
   Grid,
   Avatar,
   Input,
-  Badge
+  Badge,
+  Group,
+  Loader
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { IMaskInput } from 'react-imask';
-import { IconStar } from '@tabler/icons-react';
+import { IconStar, IconEdit, IconCheck, IconX } from '@tabler/icons-react';
 import Navbar from '../../components/Navbar';
 import Volunteers from './Volunteers';
-import { notifications } from '@mantine/notifications'; 
-import { IconCheck } from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications';
+import { useAuth } from '../../contexts/AuthContext';
+import { getDatabase, ref, get, update } from 'firebase/database';
+import defaultAvatar from '../../assets/default-avatar.jpg';
 
 const Profile = () => {
-  // Kawaii user data (⁄ ⁄•⁄ω⁄•⁄ ⁄)
-  const [userData, setUserData] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@gmail.com",
-    age: "28",
-    gender: "Male",
-    phone: "+63 912 345 6789",
-    address: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    birthdate: new Date("1995-06-15")
-  });
-
+  const { currentUser } = useAuth();
+  const [userData, setUserData] = useState(null);
+  const [originalData, setOriginalData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
 
-  // Super kawaii form handling (づ｡◕‿‿◕｡)づ
+  // Fetch user data from Firebase
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!currentUser) return;
+      
+      try {
+        setLoading(true);
+        const database = getDatabase();
+        const userRef = ref(database, `users/${currentUser.uid}`);
+        const snapshot = await get(userRef);
+        
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          
+          // Convert birthdate string to Date object if it exists
+          if (data.birthdate) {
+            data.birthdate = new Date(data.birthdate);
+          }
+          
+          // Format phone number if needed
+          if (data.phoneNumber && !data.phone) {
+            data.phone = data.phoneNumber;
+          }
+          
+          setUserData(data);
+          setOriginalData(data);
+        } else {
+          console.log("No user data found!");
+          // Set defaults from Firebase Auth
+          setUserData({
+            firstName: currentUser.displayName?.split(' ')[0] || '',
+            lastName: currentUser.displayName?.split(' ')[1] || '',
+            email: currentUser.email,
+            photoURL: currentUser.photoURL,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        notifications.show({
+          title: 'Error',
+          message: 'Failed to load profile data',
+          color: 'red',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchUserData();
+  }, [currentUser]);
+
+  // Handle form field changes
   const handleChange = (value, name) => {
     setUserData(prev => ({
       ...prev,
@@ -43,17 +91,62 @@ const Profile = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  // Handle form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // This would connect to your backend API ^_^
-    notifications.show({
-      title: 'Profile Updated',
-      message: 'Your profile was updated successfully! ★~(◠ω◕✿)',
-      icon: <IconCheck size="1.1rem" />,
-      color: 'pink',
-      autoClose: 4000,
-    });
+    
+    try {
+      const database = getDatabase();
+      const userRef = ref(database, `users/${currentUser.uid}`);
+      
+      // Prepare data for update
+      const updateData = {
+        ...userData,
+        birthdate: userData.birthdate ? userData.birthdate.toISOString().split('T')[0] : null,
+        phoneNumber: userData.phone || userData.phoneNumber,
+        lastUpdated: new Date().toISOString()
+      };
+      
+      // Update Firebase
+      await update(userRef, updateData);
+      
+      notifications.show({
+        title: 'Profile Updated',
+        message: 'Your profile was updated successfully! ★~(◠ω◕✿)',
+        icon: <IconCheck size="1.1rem" />,
+        color: 'green',
+        autoClose: 4000,
+      });
+      
+      setEditMode(false);
+      setOriginalData(userData);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      notifications.show({
+        title: 'Update Failed',
+        message: 'Could not update your profile',
+        color: 'red',
+      });
+    }
   };
+
+  // Cancel editing
+  const handleCancel = () => {
+    setUserData(originalData);
+    setEditMode(false);
+  };
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen pt-20 flex justify-center items-center">
+          <Loader size="xl" color="blue" />
+          <p className="ml-3 text-xl">Loading your profile...</p>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -61,23 +154,23 @@ const Profile = () => {
       <div className="min-h-screen pt-20 pb-10 px-4 relative bg-gradient-to-br from-blue-50 to-pink-50">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-6">
           
-          {/* Kawaii sidebar (≧◡≦) */}
+          {/* Profile sidebar */}
           <Paper shadow="md" radius="lg" className="w-full md:w-64 p-5 h-fit">
             <div className="flex flex-col items-center">
               <Avatar 
-                src="https://i.pravatar.cc/300"
+                src={userData?.photoURL || defaultAvatar}
                 size={120}
                 radius={120}
                 className="border-4 border-blue-500 mb-4"
               />
-              <Title order={3} className="font-bold">{userData.firstName} {userData.lastName}</Title>
-              <p className="text-gray-500 mb-2">{userData.email}</p>
+              <Title order={3} className="font-bold">{userData?.firstName} {userData?.lastName}</Title>
+              <p className="text-gray-500 mb-2">{userData?.email}</p>
               
               <Badge variant="gradient" gradient={{ from: 'pink', to: 'blue' }} className="mb-6">
-                <IconStar size={14} className="mr-1" style={{display: 'inline'}} /> Member
+                <IconStar size={14} className="mr-1" style={{display: 'inline'}} /> {userData?.role || 'Member'}
               </Badge>
               
-              {/* Kawaii navigation (つ≧▽≦)つ */}
+              {/* Navigation tabs */}
               <div className="w-full space-y-2">
                 <button 
                   className={`w-full flex items-center justify-between p-3 rounded-md ${activeTab === "profile" ? "bg-blue-50 text-blue-500" : "hover:bg-gray-100"}`}
@@ -112,125 +205,157 @@ const Profile = () => {
             </div>
           </Paper>
           
-          {/* Kawaii form section (＾▽＾) */}
+          {/* Main content */}
           <Paper shadow="md" radius="lg" className="flex-1 p-6">
           {activeTab === "profile" ? (
             <>
-            <Title order={2} className="mb-6">Personal Information</Title>
+              <div className="flex justify-between items-center mb-6">
+                <Title order={2}>Personal Information</Title>
+                {!editMode && (
+                  <Button
+                    leftIcon={<IconEdit size={16} />}
+                    onClick={() => setEditMode(true)}
+                    variant="light"
+                    color="blue"
+                    radius="md"
+                  >
+                    Edit Profile
+                  </Button>
+                )}
+              </div>
             
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <Grid gutter="md">
-                {/* First name and Last name */}
-                <Grid.Col span={{ base: 12, md: 6 }}>
-                  <TextInput
-                    label="First Name"
-                    placeholder="Your first name"
-                    value={userData.firstName}
-                    onChange={(e) => handleChange(e.target.value, 'firstName')}
-                    required
-                    radius="md"
-                  />
-                </Grid.Col>
-                
-                <Grid.Col span={{ base: 12, md: 6 }}>
-                  <TextInput
-                    label="Last Name"
-                    placeholder="Your last name"
-                    value={userData.lastName}
-                    onChange={(e) => handleChange(e.target.value, 'lastName')}
-                    required
-                    radius="md"
-                  />
-                </Grid.Col>
-                
-                {/* Age and Gender */}
-                <Grid.Col span={{ base: 12, md: 6 }}>
-                  <TextInput
-                    label="Age"
-                    placeholder="Your age"
-                    value={userData.age}
-                    onChange={(e) => handleChange(e.target.value, 'age')}
-                    radius="md"
-                  />
-                </Grid.Col>
-                
-                <Grid.Col span={{ base: 12, md: 6 }}>
-                  <Select
-                    label="Gender"
-                    placeholder="Select gender"
-                    value={userData.gender}
-                    onChange={(value) => handleChange(value, 'gender')}
-                    data={[
-                      { value: 'Male', label: 'Male' },
-                      { value: 'Female', label: 'Female' },
-                      { value: 'Non-binary', label: 'Non-binary' },
-                      { value: 'Prefer not to say', label: 'Prefer not to say' }
-                    ]}
-                    radius="md"
-                    withAsterisk
-                  />
-                </Grid.Col>
-                
-                {/* Phone and Email */}
-                <Grid.Col span={{ base: 12, md: 6 }}>
-                  <Input.Wrapper label="Phone Number" required>
-                    <Input
-                      component={IMaskInput}
-                      mask="+63 (000) 000-0000"
-                      placeholder="Your phone number"
-                      value={userData.phone}
-                      onChange={(e) => handleChange(e.target.value, 'phone')}
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <Grid gutter="md">
+                  {/* First name and Last name */}
+                  <Grid.Col span={{ base: 12, md: 6 }}>
+                    <TextInput
+                      label="First Name"
+                      placeholder="Your first name"
+                      value={userData?.firstName || ''}
+                      onChange={(e) => handleChange(e.target.value, 'firstName')}
+                      required
+                      disabled={!editMode}
                       radius="md"
                     />
-                  </Input.Wrapper>
-                </Grid.Col>
+                  </Grid.Col>
+                  
+                  <Grid.Col span={{ base: 12, md: 6 }}>
+                    <TextInput
+                      label="Last Name"
+                      placeholder="Your last name"
+                      value={userData?.lastName || ''}
+                      onChange={(e) => handleChange(e.target.value, 'lastName')}
+                      required
+                      disabled={!editMode}
+                      radius="md"
+                    />
+                  </Grid.Col>
+                  
+                  {/* Age and Gender */}
+                  <Grid.Col span={{ base: 12, md: 6 }}>
+                    <TextInput
+                      label="Age"
+                      placeholder="Your age"
+                      value={userData?.age || ''}
+                      onChange={(e) => handleChange(e.target.value, 'age')}
+                      disabled={!editMode}
+                      radius="md"
+                    />
+                  </Grid.Col>
+                  
+                  <Grid.Col span={{ base: 12, md: 6 }}>
+                    <Select
+                      label="Gender"
+                      placeholder="Select gender"
+                      value={userData?.gender || ''}
+                      onChange={(value) => handleChange(value, 'gender')}
+                      data={[
+                        { value: 'Male', label: 'Male' },
+                        { value: 'Female', label: 'Female' },
+                        { value: 'Non-binary', label: 'Non-binary' },
+                        { value: 'Prefer not to say', label: 'Prefer not to say' }
+                      ]}
+                      disabled={!editMode}
+                      radius="md"
+                    />
+                  </Grid.Col>
+                  
+                  {/* Phone and Email */}
+                  <Grid.Col span={{ base: 12, md: 6 }}>
+                    <Input.Wrapper label="Phone Number">
+                      <Input
+                        component={IMaskInput}
+                        mask="+63 (000) 000-0000"
+                        placeholder="Your phone number"
+                        value={userData?.phone || userData?.phoneNumber || ''}
+                        onChange={(e) => handleChange(e.target.value, 'phone')}
+                        disabled={!editMode}
+                        radius="md"
+                      />
+                    </Input.Wrapper>
+                  </Grid.Col>
+                  
+                  <Grid.Col span={{ base: 12, md: 6 }}>
+                    <TextInput
+                      label="E-mail"
+                      type="email"
+                      placeholder="your.email@example.com"
+                      value={userData?.email || ''}
+                      onChange={(e) => handleChange(e.target.value, 'email')}
+                      required
+                      disabled={true} // Email cannot be edited through this form
+                      radius="md"
+                    />
+                  </Grid.Col>
+                </Grid>
                 
-                <Grid.Col span={{ base: 12, md: 6 }}>
-                  <TextInput
-                    label="E-mail"
-                    type="email"
-                    placeholder="your.email@example.com"
-                    value={userData.email}
-                    onChange={(e) => handleChange(e.target.value, 'email')}
-                    required
-                    radius="md"
-                  />
-                </Grid.Col>
-              </Grid>
-              
-              {/* Address */}
-              <Textarea
-                label="Address"
-                placeholder="Your full address"
-                value={userData.address}
-                onChange={(e) => handleChange(e.target.value, 'address')}
-                radius="md"
-                minRows={3}
-              />
-              
-              {/* Birthdate */}
-              <DateInput
-                label="Birthdate"
-                placeholder="Select your birthdate"
-                value={userData.birthdate}
-                onChange={(value) => handleChange(value, 'birthdate')}
-                radius="md"
-                valueFormat="YYYY-MM-DD"
-              />
-              
-              {/* Save button */}
-              <div className="flex justify-end">
-                <Button
-                  type="submit"
-                  radius="xl"
-                  variant="gradient"
-                  gradient={{ from: 'pink', to: 'blue' }}
-                  className="px-8 py-2 transition hover:scale-105"
-                >
-                  Save Changes (✿◠‿◠)
-                </Button>
-              </div>
-            </form>
+                {/* Address */}
+                <Textarea
+                  label="Address"
+                  placeholder="Your full address"
+                  value={userData?.address || ''}
+                  onChange={(e) => handleChange(e.target.value, 'address')}
+                  disabled={!editMode}
+                  radius="md"
+                  minRows={3}
+                />
+                
+                {/* Birthdate */}
+                <DateInput
+                  label="Birthdate"
+                  placeholder="Select your birthdate"
+                  value={userData?.birthdate || null}
+                  onChange={(value) => handleChange(value, 'birthdate')}
+                  disabled={!editMode}
+                  radius="md"
+                  valueFormat="YYYY-MM-DD"
+                />
+                
+                {/* Action buttons */}
+                {editMode && (
+                  <Group position="right" spacing="md">
+                    <Button
+                      onClick={handleCancel}
+                      variant="outline"
+                      color="red"
+                      radius="xl"
+                      leftIcon={<IconX size={16} />}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      radius="xl"
+                      variant="gradient"
+                      gradient={{ from: 'pink', to: 'blue' }}
+                      className="px-8 transition hover:scale-105"
+                      leftIcon={<IconCheck size={16} />}
+                    >
+                      Save Changes
+                    </Button>
+                  </Group>
+                )}
+              </form>
             </>
             ) : (
               // Show Volunteers component when activeTab is "volunteers"

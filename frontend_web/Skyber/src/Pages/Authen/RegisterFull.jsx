@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import skyber from '../../assets/skyber.svg';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import logo from '../../assets/communityLogo.png';
 import { 
   Input, 
@@ -10,9 +10,14 @@ import {
   Group, 
   Checkbox, 
   Button, 
-  Select 
+  Select ,
+  LoadingOverlay
 } from '@mantine/core'; // AHHHH KAPOYA
 import { IconAt, IconEye, IconEyeOff } from '@tabler/icons-react';
+import { showNotification } from '@mantine/notifications';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase/firebase';
+import { getDatabase, ref, set } from "firebase/database";
 
 const RegisterFull = () => {
   
@@ -26,6 +31,173 @@ const RegisterFull = () => {
   const [day, setDay] = useState('');
   const [year, setYear] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+
+  
+  const [loading, setLoading] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [address, setAddress] = useState('');
+  const navigate = useNavigate();
+  
+  // Form validation function
+  const validateForm = () => {
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      showNotification({
+        title: 'Invalid Email',
+        message: 'Please enter a valid email address',
+        color: 'red'
+      });
+      return false;
+    }
+    
+    // Password validation
+    if (password.length < 6) {
+      showNotification({
+        title: 'Weak Password',
+        message: 'Password must be at least 6 characters long',
+        color: 'red'
+      });
+      return false;
+    }
+    
+    // Password match check
+    if (password !== confirmPassword) {
+      showNotification({
+        title: 'Password Mismatch',
+        message: 'Passwords do not match',
+        color: 'red'
+      });
+      return false;
+    }
+    
+    // Name validation
+    if (!firstName.trim() || !lastName.trim()) {
+      showNotification({
+        title: 'Missing Information',
+        message: 'Please enter your first and last name',
+        color: 'red'
+      });
+      return false;
+    }
+    
+    return true;
+  };
+  
+  // Form submission handler
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      
+      // Step 1: Create user account in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(
+        auth, 
+        email, 
+        password
+      );
+      
+      const user = userCredential.user;
+      
+      // Format birthdate
+      let birthdate = null;
+      if (year && month && day) {
+        birthdate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+      
+      // Calculate age from birthdate
+      let age = '';
+      if (birthdate) {
+        const birthDate = new Date(birthdate);
+        const today = new Date();
+        age = String(today.getFullYear() - birthDate.getFullYear());
+      }
+      
+      // Step 2: Get Firebase ID token
+      const idToken = await user.getIdToken();
+      
+      // Step 3: Send user details to Spring Boot backend
+      const response = await fetch('http://localhost:8080/api/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify({
+          uid: user.uid,
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          birthdate: birthdate,
+          gender: gender || '',
+          age: age,
+          phoneNumber: phoneNumber || '',
+          address: address || '',
+          role: 'USER'
+        })
+      });
+      
+      if (response.ok) {
+        // Also store profile in Firebase Realtime Database
+        const database = getDatabase();
+        console.log("Database reference created, attempting to write user data...");
+
+        await set(ref(database, 'users/' + user.uid), {
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          photoURL: null, // User can add this later
+          birthdate: birthdate,
+          gender: gender || '',
+          phoneNumber: phoneNumber || '',
+          address: address || '',
+          role: 'USER', // Add this!
+          lastUpdated: new Date().toISOString()
+        });
+        
+      console.log("Successfully wrote user data to Firebase Realtime Database!");
+    
+        showNotification({
+          title: 'Registration Successful',
+          message: 'Your account has been created! You can now log in.',
+          color: 'green'
+        });
+        
+        navigate('/login');
+      } else {
+        // If backend registration fails, delete the Firebase user
+        await user.delete();
+        throw new Error('Failed to register user data');
+      }
+      
+    } catch (dberror) {
+      console.error("Firebase Realtime Database error:", dberror);
+      console.error("Registration error:", dberror);
+      
+      let errorMessage = 'Failed to register. Please try again.';
+      
+      if (dberror.code === 'auth/email-already-in-use') {
+        errorMessage = 'This email is already registered.';
+      } else if (dberror.code === 'auth/invalid-email') {
+        errorMessage = 'Invalid email address.';
+      } else if (dberror.code === 'auth/weak-password') {
+        errorMessage = 'Password is too weak.';
+      }
+      
+      showNotification({
+        title: 'Registration Failed',
+        message: errorMessage,
+        color: 'red'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Generate years for dropdown
   const years = Array.from({ length: 100 }, (_, i) => {
@@ -93,7 +265,7 @@ const RegisterFull = () => {
           </div>
 
           {/* Registration Form */}
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             {/* Name fields */}
             <div className="flex gap-4">
               <div className="w-1/2">
@@ -222,7 +394,32 @@ const RegisterFull = () => {
                 />
               </div>
             </div>
+
+            {/* Phone Number */}            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+              <Input 
+                value={phoneNumber}
+                onChange={(event) => setPhoneNumber(event.currentTarget.value)}
+                placeholder="09123456789"
+                styles={(theme) => ({
+                  input: { borderRadius: '4px' },
+                })}
+              />
+            </div>
             
+            {/* Address*/}    
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+              <Input 
+                value={address}
+                onChange={(event) => setAddress(event.currentTarget.value)}
+                placeholder="Your address"
+                styles={(theme) => ({
+                  input: { borderRadius: '4px' },
+                })}
+              />
+            </div>
             {/* Remember me */}
             <div className="flex items-center">
               <Checkbox 
@@ -241,14 +438,13 @@ const RegisterFull = () => {
             </div>
             
             {/* Sign In Button */}
-            <Link to="/login" className="block">
-            <button
-                type="button"
+              <button
+                type="submit"
                 className="w-full py-3 bg-gradient-to-r from-pink-400 to-blue-500 text-white font-semibold rounded-full shadow-lg hover:scale-105 hover:opacity-90 transition-all duration-200 cursor-pointer"
-            >
-                Sign In
-            </button>
-            </Link>
+                disabled={loading}
+              >
+                {loading ? 'Creating Account...' : 'Create Account'}
+              </button>
           </form>
         </div>
       </div>

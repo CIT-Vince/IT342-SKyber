@@ -1,14 +1,71 @@
 import React, { useState } from 'react';
 import skyber from '../../assets/skyber.svg'; 
-import { Link } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom'; 
 import logo from '../../assets/communityLogo.png'; 
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase/firebase';
+import { showNotification } from '@mantine/notifications';
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    
+    if (!email || !password) {
+      showNotification({
+        title: 'Error',
+        message: 'Please fill in all fields',
+        color: 'red',
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Save user token if "remember me" is checked
+      if (rememberMe) {
+        localStorage.setItem('userToken', await user.getIdToken());
+      } else {
+        sessionStorage.setItem('userToken', await user.getIdToken());
+      }
+
+      showNotification({
+        title: 'Success',
+        message: 'Login successful! Redirecting...',
+        color: 'green',
+      });
+
+      // Redirect to home page after successful login
+      navigate('/');
+    } catch (error) {
+      console.error('Login error:', error.message);
+      
+      let errorMessage = 'Login failed';
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        errorMessage = 'Invalid email or password';
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage = 'Too many failed login attempts. Please try again later';
+      }
+      
+      showNotification({
+        title: 'Error',
+        message: errorMessage,
+        color: 'red',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="content flex min-h-screen">
@@ -40,7 +97,7 @@ const Login = () => {
           </div>
 
           {/* Login Form */}
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleLogin}>
             {/* Email Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -98,14 +155,13 @@ const Login = () => {
             </div>
 
             {/* Sign In Button */}
-            <Link to="/">
             <button 
               type="submit" 
               className="w-full py-3 bg-gradient-to-r from-pink-400 to-blue-500 text-white font-semibold rounded-full shadow-lg hover:scale-105 hover:opacity-90 transition-all duration-200 cursor-pointer"
+              disabled={loading}
             >
-              Sign in
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
-            </Link>
           </form>
         </div>
       </div>
