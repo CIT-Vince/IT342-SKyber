@@ -32,4 +32,5 @@ public class ProjectTransparency {
     private String teamMembers;  // List of team members or roles
     private String stakeholders;  // External stakeholders
     private String sustainabilityGoals;  // Sustainability goals of the project
+    private String projectImage;
 }
