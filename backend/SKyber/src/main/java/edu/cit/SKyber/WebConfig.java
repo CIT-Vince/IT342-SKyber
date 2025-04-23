@@ -14,7 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/auth/**")
-                .allowedOrigins("http://localhost:8080")  // Allow front-end port if applicable
+                .allowedOrigins("http://localhost:5173")  // Allow front-end port if applicable
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*") // Allow all headers
                 .allowCredentials(true)
@@ -26,7 +26,7 @@ public class WebConfig implements WebMvcConfigurer {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:8080"); // React app URL
+        config.addAllowedOrigin("http://localhost:5173"); // React app URL
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);

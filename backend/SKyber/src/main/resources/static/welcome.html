@@ -119,6 +119,7 @@
   </div>
   <button id="logoutBtn">Logout</button>
   <button id="announcementBtn" style="background: #3498db; margin-right: 10px;">View Announcements</button>
+  <button id="projectsBtn" style="background: #27ae60; margin-right: 10px;">Project Transparency</button>
   <button id="refreshDataBtn" style="background: #9b59b6;">Refresh Data</button>
 
   <script type="module">
@@ -616,6 +617,19 @@
       
       // Set up refresh button
       document.getElementById('refreshDataBtn').addEventListener('click', refreshUserData);
+
+      // Add announcement page redirection
+document.getElementById("announcementBtn").addEventListener("click", () => {
+  window.location.href = "announcement.html";
+});
+
+// Add project transparency page redirection
+document.getElementById("projectsBtn").addEventListener("click", () => {
+  window.location.href = "pt.html";
+});
+
+// Set up the edit profile button
+document.getElementById('editProfileBtn').addEventListener('click', enterEditMode);
     });
   </script>
 </body>
