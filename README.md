@@ -8,15 +8,9 @@ Key Features:
 
 ✅ Smart Announcements – Instantly notify the community about events, programs, and government initiatives (e.g., free vaccines, financial aid).
 
-✅ Attendance Tracker – Simplifies meeting and event attendance with a QR code-based check-in system.
-
 ✅ Volunteer Hub – Recruit, manage, and reward volunteers for community projects.
 
-✅ Feedback & Polls – Engage with the youth through surveys and suggestions for barangay development.
-
 ✅ Project Transparency – Showcase SK initiatives, budget allocations, and progress reports for accountability.
-
-✅ Emergency Alerts – Send real-time notifications for disasters, security issues, and urgent announcements.
 
 ✅ Scholarship & Job Opportunities – List available scholarships, internships, and job openings for the youth.
 
