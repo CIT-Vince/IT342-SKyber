@@ -62,7 +62,6 @@ fun Home(navController: NavHostController, userProfile: MutableState<User?>, ref
     val allAnnouncements = remember { mutableStateListOf<Announcement>() }
     LaunchedEffect(Unit) {
         refreshUserProfile()
-
         try {
             val announcementFetch = async {
                 FirebaseHelper.databaseReference.child("Announcements").get().await()
