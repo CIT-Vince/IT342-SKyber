@@ -70,7 +70,6 @@ fun PostJob(navController: NavHostController, userProfile: MutableState<User?>){
     var address by remember { mutableStateOf("") }
     var contactperson by remember { mutableStateOf("") }
     var contact by remember { mutableStateOf("") }
-
     val context = LocalContext.current
 
         if (user == null){
@@ -82,7 +81,7 @@ fun PostJob(navController: NavHostController, userProfile: MutableState<User?>){
                 CircularProgressIndicator(color = SKyberYellow)
             }
             return
-        }else {
+        }else{
             Scaffold(){ innerPadding->
                 Column(
                     modifier = Modifier

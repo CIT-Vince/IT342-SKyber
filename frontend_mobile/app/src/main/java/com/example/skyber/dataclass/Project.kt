@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @IgnoreExtraProperties
 data class Project(
+    val id: String = "",
     val projectName: String = "",
     val projectDescription: String = "",
     val status: String = "",

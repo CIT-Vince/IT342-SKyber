@@ -5,11 +5,12 @@ data class User(
     val firstname: String? = null,
     val lastname: String? = null,
     val password: String? = null,
-    val dob: String? = null,
+    val age: String? = null,
+    val birthdate: String? = null,
     val email: String? = null,
     val gender: String? = null,
     val role: String? = null,
-    val phonenumber: String? = null,
+    val phoneNumber: String? = null,
     val address: String? = null,
     val volunteeredActivities: List<String> = emptyList()
 )

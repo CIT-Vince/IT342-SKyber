@@ -212,19 +212,14 @@ class MainActivity : ComponentActivity() {
                             composable(Screens.SignUp.screen) { SignupScreen(navController) }
 
                             // Main screens
-                            composable(Screens.Home.screen) {Home(navController,userProfile = userProfile)}
+                            composable(Screens.Home.screen) {Home(navController,userProfile = userProfile, ::refreshUserProfile)}
                             composable(Screens.VolunteerHub.screen) { VolunteerHub(navController) }
                             composable(Screens.Portal.screen) {Portal(navController,userProfile = userProfile)}
-                            composable(Screens.UserProfile.screen) {UserProfile(navController,userProfile = userProfile)}
+                            composable(Screens.UserProfile.screen) {UserProfile(navController,userProfile = userProfile,::refreshUserProfile )}
                             composable(Screens.SKcandidates.screen) { SKcandidates(navController) }
 
                             //Nested screens for SKcandidates
-                            composable(Screens.PostSKcandidates.screen) {
-                                PostSKcandidates(
-                                    navController,
-                                    userProfile = userProfile
-                                )
-                            }
+                            composable(Screens.PostSKcandidates.screen) {PostSKcandidates(navController,userProfile = userProfile)}
                             composable(Screens.DetailsSKcandidates.screen) {DetailsSKcandidates(navController)}
 
                             //Nested Screens in Portal
@@ -254,19 +249,8 @@ class MainActivity : ComponentActivity() {
                             composable(Screens.DetailsVolunteerHub.screen) {DetailsVolunteerHub(navController)}
 
                             //Nested Screens in User Profile
-                            composable(Screens.EditProfile.screen) {
-                                EditProfile(
-                                    navController,
-                                    userProfile = userProfile,
-                                    ::refreshUserProfile
-                                )
-                            }
-                            composable(Screens.VolunteerList.screen) {
-                                VolunteerList(
-                                    navController,
-                                    userProfile = userProfile
-                                )
-                            }
+                            composable(Screens.EditProfile.screen) { EditProfile(navController, userProfile = userProfile, ::refreshUserProfile) }
+                            composable(Screens.VolunteerList.screen) {VolunteerList(navController,userProfile = userProfile)}
                             composable(Screens.DetailsVolunteerList.screen) { DetailsVolunteerList(navController)}
                         }
                     }

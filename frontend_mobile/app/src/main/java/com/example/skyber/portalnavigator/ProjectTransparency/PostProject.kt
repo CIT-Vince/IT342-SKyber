@@ -42,25 +42,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.skyber.FirebaseHelper
 import com.example.skyber.ModularFunctions.DatePickerField
 import com.example.skyber.ModularFunctions.convertMillisToDate
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.Project
 import com.example.skyber.dataclass.User
-import com.example.skyber.dataclass.getCurrentDateTime
 import com.example.skyber.headerbar.HeaderBar
 import com.example.skyber.headerbar.NotificationHandler
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlue
-import com.example.skyber.ui.theme.SKyberRed
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.White
+import com.google.firebase.database.DatabaseReference
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -335,21 +332,26 @@ fun PostProject(navController: NavHostController, userProfile: MutableState<User
                             if (projectname.isBlank() || startdate.isBlank() || enddate.isBlank()) {
                                 showToast(context, "Please fill out required fields")
                             }else{
-                                val newProject = Project(
-                                    projectName = projectname,
-                                    projectDescription = projectdescription,
-                                    status = "Ongoing",
-                                    startDate = startdate,
-                                    endDate = enddate,
-                                    budget = budget,
-                                    projectManager = projectmanager,
-                                    sustainabilityGoals = sustainabilitygoals,
-                                    projectMembers = projectmembers.toList(),
-                                    stakeholders = stakeholders.toList()
-                                )
-                                // Upload the project post and show the toast
-                                uploadProject(newProject, context)
-                                navController.navigate(Screens.Projects.screen)
+                                val databaseRef = FirebaseHelper.databaseReference.child("ProjectTransparency").push()
+                                val postId = databaseRef.key
+                                if (postId != null) {
+                                    val newProject = Project(
+                                        id = postId,
+                                        projectName = projectname,
+                                        projectDescription = projectdescription,
+                                        status = "Ongoing",
+                                        startDate = startdate,
+                                        endDate = enddate,
+                                        budget = budget,
+                                        projectManager = projectmanager,
+                                        sustainabilityGoals = sustainabilitygoals,
+                                        projectMembers = projectmembers.toList(),
+                                        stakeholders = stakeholders.toList()
+                                    )
+                                    // Upload the project post and show the toast
+                                    uploadProject(databaseRef,newProject, context)
+                                    navController.navigate(Screens.Projects.screen)
+                                }
                             }
                     }) {
                         Text("Post Project")
@@ -365,13 +367,12 @@ fun showToast(context: Context, message: String) {
     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 }
 
-fun uploadProject(project: Project, context: Context) {
-    val databaseRef = FirebaseHelper.databaseReference.child("ProjectTransparency").push()
+fun uploadProject(databaseRef: DatabaseReference, project: Project, context: Context) {
     databaseRef.setValue(project).addOnSuccessListener {
         // Show success toast when announcement is uploaded successfully
         showToast(context, "Project Report uploaded successfully")
-    }
-        .addOnFailureListener { error ->
+        }
+        .addOnFailureListener {
             // Show failure toast when something goes wrong
             showToast(context, "Failed to Post Project Report")
         }

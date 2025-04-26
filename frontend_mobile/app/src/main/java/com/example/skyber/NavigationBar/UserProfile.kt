@@ -26,6 +26,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -43,10 +47,14 @@ import com.example.skyber.ui.theme.*
 
 
 @Composable@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-fun UserProfile(navController: NavHostController, userProfile : MutableState<User?>)  {
+fun UserProfile(navController: NavHostController, userProfile : MutableState<User?>, refreshUserProfile: () -> Unit)  {
    val user = userProfile.value
-    if (user == null) {
-        // Show a loading spinner while waiting for user data
+    var isLoading by rememberSaveable { mutableStateOf(false) }
+
+
+    if (user == null && !isLoading) {
+        isLoading = true // set a loading flag so you don't recall it
+        refreshUserProfile()
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center

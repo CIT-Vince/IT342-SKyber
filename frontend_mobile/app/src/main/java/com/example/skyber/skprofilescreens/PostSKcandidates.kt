@@ -322,10 +322,7 @@ fun showToast(context: Context, message: String) {
     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 }
 
-fun uploadCandidateProfile(candidateProfile: CandidateProfile
-                           , context: Context
-                           , navController: NavHostController
-                           , databaseRef: DatabaseReference) {
+fun uploadCandidateProfile(candidateProfile: CandidateProfile, context: Context, navController: NavHostController, databaseRef: DatabaseReference) {
     databaseRef.setValue(candidateProfile)
             .addOnSuccessListener {
                 showToast(context, "Candidate Profile uploaded successfully")// Show success toast when announcement is uploaded successfully

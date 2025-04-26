@@ -149,17 +149,11 @@ fun LoginScreen(navController: NavHostController, refreshUserProfile: () -> Unit
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 val currentUser = auth.currentUser
-                                Log.d(
-                                    "LoginDebug",
-                                    "User logged in: ${currentUser?.uid}"
-                                ) // <-- Here
+                                Log.d("LoginDebug", "User logged in: ${currentUser?.uid}") // <-- Here
                                 currentUser?.uid?.let { uid ->
                                     // Debugging the process of fetching the user profile
                                     Log.d("LoginDebug", "Fetching user profile for UID: $uid")
-                                    FirebaseHelper.databaseReference
-                                        .child("users")
-                                        .child(uid)
-                                        .get()
+                                    FirebaseHelper.databaseReference.child("users").child(uid).get()
                                         .addOnSuccessListener { snapshot ->
                                             Log.d("LoginDebug", "Raw snapshot: ${snapshot.value}")
                                             val user = snapshot.getValue(User::class.java)
@@ -173,6 +167,7 @@ fun LoginScreen(navController: NavHostController, refreshUserProfile: () -> Unit
                                             )
                                         }
                                 }
+                                refreshUserProfile()
                                 navController.navigate(Screens.Home.screen)
                                 Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT)
                                     .show()
