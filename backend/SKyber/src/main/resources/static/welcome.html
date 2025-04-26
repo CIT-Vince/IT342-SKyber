@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+    }
+    .user-details {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+    button {
+      padding: 8px 16px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .loading {
+      display: none; /* Hide the loading indicators by default */
+    }
+    .data-container {
+      display: none; /* Hide data until it's loaded */
+    }
+    .edit-btn {
+      padding: 3px 8px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 10px;
+      font-size: 0.8em;
+    }
+    .edit-btn:hover {
+      background: #2980b9;
+    }
+    .edit-field {
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 200px;
+      margin-right: 5px;
+    }
+    #editControls {
+      margin-top: 15px;
+    }
+    #saveChangesBtn {
+      background: #4CAF50;
+      margin-right: 10px;
+    }
+    #cancelEditBtn {
+      background: #f44336;
+    }
+    #editProfileBtn {
+      background: #3498db;
+      margin-top: 10px;
+      display: block;
+    }
+    .error-message {
+      color: #f44336;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Welcome, <span id="userName"></span>!</h2>
+  <div id="loadingMessage">Fetching your information...</div>
+  <div id="errorMessage" class="error-message" style="display:none;"></div>
+
+  <div id="dataContainer" class="user-details data-container">
+    <p><strong>Email:</strong> <span id="userEmail"></span></p>
+    <p>
+      <strong>First Name:</strong> 
+      <span id="firstName" class="display-field"></span>
+      <input type="text" id="firstNameInput" class="edit-field" style="display:none;">
+    </p>
+    <p>
+      <strong>Last Name:</strong> 
+      <span id="lastName" class="display-field"></span>
+      <input type="text" id="lastNameInput" class="edit-field" style="display:none;">
+    </p>
+    <p>
+      <strong>Gender:</strong> 
+      <span id="gender" class="display-field"></span>
+      <input type="text" id="genderInput" class="edit-field" style="display:none;">
+    </p>
+    <p>
+      <strong>Age:</strong> 
+      <span id="age" class="display-field"></span>
+      <input type="number" id="ageInput" class="edit-field" style="display:none;">
+    </p>
+    <p>
+      <strong>Phone Number:</strong> 
+      <span id="phoneNumber" class="display-field"></span>
+      <input type="text" id="phoneNumberInput" class="edit-field" style="display:none;">
+    </p>
+    <p>
+      <strong>Address:</strong> 
+      <span id="address" class="display-field"></span>
+      <input type="text" id="addressInput" class="edit-field" style="display:none;">
+    </p>
+    <button id="editProfileBtn">Edit Profile</button>
+    <div id="editControls" style="display:none;">
+      <button id="saveChangesBtn">Save Changes</button>
+      <button id="cancelEditBtn">Cancel</button>
+    </div>
+  </div>
+  <button id="logoutBtn">Logout</button>
+  <button id="announcementBtn" style="background: #3498db; margin-right: 10px;">View Announcements</button>
+  <button id="projectsBtn" style="background: #27ae60; margin-right: 10px;">Project Transparency</button>
+  <button id="refreshDataBtn" style="background: #9b59b6;">Refresh Data</button>
+
+  <script type="module">
+    // Import necessary Firebase modules
+    import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAuF4fCivSrXo8wHnmzXzYbaxGdZBdlDAo",
+      authDomain: "skyber-57fa5.firebaseapp.com",
+      projectId: "skyber-57fa5",
+      storageBucket: "skyber-57fa5.appspot.com",
+      messagingSenderId: "627178043013",
+      appId: "1:627178043013:android:eb879a84075c6dbccf9bec",
+      databaseURL: "https://skyber-57fa5-default-rtdb.asia-southeast1.firebasedatabase.app"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+
+    // Global variables for editing functionality
+    let currentUserData = null;
+    let currentUserId = null;
+    let currentIdToken = null;
+    let isEditing = false;
+    const editableFields = ['firstName', 'lastName', 'gender', 'age', 'phoneNumber', 'address'];
+
+    // Function to show error message
+    function showError(message) {
+      console.error("Error:", message);
+      const errorElement = document.getElementById("errorMessage");
+      errorElement.textContent = message;
+      errorElement.style.display = "block";
+      
+      // Hide error after 5 seconds
+      setTimeout(() => {
+        errorElement.style.display = "none";
+      }, 5000);
+    }
+
+    // Set up a timeout to detect if loading is taking too long
+    const loadingTimeout = setTimeout(() => {
+      const loadingElement = document.getElementById("loadingMessage");
+      if (loadingElement && loadingElement.style.display !== "none") {
+        console.log("Loading timeout triggered - trying to recover");
+        showError("Loading is taking too long. Trying to recover...");
+        
+        // Try to recover by loading from Firebase directly
+        if (auth.currentUser) {
+          getUserDataFromFirebase(auth.currentUser)
+            .then(() => {
+              document.getElementById("loadingMessage").style.display = "none";
+              document.getElementById("dataContainer").style.display = "block";
+            })
+            .catch(error => {
+              console.error("Recovery attempt failed:", error);
+              document.getElementById("loadingMessage").style.display = "none";
+              document.getElementById("dataContainer").style.display = "block";
+              showError("Failed to load user data. Please refresh the page.");
+            });
+        }
+      }
+    }, 8000);
+
+    // Initialize Firebase and set up auth persistence
+    async function initializeFirebase() {
+      console.log("Initializing Firebase...");
+      
+      try {
+        await setPersistence(auth, browserLocalPersistence);
+        console.log("Firebase persistence set to LOCAL");
+        
+        // Now check auth state
+        checkAuthState();
+      } catch (error) {
+        console.error("Error setting persistence:", error);
+        // Still try to check auth even if persistence fails
+        checkAuthState();
+      }
+    }
+
+    // Check authentication state
+    function checkAuthState() {
+      console.log("Checking authentication state...");
+      
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          // User is signed in
+          console.log("User is signed in:", user.uid);
+          currentUserId = user.uid;
+          
+          try {
+            // Fetch user data
+            await loadUserData(user);
+          } catch (error) {
+            console.error("Error loading user data:", error);
+            
+            // Show minimal UI with available data
+            document.getElementById("loadingMessage").style.display = "none";
+            document.getElementById("dataContainer").style.display = "block";
+            document.getElementById("userEmail").textContent = user.email || "Not available";
+            document.getElementById("userName").textContent = user.displayName || "User";
+            
+            showError("Failed to load complete profile data.");
+          }
+        } else {
+          // User is signed out
+          console.log("No user signed in, redirecting to login");
+          window.location.href = "login.html";
+        }
+      });
+    }
+
+    // Load user data from either backend or Firebase
+    async function loadUserData(user) {
+      console.log("Loading user data for:", user.uid);
+      
+      document.getElementById("loadingMessage").style.display = "block";
+      document.getElementById("dataContainer").style.display = "none";
+      
+      try {
+        // Get ID token for API authentication
+        try {
+          console.log("Getting fresh ID token...");
+          currentIdToken = await user.getIdToken(true);
+        } catch (tokenError) {
+          console.error("Error refreshing token, trying without force refresh:", tokenError);
+          currentIdToken = await user.getIdToken(false);
+        }
+
+        // Try backend first, then fall back to Firebase
+        let userData = null;
+        let backendFailed = false;
+        
+        try {
+          // First attempt to get data from Spring Boot backend
+          console.log("Attempting to fetch from backend API...");
+          userData = await getUserDataFromBackend(user.uid, currentIdToken);
+          console.log("Successfully fetched data from backend");
+        } catch (backendError) {
+          console.log("Backend fetch failed, trying Firebase:", backendError);
+          backendFailed = true;
+          
+          // Backend failed, try Firebase as fallback
+          userData = await getUserDataFromFirebase(user);
+          console.log("Successfully fetched data from Firebase");
+        }
+
+        // Clear the loading timeout since we have data
+        clearTimeout(loadingTimeout);
+        
+        if (userData) {
+          // Show data container once we have data
+          document.getElementById("loadingMessage").style.display = "none";
+          document.getElementById("dataContainer").style.display = "block";
+          
+          if (backendFailed) {
+            showError("Backend connection failed. Showing cached data.");
+          }
+          
+          return userData;
+        } else {
+          throw new Error("No user data available from any source");
+        }
+      } catch (error) {
+        console.error("All data fetching methods failed:", error);
+        clearTimeout(loadingTimeout); // Clear timeout to prevent double error
+        
+        // If both requests fail, at least show email
+        document.getElementById("loadingMessage").style.display = "none";
+        document.getElementById("dataContainer").style.display = "block";
+        document.getElementById("userEmail").textContent = user.email || "Not available";
+        document.getElementById("userName").textContent = user.displayName || "User";
+        
+        showError("Failed to load your data. Please try refreshing.");
+        throw error; // Re-throw for caller handling
+      }
+    }
+
+    // Get user data from Spring Boot backend
+    async function getUserDataFromBackend(uid, idToken) {
+      console.log("Fetching user data from backend for UID:", uid);
+      
+      try {
+        const timestamp = new Date().getTime(); // Add cache-busting timestamp
+        const response = await fetch(`/api/users/get/${uid}?_=${timestamp}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + idToken,
+            "Cache-Control": "no-cache, no-store"
+          },
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          console.error("Backend API error status:", response.status);
+          const errorText = await response.text();
+          console.error("Backend error details:", errorText);
+          throw new Error(`Backend API error: ${response.status}`);
+        }
+
+        const userData = await response.json();
+        console.log("User data received from backend");
+
+        // Update UI with backend data
+        updateUIWithUserData(userData);
+        
+        // Also save to Firebase for redundancy
+        try {
+          await updateUserInFirebase(userData);
+          console.log("Saved backend data to Firebase as backup");
+        } catch (firebaseError) {
+          console.error("Failed to save backup to Firebase:", firebaseError);
+        }
+        
+        return userData;
+      } catch (error) {
+        console.error("Error fetching from backend API:", error);
+        throw error; // Re-throw to allow fallback
+      }
+    }
+
+    // Get user data from Firebase
+    async function getUserDataFromFirebase(user) {
+      console.log("Fetching user data from Firebase for UID:", user.uid);
+      
+      try {
+        const userRef = ref(database, 'users/' + user.uid);
+        const snapshot = await get(userRef);
+
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          console.log("User data retrieved from Firebase");
+
+          // Update UI with Firebase data
+          updateUIWithUserData(userData);
+          return userData;
+        } else {
+          console.log("No user data found in Firebase");
+          
+          // At least show the email
+          const minimalUserData = { 
+            email: user.email,
+            displayName: user.displayName || "User"
+          };
+          updateUIWithUserData(minimalUserData);
+          return minimalUserData;
+        }
+      } catch (error) {
+        console.error("Error fetching from Firebase:", error);
+        throw error;
+      }
+    }
+
+    // Function to refresh user data
+    async function refreshUserData() {
+      console.log("Manual refresh requested");
+      
+      if (!auth.currentUser) {
+        showError("No user logged in. Please log in again.");
+        return;
+      }
+      
+      document.getElementById("loadingMessage").style.display = "block";
+      document.getElementById("dataContainer").style.display = "none";
+      
+      try {
+        await loadUserData(auth.currentUser);
+        console.log("Data refreshed successfully");
+      } catch (error) {
+        console.error("Data refresh failed:", error);
+        showError("Could not refresh data: " + error.message);
+      } finally {
+        // Ensure loading is hidden regardless of outcome
+        document.getElementById("loadingMessage").style.display = "none";
+        document.getElementById("dataContainer").style.display = "block";
+      }
+    }
+
+    // Update UI with user data
+    function updateUIWithUserData(userData) {
+      if (!userData) {
+        console.warn("No user data to update UI with");
+        return;
+      }
+      
+      console.log("Updating UI with user data");
+      
+      // Store the current user data
+      currentUserData = userData;
+
+      // Update the UI with the user data
+      document.getElementById("userName").textContent = 
+        userData.firstName && userData.lastName 
+          ? `${userData.firstName} ${userData.lastName}` 
+          : (userData.displayName || "User");
+
+      document.getElementById("userEmail").textContent = userData.email || "";
+      document.getElementById("firstName").textContent = userData.firstName || "";
+      document.getElementById("lastName").textContent = userData.lastName || "";
+      document.getElementById("gender").textContent = userData.gender || "";
+      document.getElementById("age").textContent = userData.age || "";
+      document.getElementById("phoneNumber").textContent = userData.phoneNumber || "";
+      document.getElementById("address").textContent = userData.address || "";
+    }
+
+    // Function to enter edit mode for all fields
+    function enterEditMode() {
+      if (isEditing) return;
+      
+      isEditing = true;
+      
+      // Hide the edit profile button
+      document.getElementById('editProfileBtn').style.display = 'none';
+      
+      // Show all input fields and hide display fields
+      editableFields.forEach(field => {
+        const displayField = document.getElementById(field);
+        const inputField = document.getElementById(field + 'Input');
+        
+        // Set input value to current value
+        inputField.value = displayField.textContent || '';
+        
+        // Toggle visibility
+        displayField.style.display = 'none';
+        inputField.style.display = 'inline-block';
+      });
+      
+      // Show save/cancel controls
+      document.getElementById('editControls').style.display = 'block';
+    }
+
+    // Function to save changes to backend and Firebase
+    async function saveChanges() {
+      if (!isEditing) return;
+      
+      if (!currentUserId || !auth.currentUser) {
+        showError("User session expired. Please log in again.");
+        return;
+      }
+      
+      try {
+        // Create updated user data object
+        const updatedUserData = {...currentUserData};
+        
+        // Update all editable fields
+        editableFields.forEach(field => {
+          const inputField = document.getElementById(field + 'Input');
+          updatedUserData[field] = inputField.value;
+        });
+        
+        // Update in backend
+        let backendSuccess = false;
+        try {
+          // Refresh token first to ensure it's valid
+          currentIdToken = await auth.currentUser.getIdToken(true);
+          
+          await updateUserInBackend(updatedUserData);
+          backendSuccess = true;
+          console.log("Backend update successful");
+        } catch (backendError) {
+          console.error("Backend update failed:", backendError);
+          showError("Backend update failed. Data saved locally only.");
+          // Continue with Firebase update even if backend fails
+        }
+        
+        // Update in Firebase as backup
+        await updateUserInFirebase(updatedUserData);
+        console.log("Firebase update successful");
+        
+        // Update UI and current data
+        currentUserData = updatedUserData;
+        updateUIWithUserData(updatedUserData);
+        
+        // Exit edit mode
+        exitEditMode();
+        
+        // Show success message
+        if (backendSuccess) {
+          alert("Your profile has been updated successfully.");
+        } else {
+          alert("Your profile has been updated locally but not on the server.");
+        }
+      } catch (error) {
+        console.error("Error saving changes:", error);
+        alert("There was an error saving your changes: " + error.message);
+      }
+    }
+
+    // Function to update user data in backend
+    async function updateUserInBackend(userData) {
+      console.log("Updating user data in backend");
+      
+      const response = await fetch(`/api/users/update/${currentUserId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + currentIdToken,
+          "Cache-Control": "no-cache"
+        },
+        body: JSON.stringify(userData)
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to update in backend (${response.status}): ${errorText}`);
+      }
+      
+      // Check if the response is JSON
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        return await response.json();
+      } else {
+        // If not JSON, just return the updated data
+        const responseText = await response.text();
+        console.log("Backend returned non-JSON response:", responseText);
+        return userData;
+      }
+    }
+
+    // Function to update user data in Firebase
+    async function updateUserInFirebase(userData) {
+      console.log("Updating user data in Firebase");
+      
+      const userRef = ref(database, 'users/' + currentUserId);
+      await set(userRef, userData);
+      return userData;
+    }
+
+    // Function to cancel edit and revert to original values
+    function cancelEdit() {
+      exitEditMode();
+    }
+
+    // Function to exit edit mode
+    function exitEditMode() {
+      if (!isEditing) return;
+      
+      // Show all display fields and hide input fields
+      editableFields.forEach(field => {
+        const displayField = document.getElementById(field);
+        const inputField = document.getElementById(field + 'Input');
+        
+        displayField.style.display = 'inline';
+        inputField.style.display = 'none';
+      });
+      
+      // Hide controls
+      document.getElementById('editControls').style.display = 'none';
+      
+      // Show the edit profile button
+      document.getElementById('editProfileBtn').style.display = 'block';
+      
+      // Reset editing state
+      isEditing = false;
+    }
+
+    // Set up event listeners once DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log("DOM fully loaded, setting up event listeners");
+      
+      // Initialize Firebase after DOM is loaded
+      initializeFirebase();
+      
+      // Add logout functionality
+      document.getElementById("logoutBtn").addEventListener("click", async () => {
+        try {
+          await signOut(auth);
+          // Redirect will happen automatically due to onAuthStateChanged
+          console.log("User signed out successfully");
+        } catch (error) {
+          console.error("Error signing out:", error);
+          alert("Error signing out: " + error.message);
+        }
+      });
+
+      // Add announcement page redirection
+      document.getElementById("announcementBtn").addEventListener("click", () => {
+        window.location.href = "announcement.html";
+      });
+      
+      // Set up the edit profile button
+      document.getElementById('editProfileBtn').addEventListener('click', enterEditMode);
+      
+      // Set up save button
+      document.getElementById('saveChangesBtn').addEventListener('click', saveChanges);
+      
+      // Set up cancel button
+      document.getElementById('cancelEditBtn').addEventListener('click', cancelEdit);
+      
+      // Set up refresh button
+      document.getElementById('refreshDataBtn').addEventListener('click', refreshUserData);
+
+      // Add announcement page redirection
+document.getElementById("announcementBtn").addEventListener("click", () => {
+  window.location.href = "announcement.html";
+});
+
+// Add project transparency page redirection
+document.getElementById("projectsBtn").addEventListener("click", () => {
+  window.location.href = "pt.html";
+});
+
+// Set up the edit profile button
+document.getElementById('editProfileBtn').addEventListener('click', enterEditMode);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1144 @@
+-transparency.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Transparency | SKyber</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding-bottom: 50px;
+        }
+        .navbar {
+            background-color: #8e44ad;
+        }
+        .card-header {
+            background-color: #9b59b6;
+            color: white;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background-color: #9b59b6;
+            border-color: #8e44ad;
+        }
+        .btn-primary:hover {
+            background-color: #8e44ad;
+            border-color: #7d3c98;
+        }
+        .btn-danger {
+            background-color: #e74c3c;
+            border-color: #c0392b;
+        }
+        .btn-danger:hover {
+            background-color: #c0392b;
+            border-color: #a93226;
+        }
+        .status-badge-ongoing {
+            background-color: #3498db;
+            color: white;
+        }
+        .status-badge-completed {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .status-badge-planning {
+            background-color: #f39c12;
+            color: white;
+        }
+        .status-badge-delayed {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .project-card {
+            transition: transform 0.3s;
+        }
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .project-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px 5px 0 0;
+        }
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #9b59b6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="welcome.html">SKyber</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="welcome.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="announcement.html">Announcements</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="project-transparency.html">Project Transparency</a>
+                    </li>
+                </ul>
+                <button id="logoutBtn" class="btn btn-outline-light">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Alert Container -->
+        <div class="alert-container"></div>
+        
+        <!-- Main Content -->
+        <div class="row">
+            <!-- Form Column -->
+            <div class="col-lg-4">
+                <div class="card mb-4 shadow">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 id="formTitle" class="mb-0">Create New Project</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="projectForm">
+                            <!-- Hidden input for ID when editing -->
+                            <input type="hidden" id="projectId">
+                            
+                            <div class="mb-3">
+                                <label for="projectName" class="form-label">Project Name*</label>
+                                <input type="text" class="form-control" id="projectName" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description*</label>
+                                <textarea class="form-control" id="description" rows="3" required></textarea>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label for="startDate" class="form-label">Start Date*</label>
+                                    <input type="date" class="form-control" id="startDate" required>
+                                </div>
+                                <div class="col">
+                                    <label for="endDate" class="form-label">End Date*</label>
+                                    <input type="date" class="form-control" id="endDate" required>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label for="budget" class="form-label">Budget (₱)*</label>
+                                    <input type="number" class="form-control" id="budget" step="0.01" min="0" required>
+                                </div>
+                                <div class="col">
+                                    <label for="status" class="form-label">Status*</label>
+                                    <select class="form-select" id="status" required>
+                                        <option value="">Select status</option>
+                                        <option value="Planning">Planning</option>
+                                        <option value="Ongoing">Ongoing</option>
+                                        <option value="Completed">Completed</option>
+                                        <option value="Delayed">Delayed</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="projectManager" class="form-label">Project Manager*</label>
+                                <input type="text" class="form-control" id="projectManager" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="teamMembers" class="form-label">Team Members</label>
+                                <textarea class="form-control" id="teamMembers" rows="2"></textarea>
+                                <small class="text-muted">Separate names with commas</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="stakeholders" class="form-label">Stakeholders</label>
+                                <input type="text" class="form-control" id="stakeholders">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="sustainabilityGoals" class="form-label">Sustainability Goals</label>
+                                <textarea class="form-control" id="sustainabilityGoals" rows="2"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="projectImage" class="form-label">Project Image</label>
+                                <input type="file" class="form-control" id="projectImage" accept="image/*">
+                            </div>
+
+                            <!-- Image Preview -->
+                            <div id="imagePreviewContainer" class="mb-3 d-none">
+                                <label class="form-label">Image Preview</label>
+                                <div class="text-center">
+                                    <img id="imagePreview" class="img-fluid rounded" style="max-height: 200px" alt="Image preview">
+                                </div>
+                            </div>
+
+                            <!-- Hidden fields for image data when editing -->
+                            <input type="hidden" id="existingImageData">
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <button type="button" id="resetBtn" class="btn btn-secondary">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Projects Column -->
+            <div class="col-lg-8">
+                <div class="card shadow mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Projects</h5>
+                        <div>
+                            <button id="refreshBtn" class="btn btn-sm btn-outline-light">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="loadingMessage" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3">Loading projects...</p>
+                        </div>
+                        
+                        <div id="errorMessage" class="alert alert-danger d-none"></div>
+                        
+                        <div id="noProjectsMessage" class="text-center py-5 d-none">
+                            <div class="text-muted">
+                                <i class="fas fa-folder-open fa-3x mb-3"></i>
+                                <p>No projects found. Create your first project to get started!</p>
+                            </div>
+                        </div>
+                        
+                        <div id="projectsContainer" class="row g-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+        // Import the necessary Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+        import { getDatabase, ref, onValue, set, push, remove, update, get } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAuF4fCivSrXo8wHnmzXzYbaxGdZBdlDAo",
+            authDomain: "skyber-57fa5.firebaseapp.com",
+            projectId: "skyber-57fa5",
+            storageBucket: "skyber-57fa5.appspot.com",
+            messagingSenderId: "627178043013",
+            appId: "1:627178043013:android:eb879a84075c6dbccf9bec",
+            databaseURL: "https://skyber-57fa5-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+        const storage = getStorage(app);
+
+        // API base URL
+        const API_BASE_URL = "/api/projects";
+
+        // DOM elements
+        const projectForm = document.getElementById('projectForm');
+        const projectId = document.getElementById('projectId');
+        const projectNameInput = document.getElementById('projectName');
+        const descriptionInput = document.getElementById('description');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const budgetInput = document.getElementById('budget');
+        const statusInput = document.getElementById('status');
+        const projectManagerInput = document.getElementById('projectManager');
+        const teamMembersInput = document.getElementById('teamMembers');
+        const stakeholdersInput = document.getElementById('stakeholders');
+        const sustainabilityGoalsInput = document.getElementById('sustainabilityGoals');
+        const projectImageInput = document.getElementById('projectImage');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const existingImageData = document.getElementById('existingImageData');
+        const formTitle = document.getElementById('formTitle');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const noProjectsMessage = document.getElementById('noProjectsMessage');
+        const projectsContainer = document.getElementById('projectsContainer');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Check authentication
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "login.html";
+            }
+        });
+
+        // Initialize function
+        function initialize() {
+            // Set up event listeners
+            projectForm.addEventListener('submit', submitForm);
+            resetBtn.addEventListener('click', resetForm);
+            refreshBtn.addEventListener('click', loadProjects);
+            logoutBtn.addEventListener('click', handleLogout);
+            projectImageInput.addEventListener('change', handleImagePreview);
+            
+            // Load projects on page load
+            loadProjects();
+        }
+
+        // Add this helper function
+
+        // Convert Firebase string key to numeric ID
+        function keyToId(key) {
+            return key.hashCode(); // You'll need to implement a hashCode function
+        }
+
+        // Implementation of a simple hashCode function for strings
+        String.prototype.hashCode = function() {
+            let hash = 0;
+            for (let i = 0; i < this.length; i++) {
+                const char = this.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32bit integer
+            }
+            return hash;
+        };
+
+        // Convert numeric ID back to Firebase key (this is approximate)
+        // Use this when you need to get a project by ID
+        function findKeyForId(id) {
+            // This is a simplified approach - in a real app you would 
+            // probably store and retrieve the mapping
+            return id.toString();
+        }
+
+        // Load all projects
+        async function loadProjects() {
+            // Show loading message, hide error and projects
+            loadingMessage.style.display = 'block';
+            errorMessage.classList.add('d-none');
+            projectsContainer.innerHTML = '';
+            noProjectsMessage.classList.add('d-none');
+            
+            try {
+                // Try to fetch from backend API
+                console.log("Fetching projects from API...");
+                const response = await fetch(`${API_BASE_URL}/all`);
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const projects = await response.json();
+                displayProjects(projects);
+                
+            } catch (error) {
+                console.error("API fetch failed, trying Firebase", error);
+                
+                // If API fails, try Firebase as fallback
+                try {
+                    const projects = await getProjectsFromFirebase();
+                    displayProjects(projects);
+                    showAlert("Showing projects from local cache. Some information might not be up to date.", "warning");
+                } catch (fbError) {
+                    console.error("Firebase fetch also failed", fbError);
+                    errorMessage.textContent = "Failed to load projects. Please try again later.";
+                    errorMessage.classList.remove('d-none');
+                }
+            } finally {
+                loadingMessage.style.display = 'none';
+            }
+        }
+        
+        // Get projects from Firebase - update table name
+        function getProjectsFromFirebase() {
+            return new Promise((resolve, reject) => {
+                const projectsRef = ref(database, 'ProjectTransparency');
+                
+                onValue(projectsRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        const projects = [];
+                        snapshot.forEach((childSnapshot) => {
+                            const key = childSnapshot.key;
+                            const data = childSnapshot.val();
+                            
+                            // Create project object
+                            const project = {
+                                id: key,
+                                projectName: data.projectName || '',
+                                description: data.description || '',
+                                budget: data.budget || 0,
+                                startDate: data.startDate || '',
+                                endDate: data.endDate || '',
+                                status: data.status || '',
+                                projectManager: data.projectManager || '',
+                                teamMembers: data.teamMembers || '',
+                                stakeholders: data.stakeholders || '',
+                                sustainabilityGoals: data.sustainabilityGoals || '',
+                                projectImage: data.projectImage || ''
+                            };
+                            
+                            projects.push(project);
+                        });
+                        
+                        resolve(projects);
+                    } else {
+                        resolve([]);
+                    }
+                }, (error) => {
+                    reject(error);
+                });
+            });
+        }
+        
+        // Display projects
+        function displayProjects(projects) {
+            projectsContainer.innerHTML = '';
+            
+            if (!projects || projects.length === 0) {
+                noProjectsMessage.classList.remove('d-none');
+                return;
+            }
+            
+            projects.forEach(project => {
+                // Format budget as PHP currency
+                const formattedBudget = new Intl.NumberFormat('en-PH', {
+                    style: 'currency',
+                    currency: 'PHP'
+                }).format(project.budget || 0);
+                
+                // Determine status badge class
+                let statusBadgeClass = 'bg-secondary';
+                if (project.status) {
+                    const status = project.status.toLowerCase();
+                    if (status === 'ongoing') statusBadgeClass = 'status-badge-ongoing';
+                    else if (status === 'completed') statusBadgeClass = 'status-badge-completed';
+                    else if (status === 'planning') statusBadgeClass = 'status-badge-planning';
+                    else if (status === 'delayed') statusBadgeClass = 'status-badge-delayed';
+                }
+                
+                // Create project card
+                const projectCard = document.createElement('div');
+                projectCard.className = 'col-md-6 mb-4';
+                projectCard.innerHTML = `
+                    <div class="card project-card h-100 shadow">
+                        ${project.projectImage ? 
+                            `<img src="data:image/jpeg;base64,${project.projectImage}" class="project-image" alt="${project.projectName}">` : 
+                            `<div class="bg-light text-center py-5"><i class="fas fa-image fa-3x text-muted"></i></div>`
+                        }
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title">${project.projectName}</h5>
+                                <span class="badge ${statusBadgeClass}">${project.status || 'Unknown'}</span>
+                            </div>
+                            <p class="card-text text-truncate">${project.description || 'No description'}</p>
+                            
+                            <div class="mb-2">
+                                <strong>Budget:</strong> ${formattedBudget}
+                            </div>
+                            <div class="mb-2">
+                                <strong>Timeline:</strong> ${formatDate(project.startDate)} - ${formatDate(project.endDate)}
+                            </div>
+                            <div class="mb-2">
+                                <strong>Manager:</strong> ${project.projectManager || 'Not assigned'}
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-sm btn-outline-primary view-btn" data-id="${project.id}">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-secondary edit-btn" data-id="${project.id}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${project.id}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Attach event listeners
+                const viewBtn = projectCard.querySelector('.view-btn');
+                const editBtn = projectCard.querySelector('.edit-btn');
+                const deleteBtn = projectCard.querySelector('.delete-btn');
+                
+                viewBtn.addEventListener('click', () => viewProject(project));
+                editBtn.addEventListener('click', () => editProject(project.id));
+                deleteBtn.addEventListener('click', () => confirmDeleteProject(project.id, project.projectName));
+                
+                projectsContainer.appendChild(projectCard);
+            });
+        }
+        
+        // Format date for display
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) {
+                    return dateString; // Return as is if not a valid date
+                }
+                return date.toLocaleDateString();
+            } catch (e) {
+                return dateString;
+            }
+        }
+        
+        // View project details (modal)
+        function viewProject(project) {
+            // Format budget as PHP currency
+            const formattedBudget = new Intl.NumberFormat('en-PH', {
+                style: 'currency',
+                currency: 'PHP'
+            }).format(project.budget || 0);
+            
+            // Create modal element
+            const modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.id = 'projectModal';
+            modal.setAttribute('tabindex', '-1');
+            modal.innerHTML = `
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">${project.projectName}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    ${project.projectImage ? 
+                                        `<img src="data:image/jpeg;base64,${project.projectImage}" class="img-fluid rounded mb-3" alt="${project.projectName}">` : 
+                                        `<div class="bg-light text-center py-5 mb-3 rounded"><i class="fas fa-image fa-3x text-muted"></i><p class="mt-2">No image available</p></div>`
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <span class="badge ${getStatusBadgeClass(project.status)}">${project.status || 'Unknown'}</span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <strong>Budget:</strong> ${formattedBudget}
+                                    </div>
+                                    <div class="mb-3">
+                                        <strong>Timeline:</strong><br>
+                                        <i class="fas fa-calendar-alt me-1"></i> Start: ${formatDate(project.startDate)}<br>
+                                        <i class="fas fa-calendar-check me-1"></i> End: ${formatDate(project.endDate)}
+                                    </div>
+                                    <div class="mb-3">
+                                        <strong>Project Manager:</strong><br>
+                                        ${project.projectManager || 'Not assigned'}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <h6>Description</h6>
+                                        <p>${project.description || 'No description provided'}</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6>Team Members</h6>
+                                        <p>${formatList(project.teamMembers) || 'No team members specified'}</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6>Stakeholders</h6>
+                                        <p>${project.stakeholders || 'No stakeholders specified'}</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6>Sustainability Goals</h6>
+                                        <p>${project.sustainabilityGoals || 'No sustainability goals specified'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary edit-btn" data-id="${project.id}">Edit Project</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add to body and show
+            document.body.appendChild(modal);
+            const modalInstance = new bootstrap.Modal(modal);
+            modalInstance.show();
+            
+            // Handle edit button in modal
+            const modalEditBtn = modal.querySelector('.edit-btn');
+            modalEditBtn.addEventListener('click', () => {
+                modalInstance.hide();
+                editProject(project.id);
+                // Remove modal after hiding
+                modal.addEventListener('hidden.bs.modal', () => {
+                    modal.remove();
+                });
+            });
+            
+            // Remove modal from DOM after it's hidden
+            modal.addEventListener('hidden.bs.modal', () => {
+                modal.remove();
+            });
+        }
+        
+        // Helper to format list items from comma-separated string
+        function formatList(listString) {
+            if (!listString) return '';
+            
+            const items = listString.split(',').map(item => item.trim()).filter(item => item);
+            if (items.length === 0) return '';
+            
+            return items.map(item => `<span class="badge bg-light text-dark me-1 mb-1">${item}</span>`).join('');
+        }
+        
+        // Get status badge class based on status
+        function getStatusBadgeClass(status) {
+            if (!status) return 'bg-secondary';
+            
+            const statusLower = status.toLowerCase();
+            if (statusLower === 'ongoing') return 'status-badge-ongoing';
+            if (statusLower === 'completed') return 'status-badge-completed';
+            if (statusLower === 'planning') return 'status-badge-planning';
+            if (statusLower === 'delayed') return 'status-badge-delayed';
+            
+            return 'bg-secondary';
+        }
+        
+        // Edit project
+        async function editProject(id) {
+            showLoading();
+            console.log("Edit request for project ID:", id);
+            
+            try {
+                // First, get the project details
+                const project = await getProjectById(id);
+                
+                if (!project) {
+                    throw new Error('Project not found');
+                }
+                
+                console.log("Loaded project for editing:", project);
+                
+                // Populate form with project data (ensure ID is set correctly)
+                projectId.value = project.id; // This should be the string ID
+                projectNameInput.value = project.projectName || '';
+                descriptionInput.value = project.description || '';
+                
+                // Format dates for input
+                if (project.startDate) {
+                    try {
+                        // Handle both Date object and string formats
+                        const startDate = typeof project.startDate === 'string' ? 
+                            new Date(project.startDate) : project.startDate;
+                        startDateInput.value = startDate.toISOString().split('T')[0];
+                    } catch (e) {
+                        console.warn("Error formatting start date:", e);
+                        startDateInput.value = '';
+                    }
+                }
+                
+                if (project.endDate) {
+                    try {
+                        // Handle both Date object and string formats
+                        const endDate = typeof project.endDate === 'string' ? 
+                            new Date(project.endDate) : project.endDate;
+                        endDateInput.value = endDate.toISOString().split('T')[0];
+                    } catch (e) {
+                        console.warn("Error formatting end date:", e);
+                        endDateInput.value = '';
+                    }
+                }
+                
+                // Update remaining form fields
+                budgetInput.value = project.budget || '';
+                statusInput.value = project.status || '';
+                projectManagerInput.value = project.projectManager || '';
+                teamMembersInput.value = project.teamMembers || '';
+                stakeholdersInput.value = project.stakeholders || '';
+                sustainabilityGoalsInput.value = project.sustainabilityGoals || '';
+                
+                // Store image data in hidden field
+                existingImageData.value = project.projectImage || '';
+                
+                // Show image preview if exists
+                if (project.projectImage) {
+                    imagePreview.src = `data:image/jpeg;base64,${project.projectImage}`;
+                    imagePreviewContainer.classList.remove('d-none');
+                } else {
+                    imagePreviewContainer.classList.add('d-none');
+                }
+                
+                // Update form title
+                formTitle.textContent = 'Edit Project';
+                
+                // Scroll to form
+                projectForm.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error editing project:', error);
+                showAlert('Failed to load project for editing: ' + error.message, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Get project by ID - update table name
+        async function getProjectById(id) {
+            try {
+                console.log("Fetching project with ID:", id);
+                
+                // Try from API first
+                const response = await fetch(`${API_BASE_URL}/${id}`);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.warn(`API error (${response.status}): ${errorText}`);
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (apiError) {
+                console.log('API fetch failed, trying Firebase for ID:', id);
+                
+                // Try from Firebase as fallback with updated table name
+                return new Promise((resolve, reject) => {
+                    const projectRef = ref(database, `ProjectTransparency/${id}`);
+                    
+                    get(projectRef).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const data = snapshot.val();
+                            data.id = snapshot.key; // Use key directly as ID
+                            console.log("Found project in Firebase:", data);
+                            resolve(data);
+                        } else {
+                            console.error("Project not found in Firebase either");
+                            reject(new Error('Project not found'));
+                        }
+                    }).catch((error) => {
+                        console.error("Firebase fetch error:", error);
+                        reject(error);
+                    });
+                });
+            }
+        }
+        
+        // Handle form submission - fix the missing create project branch
+        async function submitForm(e) {
+            e.preventDefault();
+            showLoading();
+            
+            try {
+                const id = projectId.value;
+                const isEditing = !!id;
+                
+                // Debug info
+                console.log("Form submission - isEditing:", isEditing, "ID:", id);
+                
+                // Get form values
+                const projectData = {
+                    projectName: projectNameInput.value,
+                    description: descriptionInput.value,
+                    startDate: startDateInput.value,
+                    endDate: endDateInput.value,
+                    budget: parseFloat(budgetInput.value),
+                    status: statusInput.value,
+                    projectManager: projectManagerInput.value,
+                    teamMembers: teamMembersInput.value,
+                    stakeholders: stakeholdersInput.value,
+                    sustainabilityGoals: sustainabilityGoalsInput.value
+                };
+                
+                // Handle different submission paths (create/update, with/without image)
+                if (isEditing) {
+                    // Existing edit logic
+                    console.log("Updating existing project with ID:", id);
+                    
+                    let updatedImageData = null;
+                    
+                    // Check if we have a new image to upload
+                    if (projectImageInput.files[0]) {
+                        console.log("New image selected, updating image first");
+                        
+                        try {
+                            // First update the image
+                            const formData = new FormData();
+                            formData.append('image', projectImageInput.files[0]);
+                            
+                            // Log image details to help debug
+                            console.log("Image details:", {
+                                name: projectImageInput.files[0].name,
+                                size: projectImageInput.files[0].size,
+                                type: projectImageInput.files[0].type
+                            });
+                            
+                            // Try image upload
+                            const imageResponse = await fetch(`${API_BASE_URL}/${id}/updateImage`, {
+                                method: 'POST',
+                                body: formData
+                            });
+                            
+                            if (!imageResponse.ok) {
+                                const errorText = await imageResponse.text();
+                                console.error("Failed to update image:", errorText);
+                                throw new Error(`Failed to update image: ${imageResponse.status} - ${errorText}`);
+                            }
+                            
+                            const updatedProject = await imageResponse.json();
+                            console.log("Image updated successfully");
+                            
+                            // Store the updated image for Firebase
+                            if (updatedProject && updatedProject.projectImage) {
+                                updatedImageData = updatedProject.projectImage;
+                                projectData.projectImage = updatedProject.projectImage;
+                            }
+                        } catch (imageError) {
+                            console.error("Error updating image:", imageError);
+                            
+                            // Still proceed with updating other fields
+                            showAlert(`Image update failed: ${imageError.message}. Other fields will still be updated.`, 'warning');
+                        }
+                    } else if (existingImageData.value) {
+                        // Keep existing image if no new one is provided
+                        projectData.projectImage = existingImageData.value;
+                    }
+                    
+                    // Then update the rest of the project data
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/${id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(projectData)
+                        });
+                        
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            throw new Error(`API error (${response.status}): ${errorText}`);
+                        }
+                        
+                        const updatedProject = await response.json();
+                        console.log("Project data updated successfully");
+                        
+                        // Update Firebase
+                        try {
+                            // Make sure to use the image we got earlier if available
+                            saveToFirebase(id, {
+                                ...projectData,
+                                id: id,
+                                projectImage: updatedImageData || projectData.projectImage
+                            });
+                        } catch (firebaseError) {
+                            console.error("Firebase update error:", firebaseError);
+                        }
+                        
+                        showAlert('Project updated successfully', 'success');
+                        resetForm();
+                        loadProjects();
+                    } catch (updateError) {
+                        console.error("Error updating project data:", updateError);
+                        showAlert(`Error updating project: ${updateError.message}`, 'danger');
+                    }
+                } else {
+                    // CREATE NEW PROJECT - THIS WAS MISSING
+                    console.log("Creating new project");
+                    let response;
+                    
+                    if (projectImageInput.files[0]) {
+                        // Create with image
+                        const formData = new FormData();
+                        formData.append('projectName', projectData.projectName);
+                        formData.append('description', projectData.description);
+                        formData.append('startDate', projectData.startDate);
+                        formData.append('endDate', projectData.endDate);
+                        formData.append('budget', projectData.budget);
+                        formData.append('status', projectData.status);
+                        formData.append('projectManager', projectData.projectManager);
+                        formData.append('teamMembers', projectData.teamMembers);
+                        formData.append('stakeholders', projectData.stakeholders);
+                        formData.append('sustainabilityGoals', projectData.sustainabilityGoals);
+                        formData.append('image', projectImageInput.files[0]);
+                        
+                        console.log("Submitting with image, form data contains:", 
+                            [...formData.entries()].map(e => `${e[0]}: ${e[1]}`));
+                        
+                        response = await fetch(`${API_BASE_URL}/createWithImage`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                    } else {
+                        // Create without image
+                        console.log("Submitting without image, JSON data:", projectData);
+                        response = await fetch(`${API_BASE_URL}/create`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(projectData)
+                        });
+                    }
+                    
+                    // Handle API response for create
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error(`API error (${response.status}): ${errorText}`);
+                        throw new Error(`API error (${response.status}): ${errorText}`);
+                    }
+                    
+                    // Parse the response
+                    const createdProject = await response.json();
+                    console.log("Project created successfully:", createdProject);
+                    
+                    // Save to Firebase for redundancy
+                    try {
+                        // Extract ID for saving to Firebase
+                        const firebaseId = createdProject.id || `temp-${Date.now()}`;
+                        
+                        // If we have an image file, convert to base64 for Firebase
+                        if (projectImageInput.files[0]) {
+                            const reader = new FileReader();
+                            reader.readAsDataURL(projectImageInput.files[0]);
+                            reader.onload = () => {
+                                // Extract base64 data (remove data:image/xxx;base64, prefix)
+                                const base64String = reader.result.split(',')[1];
+                                projectData.projectImage = base64String;
+                                
+                                // Save to Firebase
+                                saveToFirebase(firebaseId, {
+                                    ...projectData,
+                                    id: firebaseId
+                                });
+                            };
+                        } else {
+                            // Save to Firebase without image
+                            saveToFirebase(firebaseId, {
+                                ...projectData,
+                                id: firebaseId
+                            });
+                        }
+                        
+                        showAlert('Project created successfully', 'success');
+                    } catch (fbError) {
+                        console.error('Error saving to Firebase:', fbError);
+                        // Still show success since the API call worked
+                        showAlert('Project created, but backup failed', 'warning');
+                    }
+                    
+                    resetForm();
+                    loadProjects();
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                showAlert(`Error: ${error.message}`, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Save project to Firebase - update table name
+        function saveToFirebase(id, projectData) {
+            const projectRef = ref(database, `ProjectTransparency/${id}`);
+            
+            // Add ID to project data
+            projectData.id = id;
+            
+            // Save to Firebase
+            set(projectRef, projectData)
+                .then(() => {
+                    console.log('Saved to Firebase successfully');
+                })
+                .catch((error) => {
+                    console.error('Error saving to Firebase:', error);
+                });
+        }
+        
+        // Confirm delete project
+        function confirmDeleteProject(id, name) {
+            if (confirm(`Are you sure you want to delete the project "${name}"?`)) {
+                deleteProject(id);
+            }
+        }
+        
+        // Delete project - update table name
+        async function deleteProject(id) {
+            showLoading();
+            
+            try {
+                console.log("Attempting to delete project with ID:", id);
+                
+                // Try API delete
+                const response = await fetch(`${API_BASE_URL}/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error(`API delete failed with status ${response.status}: ${errorText}`);
+                    
+                    // Even if API fails, try to delete from Firebase
+                    console.log("Attempting Firebase delete as fallback");
+                    const projectRef = ref(database, `ProjectTransparency/${id}`);
+                    await remove(projectRef);
+                    showAlert('Project deleted from local cache', 'warning');
+                    loadProjects();
+                    return;
+                }
+                
+                // Delete from Firebase as well
+                try {
+                    const projectRef = ref(database, `ProjectTransparency/${id}`);
+                    await remove(projectRef);
+                } catch (fbError) {
+                    console.error('Error deleting from Firebase:', fbError);
+                }
+                
+                showAlert('Project deleted successfully', 'success');
+                loadProjects();
+            } catch (error) {
+                console.error('Error deleting project:', error);
+                showAlert(`Error deleting project: ${error.message}. Try again later.`, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Reset form
+        function resetForm() {
+            projectForm.reset();
+            projectId.value = '';
+            formTitle.textContent = 'Create New Project';
+            imagePreviewContainer.classList.add('d-none');
+            existingImageData.value = '';
+        }
+        
+        // Handle image preview
+        function handleImagePreview(e) {
+            const file = e.target.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.classList.remove('d-none');
+                    
+                    // Clear any existing image data to ensure we use the new image
+                    existingImageData.value = '';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // If no file is selected, keep showing the existing image if available
+                if (!existingImageData.value) {
+                    imagePreviewContainer.classList.add('d-none');
+                }
+            }
+        }
+        
+        // Handle logout
+        async function handleLogout() {
+            try {
+                await signOut(auth);
+                window.location.href = "login.html";
+            } catch (error) {
+                console.error('Error logging out:', error);
+                showAlert('Error logging out', 'danger');
+            }
+        }
+        
+        // Show loading spinner
+        function showLoading() {
+            loadingSpinner.style.display = 'flex';
+        }
+        
+        // Hide loading spinner
+        function hideLoading() {
+            loadingSpinner.style.display = 'none';
+        }
+        
+        // Show alert message
+        function showAlert(message, type) {
+            const alertContainer = document.querySelector('.alert-container');
+            
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            alertContainer.appendChild(alert);
+            
+            // Auto dismiss after 5 seconds
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => {
+                    alert.remove();
+                }, 300);
+            }, 5000);
+        }
+        
+        // Initialize the page
+        initialize();
+    </script>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

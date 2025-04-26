@@ -1,4 +1,20 @@
 @import "tailwindcss";
+@import 'atropos/scss';
+
+/* Add these styles to your CSS file */
+.atropos-banner {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  aspect-ratio: 1/1;
+  position: relative;
+  border-radius: 10px;
+}
+
+.atropos-inner {
+  border-radius: 10px;
+  overflow: hidden;
+}
 /* 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
