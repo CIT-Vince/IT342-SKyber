@@ -152,10 +152,10 @@ fun EditProfile(navController: NavHostController, userProfile: MutableState<User
                                                 lastname = newLastname.ifEmpty { currentUser.lastname },
                                                 email = newEmail.ifEmpty { currentUser.email },
                                                 password = newPassword.ifEmpty { currentUser.password },
-                                                dob = currentUser.dob,
+                                                birthdate = currentUser.birthdate,
                                                 gender = currentUser.gender,
                                                 role = currentUser.role,
-                                                phonenumber = newPhonenumber.ifEmpty { currentUser.phonenumber },
+                                                phoneNumber = newPhonenumber.ifEmpty { currentUser.phoneNumber },
                                                 address = newAddress.ifEmpty { currentUser.address }
                                             )
                                             FirebaseHelper.databaseReference.child("users")

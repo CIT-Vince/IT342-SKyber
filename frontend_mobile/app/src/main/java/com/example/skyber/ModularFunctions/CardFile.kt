@@ -1,7 +1,6 @@
 package com.example.skyber.ModularFunctions
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,8 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -32,15 +29,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
-import com.example.skyber.R
 import com.example.skyber.dataclass.*
 import com.example.skyber.ui.theme.*
 
@@ -60,132 +53,107 @@ fun AnnouncementCard(backgroundColor: Color = White,
             .fillMaxWidth()
             .padding(10.dp),
     ) {
-            Column(
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxSize()
+            //verticalArrangement = Arrangement.SpaceBetween,
+        ){
+            Text(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxSize()
-                //verticalArrangement = Arrangement.SpaceBetween,
-            ){
+                    .fillMaxWidth(),
+                text = announcement.title,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = fontColor,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    text = announcement.title,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = fontColor,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = announcement.author,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 20.sp,
-                        color = fontColor,
-                        maxLines = 3,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = announcement.datePosted,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 20.sp,
-                        color = fontColor,
-                        maxLines = 3,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = announcement.category,
+                    text = announcement.barangay,
+                    fontWeight = FontWeight.SemiBold,
                     fontSize = 20.sp,
                     color = fontColor,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis
                 )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = announcement.postedAt,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 20.sp,
+                    color = fontColor,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = announcement.category,
+                fontSize = 20.sp,
+                color = fontColor,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
 
 @Composable
-fun CandidateCard(backgroundColor: Color = White,
-                  fontColor: Color = Black,
-                  candidateProfile: CandidateProfile,
-                  onClick: () -> Unit){
-
+fun CandidateCard(
+    backgroundColor: Color = White,
+    fontColor: Color = Black,
+    candidateProfile: CandidateProfile,
+    onClick: () -> Unit
+) {
     Card(
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(6.dp),
         border = BorderStroke(1.dp, SKyberDarkBlue),
-        shape = RoundedCornerShape(38.dp),
+        shape = RoundedCornerShape(24.dp), // Reduced corner radius for a modern look
         modifier = Modifier
             .clickable { onClick() }
-            .wrapContentHeight()
+            .padding(8.dp) // Adjusted padding for better alignment
             .fillMaxWidth()
-            .padding(10.dp),
+            .wrapContentHeight()
     ) {
         Column(
             modifier = Modifier
-                .padding(17.dp)
-                .wrapContentHeight()
+                .padding(16.dp)
                 .fillMaxWidth(),
-            //verticalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.spacedBy(8.dp) // Consistent spacing between elements
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                Text(
-                    text = "${candidateProfile.firstname} ${candidateProfile.lastname},",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = fontColor,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-
-                Spacer(modifier = Modifier.width(20.dp))
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(22.dp))
-                        .background(BoxOrange)
-                        .padding(horizontal = 8.dp)
-                        .wrapContentWidth()
-
-                ) {
-                    /*Text(
-                        text = "${candidateProfile.status}",
-                        fontSize = 22.sp,
-                        color = BoxTextOrange,
-                        fontWeight = FontWeight.SemiBold
-                    )*/
-                }
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "${candidateProfile.firstname} ${candidateProfile.lastname}",
+                fontSize = 24.sp, // Slightly smaller font for better balance
+                fontWeight = FontWeight.Bold,
+                color = fontColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
 
             Text(
                 text = "${candidateProfile.partylist}",
-                fontSize = 24.sp,
+                fontSize = 20.sp, // Consistent font size
                 color = SoftCardFontGreen,
-                fontWeight = FontWeight.SemiBold,
-                overflow = TextOverflow.Ellipsis,
+                fontWeight = FontWeight.Medium, // Adjusted weight for better readability
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
-            Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = "${candidateProfile.address}",
-                fontSize = 22.sp,
+                fontSize = 18.sp, // Slightly smaller font for better hierarchy
                 color = SoftCardFontGreen,
-                fontWeight = FontWeight.SemiBold,
-                overflow = TextOverflow.Ellipsis,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
@@ -446,193 +414,170 @@ fun VolunteerCard(backgroundColor: Color = White,
 
 
 @Composable
-fun JobListingCard(backgroundColor: Color = White,
-                            fontColor: Color = Black,
-                            joblisting: JobListing,
-                            onClick: () -> Unit){
+fun JobListingCard(
+    backgroundColor: Color = White,
+    fontColor: Color = Black,
+    joblisting: JobListing,
+    onClick: () -> Unit
+) {
     val jobCategory = joblisting.category.lowercase() == "full-time"
     val statusColor = if (jobCategory) BoxGreen else SoftCardContainerBlue
-    val textColor = if (jobCategory)  BoxTextGreen else SoftCardFontBlue
+    val textColor = if (jobCategory) BoxTextGreen else SoftCardFontBlue
 
     Card(
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(6.dp),
         border = BorderStroke(1.dp, SKyberDarkBlue),
-        shape = RoundedCornerShape(38.dp),
+        shape = RoundedCornerShape(24.dp), // Reduced corner radius for a modern look
         modifier = Modifier
             .clickable { onClick() }
-            .height(150.dp)
+            .padding(8.dp) // Adjusted padding for better alignment
             .fillMaxWidth()
-            .padding(10.dp),
+            .wrapContentHeight()
     ) {
         Column(
             modifier = Modifier
                 .padding(16.dp)
-                .height(220.dp)
                 .fillMaxWidth(),
-            //verticalArrangement = Arrangement.SpaceBetween,
-        ){
+            verticalArrangement = Arrangement.spacedBy(8.dp) // Consistent spacing between elements
+        ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween // Aligns elements evenly
             ) {
                 Text(
                     text = joblisting.companyname,
-                    fontSize = 28.sp,
+                    fontSize = 24.sp, // Slightly smaller font for better balance
                     fontWeight = FontWeight.Bold,
                     color = fontColor,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
-
-                Spacer(modifier = Modifier.width(26.dp))
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(22.dp))
+                        .clip(RoundedCornerShape(16.dp)) // Reduced corner radius for the status box
                         .background(statusColor)
-                        .padding(horizontal = 8.dp)
-                        .wrapContentWidth()
-
-                ){
+                        .padding(horizontal = 12.dp, vertical = 4.dp) // Adjusted padding for better proportions
+                ) {
                     Text(
                         text = joblisting.category,
-                        fontSize = 22.sp,
+                        fontSize = 16.sp, // Smaller font for better hierarchy
                         color = textColor,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.Medium
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-
             Text(
                 text = joblisting.jobtitle,
-                fontSize = 22.sp,
+                fontSize = 20.sp, // Consistent font size
                 color = fontColor,
-                maxLines = 3,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
-
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween // Aligns contact details evenly
             ) {
-
                 Text(
                     text = joblisting.contactperson,
                     fontSize = 18.sp,
                     color = fontColor,
-                    maxLines = 3,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.width(18.dp))
-
                 Text(
                     text = joblisting.contact,
                     fontSize = 18.sp,
                     color = fontColor,
-                    maxLines = 3,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
-
         }
     }
 }
 
 
 @Composable
-fun ScholarshipCard(backgroundColor: Color = White,
-                  fontColor: Color = Black,
-                  scholarship: Scholarship,
-                  onClick: () -> Unit){
-
+fun ScholarshipCard(
+    backgroundColor: Color = White,
+    fontColor: Color = Black,
+    scholarship: Scholarship,
+    onClick: () -> Unit
+) {
     val category = scholarship.category.lowercase()
-    val (statusColor,textColor) = when (category){
+    val (statusColor, textColor) = when (category) {
         "all" -> BoxGreen to BoxTextGreen
         "private" -> SoftCardContainerMaroon to SoftCardFontGold
-        "public" ->  SoftCardContainerBlue to SoftCardFontBlue
+        "public" -> SoftCardContainerBlue to SoftCardFontBlue
         else -> Color.LightGray to Color.DarkGray
     }
 
     Card(
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
-        shape = RoundedCornerShape(38.dp),
+        shape = RoundedCornerShape(24.dp), // Reduced corner radius for a modern look
         elevation = CardDefaults.cardElevation(6.dp),
         border = BorderStroke(1.dp, SKyberDarkBlue),
         modifier = Modifier
             .clickable { onClick() }
-            .wrapContentHeight()
+            .padding(8.dp) // Adjusted padding for better alignment
             .fillMaxWidth()
-            .padding(8.dp),
+            .wrapContentHeight()
     ) {
-
         Column(
             modifier = Modifier
                 .padding(16.dp)
-                .wrapContentHeight()
-                .fillMaxWidth()//width(210.dp),
-            //verticalArrangement = Arrangement.SpaceBetween,
-        ){
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp) // Consistent spacing between elements
+        ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ){
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween // Aligns elements evenly
+            ) {
                 Text(
-                    //modifier = Modifier.fillMaxWidth(),
                     text = scholarship.title,
-                    fontSize = 28.sp,
+                    fontSize = 24.sp, // Slightly smaller font for better balance
                     fontWeight = FontWeight.Bold,
                     color = fontColor,
-                    maxLines = 3,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.width(26.dp))
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(22.dp))
+                        .clip(RoundedCornerShape(16.dp)) // Reduced corner radius for the status box
                         .background(statusColor)
-                        .padding(horizontal = 8.dp)
-                        .wrapContentWidth()
+                        .padding(horizontal = 12.dp, vertical = 4.dp) // Adjusted padding for better proportions
                         .defaultMinSize(40.dp),
                     contentAlignment = Alignment.Center
-                ){
+                ) {
                     Text(
                         text = scholarship.category,
-                        fontSize = 22.sp,
+                        fontSize = 16.sp, // Smaller font for better hierarchy
                         color = textColor,
-                        fontWeight = FontWeight.SemiBold,
+                        fontWeight = FontWeight.Medium,
                         overflow = TextOverflow.Ellipsis
-
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
             Text(
-                //modifier = Modifier.fillMaxWidth(),
                 text = scholarship.institution,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp, // Consistent font size
+                fontWeight = FontWeight.Medium,
                 color = fontColor,
-                maxLines = 3,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
         }
-
     }
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun Preview() {
      ScholarshipCard(
@@ -646,7 +591,7 @@ fun Preview() {
         onClick = {} // Simple empty lambda for preview
     )
 }
-
+*/
 /*
 @Preview(showBackground = true)
 @Composable

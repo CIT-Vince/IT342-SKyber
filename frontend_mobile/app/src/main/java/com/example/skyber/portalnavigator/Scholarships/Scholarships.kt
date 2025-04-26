@@ -192,9 +192,8 @@ fun Scholarships(navController: NavHostController){
                                         fontColor = SoftCardFontPast,
                                         scholarship = scholarship,
                                         onClick = {
-                                            navController.currentBackStackEntry?.savedStateHandle?.set("scholarship",scholarship
-                                            )
-                                            navController.navigate(Screens.DetailsJob.screen)
+                                            navController.currentBackStackEntry?.savedStateHandle?.set("scholarship",scholarship)
+                                            navController.navigate(Screens.DetailsScholarship.screen)
                                         }
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))

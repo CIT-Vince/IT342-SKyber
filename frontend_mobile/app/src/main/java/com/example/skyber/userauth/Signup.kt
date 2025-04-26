@@ -63,7 +63,7 @@ fun SignupScreen(navController: NavHostController){
 
     //Date of Birth
     var dob by remember { mutableStateOf("") }
-    val role = "viewer"
+    val role = "USER"
     val context = LocalContext.current
 
     Column(
@@ -280,10 +280,10 @@ fun SignupScreen(navController: NavHostController){
                                             lastname = lastname,
                                             email = email,
                                             password = password,
-                                            dob = dob,
+                                            birthdate = dob,
                                             gender = gender,
                                             role = role,
-                                            phonenumber = phonenumber,
+                                            phoneNumber = phonenumber,
                                             address = address
                                         )
 

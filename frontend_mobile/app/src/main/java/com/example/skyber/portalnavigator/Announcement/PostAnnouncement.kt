@@ -42,6 +42,7 @@ import com.example.skyber.headerbar.NotificationHandler
 import com.example.skyber.ui.theme.SKyberDarkBlue
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.White
+import com.google.firebase.database.DatabaseReference
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -138,19 +139,25 @@ fun PostAnnouncement(navController: NavHostController, userProfile: MutableState
 
                     Button(onClick = {
                         // Create Announcement object
-                        val newAnnouncement = Announcement(
-                            title = title,
-                            mainContent = content,
-                            datePosted = getCurrentDateTime(), // Assuming this function returns the correct formatted date
-                            author = "${user.firstname} ${user.lastname}",
-                            barangay = barangay,
-                            category = category,// Full name of the user
-                        )
-
+                        val databaseRef = FirebaseHelper.databaseReference.child("Announcements").push()
+                        val id = databaseRef.key
+                        if(id != null){
+                            val newAnnouncement = Announcement(
+                                id = id,
+                                title = title,
+                                content = content,
+                                postedAt = getCurrentDateTime(), // Assuming this function returns the correct formatted date
+                                //author = "${user.firstname} ${user.lastname}",
+                                barangay = barangay,
+                                category = category,// Full name of the user
+                            )
+                            uploadAnnouncement(databaseRef,newAnnouncement, context)
+                            navController.navigate(Screens.Announcement.screen)
+                        }else{
+                            showToast(context, "Failed to create announcement")
+                        }
                         // Upload the announcement and show the toast
-                        //Log.d("PostAnnouncement", "First: ${user.firstname}, Last: ${user.lastname}")
-                        uploadAnnouncement(newAnnouncement, context)
-                        navController.navigate(Screens.Announcement.screen)
+
                     }) {
                         Text("Post Announcement")
                     }
@@ -167,17 +174,16 @@ fun showToast(context: Context, message: String) {
     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
 }
 
-fun uploadAnnouncement(announcement: Announcement, context: Context) {
-    val databaseRef = FirebaseHelper.databaseReference.child("Announcements").push()
-    databaseRef.setValue(announcement).addOnSuccessListener {
-            // Show success toast when announcement is uploaded successfully
-            showToast(context, "Announcement uploaded successfully")
-        }
-        .addOnFailureListener {
-            // Show failure toast when something goes wrong
-            showToast(context, "Failed to Post Announcement")
-        }
-}
+    fun uploadAnnouncement(databaseRef: DatabaseReference, announcement: Announcement, context: Context) {
+        databaseRef.setValue(announcement).addOnSuccessListener {
+                // Show success toast when announcement is uploaded successfully
+                showToast(context, "Announcement uploaded successfully")
+            }
+            .addOnFailureListener {
+                // Show failure toast when something goes wrong
+                showToast(context, "Failed to Post Announcement")
+            }
+    }
 /*
 @Preview(showBackground = true)
 @Composable

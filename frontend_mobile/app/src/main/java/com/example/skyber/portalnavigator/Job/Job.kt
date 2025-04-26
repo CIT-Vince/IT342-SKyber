@@ -55,7 +55,9 @@ import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlue
 import com.example.skyber.ui.theme.SKyberRed
 import com.example.skyber.ui.theme.SKyberYellow
+import com.example.skyber.ui.theme.SoftCardContainerBlue
 import com.example.skyber.ui.theme.SoftCardContainerLavender
+import com.example.skyber.ui.theme.SoftCardFontBlue
 import com.example.skyber.ui.theme.White
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -175,8 +177,8 @@ fun Job(navController: NavHostController) {
                         ) {
                             items(filteredJobListings.reversed()) { joblisting ->
                                 JobListingCard(
-                                    backgroundColor = SoftCardContainerLavender,
-                                    fontColor = BoxTextGreen,
+                                    backgroundColor = SoftCardContainerBlue,
+                                    fontColor = SoftCardFontBlue,
                                     joblisting = joblisting,
                                     onClick = {
                                         navController.currentBackStackEntry?.savedStateHandle?.set("joblisting",joblisting)

@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @IgnoreExtraProperties
 data class JobListing (
+    val id: String = "",
     val jobtitle: String = "",
     val companyname: String = "",
     val description: String = "",

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Skyber</string>
+    <string name="default_web_client_id">627178043013-00bqt95127q8fpucvfu68mjc8n8ahmaj.apps.googleusercontent.com</string>
+
 </resources>

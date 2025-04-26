@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.credentials.GetCredentialRequest
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -53,6 +54,7 @@ import com.example.skyber.portalnavigator.Job.PostJob
 import com.example.skyber.portalnavigator.ProjectTransparency.DetailsProject
 import com.example.skyber.portalnavigator.ProjectTransparency.PostProject
 import com.example.skyber.portalnavigator.ProjectTransparency.Projects
+import com.example.skyber.portalnavigator.Scholarships.DetailsScholarship
 import com.example.skyber.portalnavigator.Scholarships.PostScholarship
 import com.example.skyber.portalnavigator.Scholarships.Scholarships
 import com.example.skyber.skprofilescreens.DetailsSKcandidates
@@ -69,12 +71,26 @@ import com.example.skyber.userprofilescreens.EditProfile
 import com.example.skyber.userprofilescreens.VolunteerList
 import com.example.skyber.volunteerhubscreens.DetailsVolunteerHub
 import com.example.skyber.volunteerhubscreens.PostVolunteerHub
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
+        // Instantiate a Google sign-in request
+        val googleIdOption = GetGoogleIdOption.Builder()
+            // Your server's client ID, not your Android client ID.
+            .setServerClientId(getString(R.string.default_web_client_id))
+            // Only show accounts previously used to sign in.
+            .setFilterByAuthorizedAccounts(true)
+            .build()
+
+        // Create the Credential Manager request
+        val request = GetCredentialRequest.Builder()
+            .addCredentialOption(googleIdOption)
+            .build()
 
         enableEdgeToEdge()
         setContent {
@@ -192,43 +208,19 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.padding(innerPadding)
                         ) {
                             // Auth screens
-                            composable(Screens.Login.screen) { LoginScreen(navController) }
+                            composable(Screens.Login.screen) { LoginScreen(navController, ::refreshUserProfile) }
                             composable(Screens.SignUp.screen) { SignupScreen(navController) }
 
                             // Main screens
-                            composable(Screens.Home.screen) {
-                                Home(
-                                    navController,
-                                    userProfile = userProfile
-                                )
-                            }
+                            composable(Screens.Home.screen) {Home(navController,userProfile = userProfile, ::refreshUserProfile)}
                             composable(Screens.VolunteerHub.screen) { VolunteerHub(navController) }
-                            composable(Screens.Portal.screen) {
-                                Portal(
-                                    navController,
-                                    userProfile = userProfile
-                                )
-                            }
-                            composable(Screens.UserProfile.screen) {
-                                UserProfile(
-                                    navController,
-                                    userProfile = userProfile
-                                )
-                            }
+                            composable(Screens.Portal.screen) {Portal(navController,userProfile = userProfile)}
+                            composable(Screens.UserProfile.screen) {UserProfile(navController,userProfile = userProfile,::refreshUserProfile )}
                             composable(Screens.SKcandidates.screen) { SKcandidates(navController) }
 
                             //Nested screens for SKcandidates
-                            composable(Screens.PostSKcandidates.screen) {
-                                PostSKcandidates(
-                                    navController,
-                                    userProfile = userProfile
-                                )
-                            }
-                            composable(Screens.DetailsSKcandidates.screen) {
-                                DetailsSKcandidates(
-                                    navController
-                                )
-                            }
+                            composable(Screens.PostSKcandidates.screen) {PostSKcandidates(navController,userProfile = userProfile)}
+                            composable(Screens.DetailsSKcandidates.screen) {DetailsSKcandidates(navController)}
 
                             //Nested Screens in Portal
                             composable(Screens.Announcement.screen) { Announcements(navController) }
@@ -237,77 +229,29 @@ class MainActivity : ComponentActivity() {
                             composable(Screens.Scholarship.screen) { Scholarships(navController) }
 
                             //Nested Screens in Scholarship
-                            composable(Screens.PostScholarship.screen) {
-                                PostScholarship(
-                                    navController,
-                                    userProfile = userProfile
-                                )
-                            }
-                            //composable(Screens.DetailsScholarship.screen){ DetailsScholarship(navController)}
+                            composable(Screens.PostScholarship.screen) {PostScholarship(navController,userProfile = userProfile)}
+                            composable(Screens.DetailsScholarship.screen){ DetailsScholarship(navController)}
 
                             //Nested Screens in Job
-                            composable(Screens.PostJob.screen) {
-                                PostJob(
-                                    navController,
-                                    userProfile = userProfile
-                                )
-                            }
+                            composable(Screens.PostJob.screen) {PostJob(navController,userProfile = userProfile)}
                             composable(Screens.DetailsJob.screen) { DetailsJob(navController) }
 
                             //Nested Screens in Project
-                            composable(Screens.PostProject.screen) {
-                                PostProject(
-                                    navController,
-                                    userProfile = userProfile
-                                )
-                            }
+                            composable(Screens.PostProject.screen) {PostProject(navController,userProfile = userProfile)}
                             composable(Screens.DetailsProject.screen) { DetailsProject(navController) }
 
                             //Nested Screens in Announcement
-                            composable(Screens.PostAnnouncement.screen) {
-                                PostAnnouncement(
-                                    navController,
-                                    userProfile = userProfile
-                                )
-                            }
-                            composable(Screens.DetailsAnnouncement.screen) {
-                                DetailsAnnouncement(
-                                    navController
-                                )
-                            }
+                            composable(Screens.PostAnnouncement.screen) {PostAnnouncement(navController,userProfile = userProfile)}
+                            composable(Screens.DetailsAnnouncement.screen) { DetailsAnnouncement(navController) }
 
                             //Nested Screens in VolunteerHub
-                            composable(Screens.PostVolunteerHub.screen) {
-                                PostVolunteerHub(
-                                    navController,
-                                    userProfile = userProfile
-                                )
-                            }
-                            composable(Screens.DetailsVolunteerHub.screen) {
-                                DetailsVolunteerHub(
-                                    navController
-                                )
-                            }
+                            composable(Screens.PostVolunteerHub.screen) {PostVolunteerHub(navController,userProfile = userProfile)}
+                            composable(Screens.DetailsVolunteerHub.screen) {DetailsVolunteerHub(navController)}
 
                             //Nested Screens in User Profile
-                            composable(Screens.EditProfile.screen) {
-                                EditProfile(
-                                    navController,
-                                    userProfile = userProfile,
-                                    ::refreshUserProfile
-                                )
-                            }
-                            composable(Screens.VolunteerList.screen) {
-                                VolunteerList(
-                                    navController,
-                                    userProfile = userProfile
-                                )
-                            }
-                            composable(Screens.DetailsVolunteerList.screen) {
-                                DetailsVolunteerList(
-                                    navController
-                                )
-                            }
+                            composable(Screens.EditProfile.screen) { EditProfile(navController, userProfile = userProfile, ::refreshUserProfile) }
+                            composable(Screens.VolunteerList.screen) {VolunteerList(navController,userProfile = userProfile)}
+                            composable(Screens.DetailsVolunteerList.screen) { DetailsVolunteerList(navController)}
                         }
                     }
                 }
@@ -358,3 +302,5 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+

@@ -19,11 +19,11 @@ sealed class Screens(val screen: String){
     data object PostProject: Screens("Post Projects")
     data object DetailsProject: Screens("Details Projects")
 
-    data object Job: Screens("Jobs" )
+    data object Job: Screens("Jobs" )//Jobs listing and nested screens
     data object PostJob: Screens("Post Job")
     data object DetailsJob: Screens("Details Job")
 
-    data object Scholarship: Screens("Scholarships" )
+    data object Scholarship: Screens("Scholarships" )//Scholarships and Nested Screens in Scholarships
     data object PostScholarship: Screens("Post Scholarship")
     data object DetailsScholarship: Screens("Details Scholarship")
 

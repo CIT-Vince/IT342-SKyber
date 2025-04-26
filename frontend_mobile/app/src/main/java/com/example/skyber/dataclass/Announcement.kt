@@ -11,10 +11,10 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @IgnoreExtraProperties
 data class Announcement(
+    val id: String = "",
     val title: String = "",
-    val mainContent: String = "",
-    val datePosted: String = getCurrentDateTime(),
-    val author: String = "",
+    val content: String = "",
+    val postedAt: String = getCurrentDateTime(),
     val barangay: String = "",
     val category: String = "",
 ): Parcelable

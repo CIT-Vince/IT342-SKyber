@@ -50,6 +50,7 @@ import com.example.skyber.ui.theme.*
 @Composable
 fun Announcements(navController: NavHostController) {
     val announcements = remember { mutableStateListOf<Announcement>() }
+
     LaunchedEffect(Unit) {
         FirebaseHelper.databaseReference.child("Announcements")
             .get().addOnSuccessListener { snapshot ->
@@ -65,6 +66,7 @@ fun Announcements(navController: NavHostController) {
                 Log.e("AnnouncementFetch", "Failed to load projects", it)
             }
     }
+
     Scaffold() {  innerPadding ->
         Column(
             modifier = Modifier

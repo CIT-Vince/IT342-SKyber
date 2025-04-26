@@ -2,30 +2,233 @@
 <project version="4">
   <component name="AndroidLayouts">
     <shared>
-      <config>
-        <device id="_android_virtual_device_id_Medium_Phone_API_35" />
-        <device id="_device_class_phone" />
-      </config>
+      <config />
     </shared>
+    <layouts>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/login.xml">
+        <config>
+          <theme>@style/Theme.Skyber</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/signup.xml">
+        <config>
+          <theme>@style/Theme.Skyber</theme>
+        </config>
+      </layout>
+    </layouts>
   </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7a619c32-a54b-4a6f-81c1-f9cc23d05a8a" name="Changes" comment="Fixed Navigation Bar crashes and bugs">
+    <list default="true" id="7a619c32-a54b-4a6f-81c1-f9cc23d05a8a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Config/FirebaseConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Config/FirebaseConfigProperties.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Controller/PTController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Filter/FirebaseAuthFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Service/FirebaseAuthService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Service/PTService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/cors.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/firebase-service-account.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/static/announcement.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/static/pt.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/static/userlogin.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/static/userregister.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/static/welcome.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Announcement/AnnouncementPractice.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Announcement/Announcements.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Announcement/AnnouncmentDetails.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Authen/Login.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Authen/Register.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Authen/RegisterFull.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Profile/Profile.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Profile/Volunteers.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Project/Candidates.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Project/Job.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Project/ProjectDetails.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Project/Projects.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Project/Scholarship.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Project/Sk.Profile.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Project/VolunteerHub.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/assets/default-avatar.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/assets/icons/back.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/assets/icons/bottomBack.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/assets/proj/sample1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/assets/proj/sample2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/assets/proj/sample3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/assets/proj/sampleImage.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/assets/proj/vince.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/assets/samples/sampleImage.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/components/Divider.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/components/Loading.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/components/LoadingProvider.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/components/ProtectedRoute.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/contexts/AuthContext.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/firebase/firebase.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/Skyber/tailwind.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../frontend_web/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.anima/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.anima/components.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.anima/conventions.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.anima/enrichments.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.anima/library.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.anima/workspace.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.vscode/launch.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/../.vscode/settings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Controller/AnnouncementController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Controller/AnnouncementController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Controller/ImageController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Controller/ProjectTransparencyController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/DTO/AnnouncementDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Entity/Announcement.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Entity/Announcement.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Entity/ProjectTransparency.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Entity/ProjectTransparency.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Entity/UserInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Entity/UserInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Filter/JwtAuthFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Repository/AnnouncementRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Repository/ProjectTransparencyRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Repository/UserInfoRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/SKyberApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/SKyberApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Service/AnnouncementService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Service/AnnouncementService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Service/JwtService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Service/ProjectTransparencyService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Service/UserInfoDetails.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Service/UserInfoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Service/UserInfoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/WebConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/static/announcement-form.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/static/announcement-list.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/static/edit-project.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/static/login.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/static/projecttransparency-form.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/static/projecttransparency-list.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/static/register.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/checksums/md5-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/checksums/sha1-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidPluginAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxActivityLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxComposeLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxCoreLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxEspressoLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxLifecycleLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxLifecycleRuntimeLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxUiLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxUiTestLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxUiToolingLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibs$BundleAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibs$KotlinPluginAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibs$PluginAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibs$VersionAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibs.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidPluginAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxActivityLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxComposeLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxCoreLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxEspressoLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxLifecycleLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxLifecycleRuntimeLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxUiLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxUiTestLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxUiToolingLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$BundleAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$KotlinPluginAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$PluginAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$VersionAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/metadata.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/sources/org/gradle/accessors/dm/LibrariesForLibs.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/653825400482ee63928b2750563e94a5ec2d47e4/sources/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidPluginAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxActivityLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxComposeLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxCoreLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxEspressoLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxLifecycleLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxLifecycleRuntimeLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxUiLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxUiTestLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibs$AndroidxUiToolingLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibs$BundleAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibs$KotlinPluginAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibs$PluginAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibs$VersionAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibs.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidPluginAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxActivityLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxComposeLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxCoreLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxEspressoLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxLifecycleLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxLifecycleRuntimeLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxUiLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxUiTestLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$AndroidxUiToolingLibraryAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$BundleAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$KotlinPluginAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$PluginAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock$VersionAccessors.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/classes/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/metadata.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/sources/org/gradle/accessors/dm/LibrariesForLibs.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/9860c951e10eb2f7ebe8f7c17909a4d3ce7d7876/sources/org/gradle/accessors/dm/LibrariesForLibsInPluginsBlock.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetSelector.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_activity_activity_1_10_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_activity_activity_compose_1_10_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_activity_activity_ktx_1_10_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_annotation_annotation_experimental_1_4_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_collection_collection_jvm_1_4_4.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_compose_material3_material3_android_1_2_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_compose_material_material_ripple_android_1_6_6_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_core_core_1_15_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_core_core_ktx_1_15_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_core_core_viewtree_1_0_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_livedata_core_2_8_7_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_runtime_android_2_8_7_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_runtime_ktx_android_2_8_7_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_viewmodel_android_2_8_7_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_viewmodel_ktx_2_8_7_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_viewmodel_savedstate_2_8_7_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_savedstate_savedstate_1_2_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_savedstate_savedstate_ktx_1_2_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_core_1_6_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_espresso_espresso_core_3_6_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_espresso_espresso_idling_resource_3_6_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_ext_junit_1_2_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_monitor_1_7_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_runner_1_6_1_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_services_storage_1_5_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_tracing_tracing_1_2_0_aar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_versionedparcelable_versionedparcelable_1_1_1_aar.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ModularFunctions/CardFile.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ModularFunctions/CardFile.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/Screens.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/Screens.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/dataclass/Scholarship.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/dataclass/Scholarship.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/SKcandidates.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/SKcandidates.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/VolunteerHub.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/VolunteerHub.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/portalnavigator/Job/Job.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/portalnavigator/Job/Job.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/portalnavigator/Job/PostJob.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/portalnavigator/Job/PostJob.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/portalnavigator/Reports.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/portalnavigator/portalnav.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/portalnavigator/portalnav.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ui/theme/Color.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ui/theme/Color.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/volunteerhubscreens/PostVolunteerHub.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/volunteerhubscreens/PostVolunteerHub.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.kotlin/errors/errors-1744644838059.log" beforeDir="false" afterPath="$PROJECT_DIR$/.kotlin/errors/errors-1744644838059.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/libs.versions.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend_web/Skyber/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend_web/Skyber/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend_web/Skyber/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend_web/Skyber/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend_web/Skyber/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend_web/Skyber/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend_web/Skyber/public/particles.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend_web/Skyber/public/particles.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend_web/Skyber/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/App.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend_web/Skyber/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/App.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/AnnouncementModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Announcement/AnnouncementModal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Announcements.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Home.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Home.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend_web/Skyber/src/Pages/Register.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend_web/Skyber/src/components/Navbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/components/Navbar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend_web/Skyber/src/components/WaveDivider.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/components/WaveDivider.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend_web/Skyber/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend_web/Skyber/src/main.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend_web/Skyber/src/main.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,56 +244,13 @@
       <ProjectState />
     </projectState>
   </component>
-  <component name="ExternalProjectsManager">
-    <system id="GRADLE">
-      <state>
-        <task path="$PROJECT_DIR$/app">
-          <activation />
-        </task>
-        <projects_view>
-          <tree_state>
-            <expand>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="Skyber" type="f1a62948:ProjectNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="Skyber" type="f1a62948:ProjectNode" />
-                <item name="app" type="2d1252cf:ModuleNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="Skyber" type="f1a62948:ProjectNode" />
-                <item name="app" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="Skyber" type="f1a62948:ProjectNode" />
-                <item name="app" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="other" type="c8890929:TasksNode$1" />
-              </path>
-            </expand>
-            <select />
-          </tree_state>
-        </projects_view>
-      </state>
-    </system>
-  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Kotlin File" />
         <option value="Interface" />
         <option value="Kotlin Interface" />
-        <option value="layoutResourceFile_vertical" />
-        <option value="valueResourceFile" />
-        <option value="Kotlin Data Class" />
-        <option value="Kotlin Object" />
-        <option value="resourceFile" />
         <option value="Kotlin Class" />
-        <option value="Kotlin File" />
       </list>
     </option>
   </component>
@@ -129,113 +289,38 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Android App.app.executor&quot;: &quot;Run&quot;,
-    &quot;Android App.frontend_mobile.Skyber.app.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature__frontend__mobile__Portal&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;memory.settings&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Android App.app.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "Merging feature__frontend__mobile__MergeConflict",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/ethan/OneDrive/Documents/3rd Year 2nd sem projects/FitQuest",
+    "project.structure.last.edited": "Dependencies",
+    "project.structure.proportion": "0.17",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;ChangesTree.GroupingKeys&quot;: [
-      &quot;directory&quot;,
-      &quot;module&quot;
+  "keyToStringList": {
+    "ChangesTree.GroupingKeys": [
+      "directory",
+      "module"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\ethan\OneDrive\Documents\3rd Year 2nd sem projects\IT342-SKyber\frontend_mobile\app\src\main\java\com\example\skyber\ModularFunctions" />
-      <recent name="C:\Users\ethan\OneDrive\Documents\3rd Year 2nd sem projects\IT342-SKyber\frontend_mobile\app\src\main\java\com\example\skyber\portalnavigator\Announcement" />
-      <recent name="C:\Users\ethan\OneDrive\Documents\3rd Year 2nd sem projects\IT342-SKyber\frontend_mobile\app\src\main\java\com\example\skyber\portalnavigator" />
-      <recent name="C:\Users\ethan\OneDrive\Documents\3rd Year 2nd sem projects\IT342-SKyber\frontend_mobile\app\src\main\java\com\example\skyber\userprofilescreens" />
-      <recent name="C:\Users\ethan\OneDrive\Documents\3rd Year 2nd sem projects\IT342-SKyber\frontend_mobile\app\src\main\java\com\example\skyber\userauth" />
-    </key>
-    <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
-      <recent name="com.example.skyber" />
+      <recent name="C:\Users\ethan\OneDrive\Documents\3rd Year 2nd sem projects\Skyber\IT342-SKyber\frontend_mobile\app\src\main\java\com\example\skyber\ui\NavigationBar" />
     </key>
   </component>
-  <component name="RunManager" selected="Android App.frontend_mobile.Skyber.app">
+  <component name="RunManager">
     <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
       <module name="Skyber.app" />
-      <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
-      <option name="DEPLOY" value="true" />
-      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
-      <option name="DEPLOY_AS_INSTANT" value="false" />
-      <option name="ARTIFACT_NAME" value="" />
-      <option name="PM_INSTALL_OPTIONS" value="" />
-      <option name="ALL_USERS" value="false" />
-      <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
-      <option name="ALLOW_ASSUME_VERIFIED" value="false" />
-      <option name="CLEAR_APP_STORAGE" value="false" />
-      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
-      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
-      <option name="MODE" value="default_activity" />
-      <option name="RESTORE_ENABLED" value="false" />
-      <option name="RESTORE_FILE" value="" />
-      <option name="CLEAR_LOGCAT" value="false" />
-      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
-      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
-      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
-      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
-      <option name="DEBUGGER_TYPE" value="Auto" />
-      <Auto>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
-        <option name="DEBUG_SANDBOX_SDK" value="false" />
-      </Auto>
-      <Hybrid>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
-        <option name="DEBUG_SANDBOX_SDK" value="false" />
-      </Hybrid>
-      <Java>
-        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
-        <option name="DEBUG_SANDBOX_SDK" value="false" />
-      </Java>
-      <Native>
-        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
-        <option name="SHOW_STATIC_VARS" value="true" />
-        <option name="WORKING_DIR" value="" />
-        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
-        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
-        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
-        <option name="DEBUG_SANDBOX_SDK" value="false" />
-      </Native>
-      <Profilers>
-        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
-        <option name="STARTUP_PROFILING_ENABLED" value="false" />
-        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
-        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Java/Kotlin Method Sample (legacy)" />
-        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
-        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
-      </Profilers>
-      <option name="DEEP_LINK" value="" />
-      <option name="ACTIVITY" value="" />
-      <option name="ACTIVITY_CLASS" value="" />
-      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
-      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
-      <method v="2">
-        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="frontend_mobile.Skyber.app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
-      <module name="frontend_mobile.Skyber.app" />
       <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
       <option name="DEPLOY" value="true" />
       <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
@@ -318,38 +403,8 @@
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
-    <option name="OPEN_GENERIC_TABS">
-      <map>
-        <entry key="12e32c18-a3a1-4d4c-b1bc-7f01ba67be40" value="TOOL_WINDOW" />
-      </map>
-    </option>
     <option name="TAB_STATES">
       <map>
-        <entry key="12e32c18-a3a1-4d4c-b1bc-7f01ba67be40">
-          <value>
-            <State>
-              <option name="FILTERS">
-                <map>
-                  <entry key="branch">
-                    <value>
-                      <list>
-                        <option value="HEAD" />
-                      </list>
-                    </value>
-                  </entry>
-                  <entry key="structure">
-                    <value>
-                      <list>
-                        <option value="dir:C:/Users/ethan/OneDrive/Documents/3rd Year 2nd sem projects/IT342-SKyber/frontend_mobile/app/src/main/java/com/example/skyber" />
-                      </list>
-                    </value>
-                  </entry>
-                </map>
-              </option>
-              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
-            </State>
-          </value>
-        </entry>
         <entry key="MAIN">
           <value>
             <State />
@@ -358,21 +413,17 @@
       </map>
     </option>
   </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fixed Navigation Bar crashes and bugs" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed Navigation Bar crashes and bugs" />
-  </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">
       <map>
         <entry key="com.example.skyber">
           <value>
-            <CheckInfo lastCheckTimestamp="1744699165671" />
+            <CheckInfo lastCheckTimestamp="1745460573765" />
           </value>
         </entry>
         <entry key="com.example.skyber.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1744699165679" />
+            <CheckInfo lastCheckTimestamp="1745460573766" />
           </value>
         </entry>
       </map>

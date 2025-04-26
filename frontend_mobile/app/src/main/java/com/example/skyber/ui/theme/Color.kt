@@ -13,6 +13,7 @@ val Pink40 = Color(0xFF7D5260)
 val SKyberBlue = Color(0xFF0059C4)
 val SKyberRed = Color(0xFFFF0921)
 val SKyberYellow = Color(0xFFFFC81F)
+val SKyberGreen = Color(0xFF02B710)
 val NavBarColor = Color(0xFFD5D4D4)
 
 val SKyberDarkBlue = Color(0xFF01306B)

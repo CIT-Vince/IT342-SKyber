@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,8 +44,11 @@ import com.example.skyber.ui.theme.*
 
 
 @Composable@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-fun UserProfile(navController: NavHostController, userProfile : MutableState<User?>)  {
+fun UserProfile(navController: NavHostController, userProfile : MutableState<User?>, refreshUserProfile: () -> Unit)  {
    val user = userProfile.value
+    LaunchedEffect(Unit) {
+        refreshUserProfile()
+    }
     if (user == null) {
         // Show a loading spinner while waiting for user data
         Box(
