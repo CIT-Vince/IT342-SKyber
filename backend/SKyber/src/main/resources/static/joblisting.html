@@ -1,0 +1,906 @@
+\static\job-listing.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKyber - Job Listings</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            padding-top: 60px;
+            background-color: #f8f9fa;
+        }
+        .form-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .job-card {
+            height: 100%;
+            transition: transform 0.2s;
+        }
+        .job-card:hover {
+            transform: translateY(-5px);
+        }
+        .job-type-badge-full-time {
+            background-color: #4285F4;
+        }
+        .job-type-badge-part-time {
+            background-color: #34A853;
+        }
+        .job-type-badge-contract {
+            background-color: #FBBC05;
+            color: #212529;
+        }
+        .job-type-badge-internship {
+            background-color: #EA4335;
+        }
+        .job-type-badge-other {
+            background-color: #9E9E9E;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .spinner-container {
+            text-align: center;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        #imagePreviewContainer {
+            max-width: 100%;
+            max-height: 300px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-briefcase me-2"></i>SKyber Job Listings
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="candidate.html">
+                            <i class="fas fa-user-tie me-1"></i> Candidates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="scholarship.html">
+                            <i class="fas fa-graduation-cap me-1"></i> Scholarships
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pt.html">
+                            <i class="fas fa-clipboard-list me-1"></i> Projects
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="refreshBtn" class="btn btn-outline-light btn-sm mt-1 ms-2">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button id="homeBtn" class="btn btn-outline-light btn-sm mt-1 ms-2">
+                            <i class="fas fa-home"></i> Home
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-container">
+                    <h3 id="formTitle" class="mb-4">Add New Job Listing</h3>
+                    <form id="jobForm">
+                        <input type="hidden" id="jobId">
+                        <input type="hidden" id="existingImageData">
+                        
+                        <div class="mb-3">
+                            <label for="jobTitleInput" class="form-label">Job Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="jobTitleInput" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="companyNameInput" class="form-label">Company Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="companyNameInput" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="addressInput" class="form-label">Location <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="addressInput" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="employementTypeInput" class="form-label">Employment Type <span class="text-danger">*</span></label>
+                            <select class="form-control" id="employementTypeInput" required>
+                                <option value="">Select Employment Type</option>
+                                <option value="Full-Time">Full-Time</option>
+                                <option value="Part-Time">Part-Time</option>
+                                <option value="Contract">Contract</option>
+                                <option value="Internship">Internship</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="descriptionInput" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="descriptionInput" rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="applicationlinkInput" class="form-label">Application Link</label>
+                            <input type="url" class="form-control" id="applicationlinkInput">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="jobImageInput" class="form-label">Company Logo/Job Image</label>
+                            <input type="file" class="form-control" id="jobImageInput" accept="image/*">
+                        </div>
+                        
+                        <div id="imagePreviewContainer" class="d-none">
+                            <img id="imagePreview" src="#" alt="Image Preview" class="img-thumbnail">
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save Job Listing
+                            </button>
+                            <button type="button" id="resetBtn" class="btn btn-outline-secondary">
+                                <i class="fas fa-redo me-1"></i> Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div id="alertContainer"></div>
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h3 class="mb-0">All Job Listings</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="loadingMessage" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading job listings...</p>
+                        </div>
+                        <div id="errorMessage" class="alert alert-danger text-center py-3" style="display: none;">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span id="errorText">Failed to load job listings.</span>
+                        </div>
+                        <div id="noJobsMessage" class="text-center py-5" style="display: none;">
+                            <i class="fas fa-briefcase fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">No job listings found</h4>
+                            <p class="text-muted">Add your first job listing using the form.</p>
+                        </div>
+                        <div id="jobsContainer" class="row row-cols-1 row-cols-md-2 g-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="spinner-container">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Processing...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules - NO AUTH
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js';
+        import { getDatabase, ref, push, set, remove, get, child } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqLvqp-b0lViulsx4b0R7Ol7jhoPZhPXI",
+            authDomain: "it342-skyber.firebaseapp.com",
+            projectId: "it342-skyber",
+            storageBucket: "it342-skyber.appspot.com",
+            messagingSenderId: "722519299026",
+            appId: "1:722519299026:web:5b9d2b2c50e54f946c2f57",
+            measurementId: "G-JPZ1HDEN70"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // API base URL
+        const API_BASE_URL = '/api/jobs';
+
+        // DOM elements
+        const jobForm = document.getElementById('jobForm');
+        const formTitle = document.getElementById('formTitle');
+        const jobId = document.getElementById('jobId');
+        const jobTitleInput = document.getElementById('jobTitleInput');
+        const companyNameInput = document.getElementById('companyNameInput');
+        const addressInput = document.getElementById('addressInput');
+        const employementTypeInput = document.getElementById('employementTypeInput');
+        const descriptionInput = document.getElementById('descriptionInput');
+        const applicationlinkInput = document.getElementById('applicationlinkInput');
+        const jobImageInput = document.getElementById('jobImageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const existingImageData = document.getElementById('existingImageData');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const noJobsMessage = document.getElementById('noJobsMessage');
+        const jobsContainer = document.getElementById('jobsContainer');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const homeBtn = document.getElementById('homeBtn');
+
+        // Initialize function - NO AUTH CHECK
+        function initialize() {
+            console.log("Initializing job listings page - NO AUTH");
+            
+            // Set up event listeners
+            jobForm.addEventListener('submit', submitForm);
+            resetBtn.addEventListener('click', resetForm);
+            refreshBtn.addEventListener('click', loadJobs);
+            homeBtn.addEventListener('click', () => window.location.href = "index.html");
+            jobImageInput.addEventListener('change', handleImagePreview);
+            
+            // Load jobs on page load
+            loadJobs();
+        }
+
+        // Load all jobs
+        async function loadJobs() {
+            showLoading();
+            hideError();
+            
+            try {
+                // Always use the controller method first
+                console.log("Fetching job listings from API...");
+                const response = await fetch(`${API_BASE_URL}/getAllJobs`);
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const jobs = await response.json();
+                console.log(`Loaded ${jobs.length} job listings from API`);
+                
+                displayJobs(jobs);
+            } catch (error) {
+                console.error('Error loading job listings:', error);
+                showError('Failed to load job listings. Please try again later.');
+                
+                // Try to load from Firebase as fallback
+                try {
+                    console.log("Trying Firebase as fallback...");
+                    const jobsRef = ref(database, 'JobListings');
+                    const snapshot = await get(jobsRef);
+                    
+                    if (snapshot.exists()) {
+                        const jobs = [];
+                        snapshot.forEach((childSnapshot) => {
+                            const data = childSnapshot.val();
+                            // Make sure to set the ID
+                            data.id = childSnapshot.key;
+                            jobs.push(data);
+                        });
+                        
+                        console.log(`Loaded ${jobs.length} job listings from Firebase`);
+                        displayJobs(jobs);
+                    } else {
+                        console.log("No job listings found in Firebase");
+                        displayJobs([]);
+                    }
+                } catch (firebaseError) {
+                    console.error('Firebase fallback failed:', firebaseError);
+                    // Already showing error from API, no need to update
+                }
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Display job listings
+        function displayJobs(jobs) {
+            jobsContainer.innerHTML = '';
+            
+            if (jobs.length === 0) {
+                noJobsMessage.style.display = 'block';
+                return;
+            }
+            
+            noJobsMessage.style.display = 'none';
+            
+            jobs.forEach(job => {
+                const jobCard = document.createElement('div');
+                jobCard.className = 'col';
+                jobCard.innerHTML = `
+                    <div class="card job-card h-100 shadow">
+                        ${job.jobImage ? 
+                            `<div style="height: 140px; overflow: hidden; text-align: center; background-color: #f8f9fa;">
+                                <img src="data:image/jpeg;base64,${job.jobImage}" class="card-img-top" alt="${job.companyName}" style="max-height: 140px; object-fit: contain;">
+                             </div>` : 
+                            `<div class="card-img-top text-center py-4 bg-light">
+                                <i class="fas fa-building fa-3x text-muted"></i>
+                             </div>`
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">${job.jobTitle}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">${job.companyName}</h6>
+                            <span class="badge ${getJobTypeBadgeClass(job.employementType)} mb-2">${job.employementType || 'Not Specified'}</span>
+                            <p class="card-text small mb-2"><i class="fas fa-map-marker-alt me-1"></i> ${job.address || 'Location not specified'}</p>
+                            <p class="card-text small text-muted mb-3">${truncateText(job.description, 80)}</p>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-sm btn-outline-primary view-btn" data-id="${job.id}">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-secondary edit-btn" data-id="${job.id}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${job.id}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Attach event listeners
+                const viewBtn = jobCard.querySelector('.view-btn');
+                const editBtn = jobCard.querySelector('.edit-btn');
+                const deleteBtn = jobCard.querySelector('.delete-btn');
+                
+                viewBtn.addEventListener('click', () => viewJob(job));
+                
+                editBtn.addEventListener('click', () => {
+                    // Use string ID
+                    const stringId = String(job.id);
+                    console.log("Edit clicked with string ID:", stringId);
+                    editJob(stringId);
+                });
+                
+                deleteBtn.addEventListener('click', () => {
+                    // Use string ID
+                    const stringId = String(job.id);
+                    console.log("Delete clicked with string ID:", stringId);
+                    confirmDeleteJob(stringId, job.jobTitle);
+                });
+                
+                jobsContainer.appendChild(jobCard);
+            });
+        }
+
+        // Get job type badge class
+        function getJobTypeBadgeClass(type) {
+            if (!type) return 'job-type-badge-other';
+            
+            const normalizedType = type.toLowerCase().trim();
+            
+            if (normalizedType.includes('full')) return 'job-type-badge-full-time';
+            else if (normalizedType.includes('part')) return 'job-type-badge-part-time';
+            else if (normalizedType.includes('contract')) return 'job-type-badge-contract';
+            else if (normalizedType.includes('intern')) return 'job-type-badge-internship';
+            
+            return 'job-type-badge-other';
+        }
+
+        // View job details
+        function viewJob(job) {
+            // Create modal element
+            const modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.id = 'jobModal';
+            modal.setAttribute('tabindex', '-1');
+            modal.innerHTML = `
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Job Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-4 text-center mb-3">
+                                    ${job.jobImage ? 
+                                        `<img src="data:image/jpeg;base64,${job.jobImage}" class="img-fluid rounded mb-3" alt="${job.companyName}" style="max-height: 200px;">` : 
+                                        `<div class="bg-light text-center py-5 mb-3 rounded">
+                                            <i class="fas fa-building fa-3x text-muted"></i>
+                                            <p class="mt-2">No company image</p>
+                                        </div>`
+                                    }
+                                </div>
+                                <div class="col-md-8">
+                                    <h4>${job.jobTitle}</h4>
+                                    <h6>${job.companyName}</h6>
+                                    <div class="mb-3">
+                                        <span class="badge ${getJobTypeBadgeClass(job.employementType)}">${job.employementType || 'Not Specified'}</span>
+                                    </div>
+                                    <p><i class="fas fa-map-marker-alt me-2"></i> ${job.address || 'Location not specified'}</p>
+                                    <h6>Description:</h6>
+                                    <p>${job.description || 'No description provided.'}</p>
+                                    ${job.applicationlink ? 
+                                        `<p><strong>Apply at:</strong> <a href="${job.applicationlink}" target="_blank">${job.applicationlink}</a></p>` : 
+                                        '<p>No application link provided.</p>'
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary edit-modal-btn">
+                                <i class="fas fa-edit me-1"></i> Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add to document
+            document.body.appendChild(modal);
+            
+            // Get Bootstrap modal instance and show it
+            const modalInstance = new bootstrap.Modal(modal);
+            modalInstance.show();
+            
+            // Add event listener for edit button in modal
+            const editBtn = modal.querySelector('.edit-modal-btn');
+            editBtn.addEventListener('click', () => {
+                modalInstance.hide();
+                editJob(job.id);
+            });
+            
+            // Clean up when modal is hidden
+            modal.addEventListener('hidden.bs.modal', function () {
+                document.body.removeChild(modal);
+            });
+        }
+
+        // Edit job
+        async function editJob(id) {
+            showLoading();
+            console.log("Edit request for job ID:", id);
+            
+            try {
+                // First, get the job details
+                const job = await getJobById(id);
+                
+                if (!job) {
+                    throw new Error('Job not found');
+                }
+                
+                console.log("Loaded job for editing:", job);
+                
+                // Populate form with job data
+                jobId.value = job.id;
+                jobTitleInput.value = job.jobTitle || '';
+                companyNameInput.value = job.companyName || '';
+                addressInput.value = job.address || '';
+                employementTypeInput.value = job.employementType || '';
+                descriptionInput.value = job.description || '';
+                applicationlinkInput.value = job.applicationlink || '';
+                
+                // Store image data in hidden field
+                existingImageData.value = job.jobImage || '';
+                
+                // Show image preview if exists
+                if (job.jobImage) {
+                    imagePreview.src = `data:image/jpeg;base64,${job.jobImage}`;
+                    imagePreviewContainer.classList.remove('d-none');
+                } else {
+                    imagePreviewContainer.classList.add('d-none');
+                }
+                
+                // Update form title
+                formTitle.textContent = 'Edit Job Listing';
+                
+                // Scroll to form
+                jobForm.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error editing job:', error);
+                showAlert('Failed to load job for editing: ' + error.message, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Get job by ID
+        async function getJobById(id) {
+            try {
+                // Ensure ID is a string
+                const stringId = String(id);
+                console.log("Fetching job with ID:", stringId, "Type:", typeof stringId);
+                
+                if (!stringId) {
+                    console.error("Invalid job ID:", stringId);
+                    throw new Error("Invalid job ID");
+                }
+                
+                // Try from API first
+                const response = await fetch(`${API_BASE_URL}/getJob/${stringId}`);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.warn(`API error (${response.status}): ${errorText}`);
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const job = await response.json();
+                console.log("API returned job:", job);
+                return job;
+            } catch (apiError) {
+                console.log('API fetch failed, trying Firebase for ID:', id);
+                
+                // Try from Firebase as fallback
+                return new Promise((resolve, reject) => {
+                    const jobRef = ref(database, `JobListings/${id}`);
+                    
+                    get(jobRef).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const data = snapshot.val();
+                            data.id = snapshot.key; // Ensure the ID is the Firebase key
+                            console.log("Found job in Firebase:", data);
+                            resolve(data);
+                        } else {
+                            console.error("Job not found in Firebase either");
+                            reject(new Error('Job not found'));
+                        }
+                    }).catch((error) => {
+                        console.error("Firebase fetch error:", error);
+                        reject(error);
+                    });
+                });
+            }
+        }
+
+        // Delete job confirmation
+        function confirmDeleteJob(id, jobTitle) {
+            if (confirm(`Are you sure you want to delete the job "${jobTitle}"?`)) {
+                deleteJob(id);
+            }
+        }
+
+        // Delete job
+        async function deleteJob(id) {
+            showLoading();
+            
+            try {
+                console.log("Attempting to delete job with ID:", id);
+                
+                // Try API delete
+                const response = await fetch(`${API_BASE_URL}/deleteJob/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error(`API delete failed with status ${response.status}: ${errorText}`);
+                    
+                    // Even if API fails, try to delete from Firebase
+                    console.log("Attempting Firebase delete as fallback");
+                    const jobRef = ref(database, `JobListings/${id}`);
+                    await remove(jobRef);
+                    showAlert('Job deleted from local cache', 'warning');
+                    loadJobs();
+                    return;
+                }
+                
+                console.log("Job deleted successfully via API");
+                showAlert('Job deleted successfully', 'success');
+                
+                // Reload jobs
+                loadJobs();
+            } catch (error) {
+                console.error('Error deleting job:', error);
+                showAlert(`Error deleting job: ${error.message}`, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Submit form handler
+        async function submitForm(e) {
+            e.preventDefault();
+            showLoading();
+            
+            try {
+                // Check if form is valid
+                if (!jobForm.checkValidity()) {
+                    jobForm.reportValidity();
+                    return;
+                }
+                
+                // Get form data
+                const jobData = {
+                    jobTitle: jobTitleInput.value.trim(),
+                    companyName: companyNameInput.value.trim(),
+                    address: addressInput.value.trim(),
+                    employementType: employementTypeInput.value.trim(),
+                    description: descriptionInput.value.trim(),
+                    applicationlink: applicationlinkInput.value.trim()
+                };
+                
+                let response;
+                const isEditing = jobId.value.trim() !== '';
+                
+                // If editing
+                if (isEditing) {
+                    const id = jobId.value;
+                    
+                    // Check if image is being updated
+                    if (jobImageInput.files[0]) {
+                        try {
+                            const formData = new FormData();
+                            formData.append('image', jobImageInput.files[0]);
+                            
+                            // Update image first
+                            const imageResponse = await fetch(`${API_BASE_URL}/updateJob/${id}/image`, {
+                                method: 'PUT',
+                                body: formData
+                            });
+                            
+                            if (!imageResponse.ok) {
+                                const errorText = await imageResponse.text();
+                                throw new Error(`Image update failed: ${imageResponse.status} - ${errorText}`);
+                            }
+                            
+                            const updatedJob = await imageResponse.json();
+                            console.log("Image updated successfully");
+                            
+                            // Store the updated image
+                            if (updatedJob && updatedJob.jobImage) {
+                                jobData.jobImage = updatedJob.jobImage;
+                            }
+                        } catch (imageError) {
+                            console.error("Error updating image:", imageError);
+                            showAlert(`Image update failed: ${imageError.message}. Other fields will still be updated.`, 'warning');
+                        }
+                    } else if (existingImageData.value) {
+                        // Keep existing image if no new one is provided
+                        jobData.jobImage = existingImageData.value;
+                    }
+                    
+                    // Then update the rest of the job data
+                    try {
+                        response = await fetch(`${API_BASE_URL}/updateJob/${id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(jobData)
+                        });
+                        
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            throw new Error(`API error (${response.status}): ${errorText}`);
+                        }
+                        
+                        console.log("Job updated successfully");
+                        showAlert('Job listing updated successfully', 'success');
+                        resetForm();
+                        loadJobs();
+                    } catch (updateError) {
+                        console.error("Error updating job:", updateError);
+                        
+                        // Try Firebase update as fallback
+                        try {
+                            console.log("Trying Firebase update as fallback...");
+                            await saveToFirebase(id, jobData);
+                            showAlert('Job updated in local cache', 'warning');
+                            resetForm();
+                            loadJobs();
+                        } catch (firebaseError) {
+                            console.error("Firebase update failed:", firebaseError);
+                            showAlert(`Failed to update job: ${updateError.message}`, 'danger');
+                        }
+                    }
+                } else {
+                    // Creating new job
+                    if (jobImageInput.files[0]) {
+                        // Create with image using controller method
+                        const formData = new FormData();
+                        formData.append('jobTitle', jobData.jobTitle);
+                        formData.append('companyName', jobData.companyName);
+                        formData.append('address', jobData.address);
+                        formData.append('employementType', jobData.employementType);
+                        formData.append('description', jobData.description);
+                        formData.append('applicationlink', jobData.applicationlink);
+                        formData.append('image', jobImageInput.files[0]);
+                        
+                        console.log("Submitting with image using controller method");
+                        
+                        response = await fetch(`${API_BASE_URL}/createJob/with-image`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                    } else {
+                        // Create without image using controller method
+                        console.log("Submitting without image using controller method");
+                        response = await fetch(`${API_BASE_URL}/createJob`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(jobData)
+                        });
+                    }
+
+                    // Handle API response
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`API error (${response.status}): ${errorText}`);
+                    }
+
+                    const createdJob = await response.json();
+                    console.log("Job created successfully via controller:", createdJob);
+
+                    showAlert('Job listing created successfully', 'success');
+                    resetForm();
+                    loadJobs();
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                showAlert(`Error: ${error.message}`, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Save job to Firebase
+        function saveToFirebase(id, jobData) {
+            return new Promise((resolve, reject) => {
+                try {
+                    let jobRef;
+                    
+                    if (id) {
+                        // Update existing job
+                        jobRef = ref(database, `JobListings/${id}`);
+                        set(jobRef, { ...jobData, id: id })
+                            .then(() => {
+                                console.log("Job updated in Firebase");
+                                resolve();
+                            })
+                            .catch(reject);
+                    } else {
+                        // Create new job
+                        jobRef = push(ref(database, 'JobListings'));
+                        const newId = jobRef.key;
+                        set(jobRef, { ...jobData, id: newId })
+                            .then(() => {
+                                console.log("Job created in Firebase with ID:", newId);
+                                resolve(newId);
+                            })
+                            .catch(reject);
+                    }
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        // Handle image preview
+        function handleImagePreview(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.classList.remove('d-none');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                imagePreviewContainer.classList.add('d-none');
+            }
+        }
+
+        // Reset form
+        function resetForm() {
+            jobId.value = '';
+            existingImageData.value = '';
+            jobForm.reset();
+            imagePreviewContainer.classList.add('d-none');
+            formTitle.textContent = 'Add New Job Listing';
+        }
+
+        // Show loading overlay
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        // Hide loading overlay
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        // Show loading in container
+        function showLoadingInContainer() {
+            loadingMessage.style.display = 'block';
+        }
+
+        // Hide loading in container
+        function hideLoadingInContainer() {
+            loadingMessage.style.display = 'none';
+        }
+
+        // Show error
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        // Hide error
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            alertContainer.appendChild(alert);
+            
+            // Auto dismiss after 5 seconds
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => {
+                    alertContainer.removeChild(alert);
+                }, 150);
+            }, 5000);
+        }
+
+        // Helper function to truncate text
+        function truncateText(text, maxLength) {
+            if (!text) return '';
+            return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+        }
+
+        // Call initialize when document is ready
+        document.addEventListener('DOMContentLoaded', initialize);
+        console.log("DOM content loaded event registered");
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

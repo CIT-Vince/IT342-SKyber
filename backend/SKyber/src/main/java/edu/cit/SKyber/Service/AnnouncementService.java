@@ -42,7 +42,7 @@ public class AnnouncementService {
             }
             
             // Push to Firebase and get key
-            DatabaseReference announcementRef = firebaseDatabase.getReference("announcements").push();
+            DatabaseReference announcementRef = firebaseDatabase.getReference("Announcements").push();
             String key = announcementRef.getKey();
             
             // Store the key as id in the map and object
@@ -68,10 +68,24 @@ public class AnnouncementService {
         final CountDownLatch latch = new CountDownLatch(1);
         final List<Announcement> announcements = new ArrayList<>();
         final List<Exception> exceptions = new ArrayList<>();
-
+        logger.info("Firebase database URL: " + firebaseDatabase.getReference().toString());
+        DatabaseReference connRef = firebaseDatabase.getReference(".info/connected");
+        connRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                Boolean connected = snapshot.getValue(Boolean.class);
+                logger.info("Firebase connection status: " + (connected ? "CONNECTED" : "DISCONNECTED"));
+            }
+            
+            @Override
+            public void onCancelled(DatabaseError error) {
+                logger.severe("Firebase connection check failed: " + error.getMessage());
+            }
+        });
         try {
-            DatabaseReference announcementsRef = firebaseDatabase.getReference("announcements");
-            announcementsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            DatabaseReference announcementsRef = firebaseDatabase.getReference("Announcements");
+            Query limitedQuery = announcementsRef.limitToFirst(10);
+            limitedQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     try {
@@ -141,11 +155,16 @@ public class AnnouncementService {
 
             // Wait with timeout
             if (!latch.await(10, TimeUnit.SECONDS)) {
-                throw new RuntimeException("Firebase query timed out after 10 seconds");
+                logger.warning("Firebase query took longer than 10 seconds - returning partial results");
+                // Return whatever we have instead of throwing an exception
+                return announcements;
             }
             
             if (!exceptions.isEmpty()) {
-                throw exceptions.get(0);
+                logger.warning("Encountered errors but returning partial results: " + 
+                              exceptions.get(0).getMessage());
+                // Return partial results even if there were some errors
+                return announcements;
             }
             
             logger.info("Successfully retrieved " + announcements.size() + " announcements");
@@ -154,7 +173,8 @@ public class AnnouncementService {
         } catch (Exception e) {
             logger.severe("Error getting announcements: " + e.getMessage());
             e.printStackTrace();
-            throw new RuntimeException("Error fetching announcements", e);
+            // Return empty list instead of throwing exception
+            return new ArrayList<>();
         }
     }
 
@@ -166,7 +186,7 @@ public class AnnouncementService {
         final List<Exception> exceptions = new ArrayList<>();
 
         try {
-            DatabaseReference announcementsRef = firebaseDatabase.getReference("announcements");
+            DatabaseReference announcementsRef = firebaseDatabase.getReference("Announcements");
             Query query = announcementsRef.orderByChild("barangay").equalTo(barangay);
             
             query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -257,7 +277,7 @@ public class AnnouncementService {
         final List<Exception> exceptions = new ArrayList<>();
 
         try {
-            DatabaseReference announcementsRef = firebaseDatabase.getReference("announcements");
+            DatabaseReference announcementsRef = firebaseDatabase.getReference("Announcements");
             Query query = announcementsRef.orderByChild("category").equalTo(category);
             
             query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -348,7 +368,7 @@ public class AnnouncementService {
         final List<Exception> exceptions = new ArrayList<>();
 
         try {
-            DatabaseReference announcementRef = firebaseDatabase.getReference("announcements").child(id);
+            DatabaseReference announcementRef = firebaseDatabase.getReference("Announcements").child(id);
             
             announcementRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -453,7 +473,7 @@ public class AnnouncementService {
             }
             
             // Update in Firebase
-            DatabaseReference announcementRef = firebaseDatabase.getReference("announcements").child(id);
+            DatabaseReference announcementRef = firebaseDatabase.getReference("Announcements").child(id);
             announcementRef.updateChildrenAsync(announcementMap);
             
             // Set the ID in the returned object for consistency
@@ -473,7 +493,7 @@ public class AnnouncementService {
     public boolean deleteAnnouncement(String id) {
         logger.info("Deleting announcement with ID: " + id);
         try {
-            DatabaseReference announcementRef = firebaseDatabase.getReference("announcements").child(id);
+            DatabaseReference announcementRef = firebaseDatabase.getReference("Announcements").child(id);
             
             // Check if the announcement exists before deletion
             final CountDownLatch latch = new CountDownLatch(1);

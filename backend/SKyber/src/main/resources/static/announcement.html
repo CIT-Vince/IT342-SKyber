@@ -272,10 +272,10 @@
     </div>
 
     <script type="module">
-        // Import Firebase modules
+
+// Import Firebase modules - only keep auth for user validation
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-        import { getDatabase, ref, set, get, child, push, remove, update } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
         import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
         // Firebase configuration
@@ -289,10 +289,9 @@
             databaseURL: "https://skyber-57fa5-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
 
-        // Initialize Firebase
+        // Initialize Firebase - only auth and storage
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const database = getDatabase(app);
         const storage = getStorage(app);
 
         // API URL
@@ -309,13 +308,21 @@
         const loadingElement = document.getElementById('loading');
         const backBtn = document.getElementById('back-btn');
 
-        // Check authentication
-        onAuthStateChanged(auth, (user) => {
+        // Check authentication - keep this for user validation
+        onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 // Redirect to login if not authenticated
                 window.location.href = "login.html";
             } else {
                 console.log("User authenticated:", user.email);
+                // Get ID token for API authentication
+                try {
+                    const idToken = await user.getIdToken();
+                    // Store token for API calls
+                    localStorage.setItem('authToken', idToken);
+                } catch (error) {
+                    console.error("Error getting auth token:", error);
+                }
             }
         });
 
@@ -364,59 +371,37 @@
             announcementsList.style.display = 'grid';
         }
 
-        // Load all announcements with improved error handling
+        // Load all announcements using controller endpoint
         async function loadAnnouncements() {
             showLoading();
             
             try {
-                let announcements = [];
-                let fromCache = false;
+                console.log("Fetching announcements from backend API");
+                const timestamp = Date.now(); // Cache busting
                 
-                // Try to get from backend first
-                try {
-                    console.log("Fetching announcements from backend API");
-                    const timestamp = Date.now(); // Cache busting
-                    const response = await fetch(`${API_BASE_URL}/getAllAnnouncements?_=${timestamp}`, {
-                        headers: {
-                            'Cache-Control': 'no-cache'
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        announcements = await response.json();
-                        console.log(`Fetched ${announcements.length} announcements from API`);
-                        
-                        // Save to Firebase for redundancy
-                        await saveAnnouncementsToFirebase(announcements);
-                    } else {
-                        const errorText = await response.text();
-                        console.error('Backend API error:', errorText);
-                        throw new Error('Backend API error: ' + errorText);
-                    }
-                } catch (apiError) {
-                    console.log("API fetch failed, trying Firebase", apiError);
-                    
-                    // Try to get from Firebase as fallback
-                    try {
-                        announcements = await getAnnouncementsFromFirebase();
-                        fromCache = true;
-                        console.log(`Fetched ${announcements.length} announcements from Firebase cache`);
-                    } catch (fbError) {
-                        console.error('Firebase fetch failed:', fbError);
-                        throw new Error('Failed to get announcements from both API and Firebase');
-                    }
+                // Get authentication token for secure API calls
+                const idToken = localStorage.getItem('authToken');
+                const headers = {
+                    'Cache-Control': 'no-cache'
+                };
+                
+                // Add authentication if available
+                if (idToken) {
+                    headers['Authorization'] = 'Bearer ' + idToken;
                 }
                 
-                // Display announcements
-                if (announcements && Array.isArray(announcements)) {
+                const response = await fetch(`${API_BASE_URL}/getAllAnnouncements?_=${timestamp}`, {
+                    headers: headers
+                });
+                
+                if (response.ok) {
+                    const announcements = await response.json();
+                    console.log(`Fetched ${announcements.length} announcements from API`);
                     displayAnnouncements(announcements);
-                    
-                    if (fromCache) {
-                        showAlert('Loaded announcements from local cache. Some data may not be current.', 'warning');
-                    }
                 } else {
-                    console.log("No announcements found or invalid data format");
-                    announcementsList.innerHTML = '<p style="grid-column: span 3; text-align: center;">No announcements available</p>';
+                    const errorText = await response.text();
+                    console.error('Backend API error:', errorText);
+                    throw new Error('Backend API error: ' + errorText);
                 }
             } catch (error) {
                 console.error('Error loading announcements:', error);
@@ -424,68 +409,6 @@
                 announcementsList.innerHTML = '<p style="grid-column: span 3; text-align: center;">Failed to load announcements</p>';
             } finally {
                 hideLoading();
-            }
-        }
-
-        // Save announcements to Firebase with improved structure
-        async function saveAnnouncementsToFirebase(announcements) {
-            if (!announcements || !Array.isArray(announcements)) {
-                console.log('Invalid announcements data to save to Firebase');
-                return;
-            }
-            
-            // Skip if empty array
-            if (announcements.length === 0) {
-                console.log('No announcements to save to Firebase');
-                return;
-            }
-
-            try {
-                // Convert array to object with IDs as keys for better Firebase performance
-                const announcementsObj = {};
-                announcements.forEach(announcement => {
-                    if (announcement && announcement.id) {
-                        announcementsObj[announcement.id] = announcement;
-                    }
-                });
-                
-                // Skip if no valid announcements
-                if (Object.keys(announcementsObj).length === 0) {
-                    console.log('No valid announcements to save to Firebase');
-                    return;
-                }
-                
-                const announcementsRef = ref(database, 'Announcements');
-                await set(announcementsRef, announcementsObj);
-                console.log(`${Object.keys(announcementsObj).length} announcements saved to Firebase`);
-                
-            } catch (error) {
-                console.error('Error saving to Firebase:', error);
-                // Non-blocking error - we don't want to break the app if Firebase save fails
-            }
-        }
-
-        // Get announcements from Firebase with improved error handling
-        async function getAnnouncementsFromFirebase() {
-            try {
-                console.log("Fetching announcements from Firebase");
-                const dbRef = ref(database);
-                const snapshot = await get(child(dbRef, 'Announcements'));
-                
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    
-                    // Convert object back to array
-                    if (typeof data === 'object') {
-                        return Object.values(data).filter(item => item !== null && item !== undefined);
-                    }
-                }
-                
-                console.log('No announcements found in Firebase');
-                return [];
-            } catch (error) {
-                console.error('Error reading from Firebase:', error);
-                return [];
             }
         }
 
@@ -523,7 +446,17 @@
                     const content = announcement.content || 'No content';
                     const barangay = announcement.barangay || 'Unknown';
                     const category = announcement.category || 'Uncategorized';
-                    const postedAt = announcement.postedAt || new Date().toLocaleString();
+                    
+                    // Format date and time according to LocalDate and LocalTime fields
+                    let formattedDateTime = 'Unknown date';
+                    if (announcement.postedDate && announcement.postedTime) {
+                        // Format LocalDate and LocalTime values
+                        formattedDateTime = formatDateTime(announcement.postedDate, announcement.postedTime);
+                    } else if (announcement.postedAtString) {
+                        // Fallback to legacy format
+                        formattedDateTime = announcement.postedAtString;
+                    }
+                    
                     const id = announcement.id || `temp-${Date.now()}`;
                     
                     card.innerHTML = `
@@ -533,7 +466,7 @@
                             <p class="announcement-info">
                                 <strong>Barangay:</strong> ${barangay} | 
                                 <strong>Category:</strong> ${category} | 
-                                <strong>Posted:</strong> ${postedAt}
+                                <strong>Posted:</strong> ${formattedDateTime}
                             </p>
                             <p class="announcement-text">${content.length > 100 ? content.substring(0, 100) + '...' : content}</p>
                             <div class="button-group">
@@ -564,7 +497,29 @@
             });
         }
 
-        // View announcement details with improved error handling
+        // Helper function to format date and time
+        function formatDateTime(dateStr, timeStr) {
+            try {
+                // Parse the LocalDate and LocalTime strings
+                const dateParts = dateStr.split('-');
+                const year = parseInt(dateParts[0]);
+                const month = parseInt(dateParts[1]) - 1; // Month is 0-indexed in JS
+                const day = parseInt(dateParts[2]);
+                
+                const timeParts = timeStr.split(':');
+                const hour = parseInt(timeParts[0]);
+                const minute = parseInt(timeParts[1]);
+                const second = parseInt(timeParts[2] || 0);
+                
+                const date = new Date(year, month, day, hour, minute, second);
+                return date.toLocaleString();
+            } catch (error) {
+                console.warn('Error formatting date/time:', error, dateStr, timeStr);
+                return `${dateStr} ${timeStr}`;
+            }
+        }
+
+        // View announcement details using controller endpoint
         async function viewAnnouncement(id) {
             if (!id) {
                 showAlert('Invalid announcement ID', 'danger');
@@ -572,42 +527,48 @@
             }
             
             try {
-                let announcement = null;
+                // Get auth token
+                const idToken = localStorage.getItem('authToken');
+                const headers = {
+                    'Cache-Control': 'no-cache'
+                };
                 
-                // Try API first
-                try {
-                    const response = await fetch(`${API_BASE_URL}/getAnnouncements/${id}`, {
-                        headers: {
-                            'Cache-Control': 'no-cache'
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        announcement = await response.json();
-                        console.log('Fetched announcement details from API:', id);
-                    } else {
-                        throw new Error(`API error: ${response.status}`);
-                    }
-                } catch (apiError) {
-                    console.log('API fetch failed, trying Firebase', apiError);
-                    
-                    // Try Firebase as fallback
-                    announcement = await getAnnouncementFromFirebase(id);
-                    if (!announcement) {
-                        throw new Error('Announcement not found in Firebase');
-                    }
+                if (idToken) {
+                    headers['Authorization'] = 'Bearer ' + idToken;
                 }
+                
+                // Fetch from controller API
+                const response = await fetch(`${API_BASE_URL}/getAnnouncements/${id}`, {
+                    headers: headers
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const announcement = await response.json();
                 
                 if (announcement) {
                     // Populate modal with announcement details
                     document.getElementById('modal-title').textContent = announcement.title || 'Untitled';
+                    
+                    // Format date and time using the helper function
+                    let formattedDateTime = 'Unknown date';
+                    if (announcement.postedDate && announcement.postedTime) {
+                        formattedDateTime = formatDateTime(announcement.postedDate, announcement.postedTime);
+                    } else if (announcement.postedAtString) {
+                        formattedDateTime = announcement.postedAtString;
+                    }
+                    
                     document.getElementById('modal-info').innerHTML = `
                         <strong>Barangay:</strong> ${announcement.barangay || 'Unknown'} | 
                         <strong>Category:</strong> ${announcement.category || 'Uncategorized'} | 
-                        <strong>Posted:</strong> ${announcement.postedAt || new Date().toLocaleString()}
+                        <strong>Posted:</strong> ${formattedDateTime}
                     `;
+                    
                     document.getElementById('modal-content').textContent = announcement.content || 'No content';
                     
+                    // Handle image display
                     const modalImage = document.getElementById('modal-image');
                     const imageContainer = document.getElementById('modal-image-container');
                     
@@ -635,31 +596,7 @@
             }
         }
 
-        // Get a single announcement from Firebase
-        async function getAnnouncementFromFirebase(id) {
-            try {
-                const dbRef = ref(database);
-                const snapshot = await get(child(dbRef, `Announcements/${id}`));
-                
-                if (snapshot.exists()) {
-                    return snapshot.val();
-                } else {
-                    // Try the old array format as fallback
-                    const allSnapshot = await get(child(dbRef, 'Announcements'));
-                    if (allSnapshot.exists()) {
-                        const all = Object.values(allSnapshot.val());
-                        return all.find(a => a.id == id);
-                    }
-                }
-                
-                return null;
-            } catch (error) {
-                console.error('Error fetching announcement from Firebase:', error);
-                return null;
-            }
-        }
-
-        // Load announcement data for editing
+        // Edit announcement function
         async function editAnnouncement(id) {
             if (!id) {
                 showAlert('Invalid announcement ID', 'danger');
@@ -667,214 +604,97 @@
             }
             
             try {
-                let announcement = null;
+                // Get auth token
+                const idToken = localStorage.getItem('authToken');
+                const headers = {
+                    'Cache-Control': 'no-cache'
+                };
                 
-                // Try API first
-                try {
-                    const response = await fetch(`${API_BASE_URL}/getAnnouncements/${id}`, {
-                        headers: {
-                            'Cache-Control': 'no-cache'
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        announcement = await response.json();
-                    } else {
-                        throw new Error(`API error: ${response.status}`);
-                    }
-                } catch (apiError) {
-                    console.log('API fetch failed, trying Firebase', apiError);
-                    
-                    // Try Firebase as fallback
-                    announcement = await getAnnouncementFromFirebase(id);
-                    if (!announcement) {
-                        throw new Error('Announcement not found in Firebase');
-                    }
+                if (idToken) {
+                    headers['Authorization'] = 'Bearer ' + idToken;
                 }
                 
-                if (announcement) {
-                    // Populate form with announcement data
-                    idInput.value = announcement.id;
-                    document.getElementById('title').value = announcement.title || '';
-                    document.getElementById('content').value = announcement.content || '';
-                    document.getElementById('barangay').value = announcement.barangay || '';
-                    document.getElementById('category').value = announcement.category || '';
-                    
-                    // Store image data in hidden fields
-                    document.getElementById('existing-image-data').value = announcement.imageData || '';
-                    document.getElementById('existing-image-url').value = announcement.imageUrl || '';
-                    
-                    // Show a preview of the current image if available
-                    if (announcement.imageData || announcement.imageUrl) {
-                        const imagePreviewContainer = document.createElement('div');
-                        imagePreviewContainer.id = 'image-preview-container';
-                        imagePreviewContainer.style.marginTop = '10px';
-                        
-                        const imagePreviewLabel = document.createElement('p');
-                        imagePreviewLabel.textContent = 'Current image:';
-                        imagePreviewLabel.style.marginBottom = '5px';
-                        
-                        const imagePreview = document.createElement('img');
-                        imagePreview.style.maxWidth = '200px';
-                        imagePreview.style.maxHeight = '150px';
-                        imagePreview.style.border = '1px solid #ddd';
-                        
-                        if (announcement.imageData) {
-                            imagePreview.src = `data:image/jpeg;base64,${announcement.imageData}`;
-                        } else if (announcement.imageUrl) {
-                            imagePreview.src = announcement.imageUrl;
-                        }
-                        
-                        imagePreviewContainer.appendChild(imagePreviewLabel);
-                        imagePreviewContainer.appendChild(imagePreview);
-                        
-                        // Check if there's already a preview and remove it
-                        const existingPreview = document.getElementById('image-preview-container');
-                        if (existingPreview) {
-                            existingPreview.remove();
-                        }
-                        
-                        // Insert the preview after the image field
-                        const imageField = document.querySelector('.form-group:has(#image)');
-                        imageField.appendChild(imagePreviewContainer);
-                    }
-                    
-                    // Change form title
-                    formTitle.textContent = 'Edit Announcement';
-                    
-                    // Scroll to form
-                    form.scrollIntoView({ behavior: 'smooth' });
-                } else {
-                    throw new Error('Announcement details not found');
+                // Fetch current announcement data
+                const response = await fetch(`${API_BASE_URL}/getAnnouncements/${id}`, {
+                    headers: headers
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
                 }
+                
+                const announcement = await response.json();
+                
+                // Populate form with current values
+                document.getElementById('announcement-id').value = id;
+                document.getElementById('title').value = announcement.title || '';
+                document.getElementById('content').value = announcement.content || '';
+                document.getElementById('barangay').value = announcement.barangay || '';
+                document.getElementById('category').value = announcement.category || '';
+                
+                // Store image data in hidden fields
+                document.getElementById('existing-image-data').value = announcement.imageData || '';
+                document.getElementById('existing-image-url').value = announcement.imageUrl || '';
+                
+                // Update form title
+                document.getElementById('form-title').textContent = 'Edit Announcement';
+                
+                // Scroll to form
+                document.querySelector('.form-container').scrollIntoView({ behavior: 'smooth' });
+                
             } catch (error) {
-                console.error('Error editing announcement:', error);
+                console.error('Error loading announcement for edit:', error);
                 showAlert('Failed to load announcement for editing: ' + error.message, 'danger');
             }
         }
 
-        // Delete announcement with improved error handling
+        // Delete announcement using controller endpoint
         async function deleteAnnouncement(id) {
             if (!id) {
                 showAlert('Invalid announcement ID', 'danger');
                 return;
             }
             
-            if (confirm('Are you sure you want to delete this announcement?')) {
-                try {
-                    let deleted = false;
-                    
-                    // Try to delete from backend
-                    try {
-                        const response = await fetch(`${API_BASE_URL}/deleteAnnouncement/${id}`, {
-                            method: 'DELETE'
-                        });
-                        
-                        if (response.ok) {
-                            deleted = true;
-                            console.log('Successfully deleted from API:', id);
-                        } else {
-                            throw new Error(`API error: ${response.status}`);
-                        }
-                    } catch (apiError) {
-                        console.log('API delete failed:', apiError);
-                    }
-                    
-                    // Always delete from Firebase regardless of API success
-                    try {
-                        await deleteAnnouncementFromFirebase(id);
-                        deleted = true;
-                        console.log('Successfully deleted from Firebase:', id);
-                    } catch (fbError) {
-                        console.error('Firebase delete failed:', fbError);
-                    }
-                    
-                    if (deleted) {
-                        showAlert('Announcement deleted successfully');
-                        loadAnnouncements();
-                    } else {
-                        throw new Error('Failed to delete announcement from all sources');
-                    }
-                } catch (error) {
-                    console.error('Error deleting announcement:', error);
-                    showAlert('Error deleting announcement: ' + error.message, 'danger');
-                }
+            // Confirm before deleting
+            if (!confirm('Are you sure you want to delete this announcement?')) {
+                return;
             }
-        }
-
-        // Delete announcement from Firebase
-        async function deleteAnnouncementFromFirebase(id) {
+            
             try {
-                const announcementRef = ref(database, `Announcements/${id}`);
-                await remove(announcementRef);
-            } catch (error) {
-                console.error('Error deleting from Firebase:', error);
-                throw error;
-            }
-        }
-
-        // Firebase Storage setup with CORS handling
-        async function setupFirebaseStorage() {
-            try {
-                // Check if user is authenticated
-                if (!auth.currentUser) {
-                    throw new Error('Authentication required');
+                showLoading();
+                
+                // Get auth token
+                const idToken = localStorage.getItem('authToken');
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+                
+                if (idToken) {
+                    headers['Authorization'] = 'Bearer ' + idToken;
                 }
                 
-                const token = await auth.currentUser.getIdToken();
+                // Delete using controller endpoint
+                const response = await fetch(`${API_BASE_URL}/deleteAnnouncement/${id}`, {
+                    method: 'DELETE',
+                    headers: headers
+                });
                 
-                return {
-                    uploadImage: async function(imageFile) {
-                        if (!imageFile) return null;
-                        
-                        try {
-                            // Local backend upload first
-                            try {
-                                const formData = new FormData();
-                                formData.append('image', imageFile);
-                                
-                                const uploadResponse = await fetch('/api/uploads/image', {
-                                    method: 'POST',
-                                    body: formData
-                                });
-                                
-                                if (uploadResponse.ok) {
-                                    const result = await uploadResponse.json();
-                                    console.log('Image uploaded to backend successfully');
-                                    return result.imageUrl || result.url;
-                                }
-                                
-                                throw new Error('Backend upload failed');
-                            } catch (localError) {
-                                console.log('Backend upload failed, trying base64 encoding');
-                                
-                                // Try base64 encoding as fallback
-                                return new Promise((resolve, reject) => {
-                                    const reader = new FileReader();
-                                    reader.readAsDataURL(imageFile);
-                                    reader.onload = () => {
-                                        // Remove the "data:image/jpeg;base64," part
-                                        const base64String = reader.result.split(',')[1];
-                                        resolve(base64String);
-                                    };
-                                    reader.onerror = error => reject(error);
-                                });
-                            }
-                        } catch (error) {
-                            console.error('All image upload methods failed:', error);
-                            return null;
-                        }
-                    }
-                };
+                if (response.ok) {
+                    showAlert('Announcement deleted successfully', 'success');
+                    loadAnnouncements(); // Refresh the list
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(`Error: ${response.status} - ${errorText}`);
+                }
             } catch (error) {
-                console.error('Error setting up storage:', error);
-                return {
-                    uploadImage: async () => null
-                };
+                console.error('Error deleting announcement:', error);
+                showAlert('Failed to delete announcement: ' + error.message, 'danger');
+            } finally {
+                hideLoading();
             }
         }
 
-        // Submit form (create or update) with improved error handling
+        // Submit form using controller endpoints
         async function submitForm(e) {
             e.preventDefault();
             
@@ -897,20 +717,25 @@
             showLoading();
             
             try {
-                let imageData = null;
-                let response;
-                let apiSuccess = false;
+                // Get auth token
+                const idToken = localStorage.getItem('authToken');
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
                 
-                // Create basic announcement object with different ID handling for new vs. edit
+                if (idToken) {
+                    headers['Authorization'] = 'Bearer ' + idToken;
+                }
+                
+                // Create basic announcement object
                 const announcement = {
                     title,
                     content,
                     barangay,
-                    category,
-                    postedAt: new Date().toLocaleString()
+                    category
                 };
                 
-                // If editing, use the existing ID exactly as is
+                // Handle ID for updates
                 if (id) {
                     announcement.id = id;
                     console.log("Editing announcement with ID:", id);
@@ -919,104 +744,59 @@
                     if (!imageFile) {
                         if (existingImageData) {
                             announcement.imageData = existingImageData;
-                            console.log("Preserving existing image data");
                         }
                         if (existingImageUrl) {
                             announcement.imageUrl = existingImageUrl;
-                            console.log("Preserving existing image URL");
                         }
                     }
-                } else {
-                    // Only generate a temp ID for new announcements
-                    announcement.id = `temp-${Date.now()}`;
-                    console.log("Creating new announcement with temp ID:", announcement.id);
                 }
+                
+                let response;
                 
                 // Handle image upload if available
                 if (imageFile) {
-                    try {
-                        const storageHelper = await setupFirebaseStorage();
-                        imageData = await storageHelper.uploadImage(imageFile);
-                        
-                        if (imageData) {
-                            // Check if it's a URL or base64 data
-                            if (imageData.startsWith('http')) {
-                                announcement.imageUrl = imageData;
-                                // Remove any old imageData if we now have a URL
-                                delete announcement.imageData;
-                            } else {
-                                announcement.imageData = imageData;
-                                // Remove any old imageUrl if we now have data
-                                delete announcement.imageUrl;
-                            }
-                            console.log('New image processed successfully');
-                        }
-                    } catch (imageError) {
-                        console.error('Image upload failed:', imageError);
-                        showAlert('Image upload failed but continuing with announcement update', 'warning');
-                    }
-                }
-                
-                // Try API with correct method for update vs. create
-                try {
-                    if (id) {
-                        console.log("Sending PUT request to update announcement:", id);
-                        
-                        // Update existing announcement
-                        response = await fetch(`${API_BASE_URL}/updateAnnouncement/${id}`, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(announcement)
-                        });
-                    } else if (imageFile) {
-                        // Create with image - your existing code
-                        const formData = new FormData();
-                        formData.append('title', title);
-                        formData.append('content', content);
-                        formData.append('barangay', barangay);
-                        formData.append('category', category);
-                        formData.append('image', imageFile);
-                        
-                        response = await fetch(`${API_BASE_URL}/createWithImage`, {
-                            method: 'POST',
-                            body: formData
-                        });
-                    } else {
-                        // Create without image
-                        response = await fetch(`${API_BASE_URL}/createAnnouncements`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(announcement)
-                        });
+                    // Create with image using multipart form
+                    const formData = new FormData();
+                    formData.append('title', title);
+                    formData.append('content', content);
+                    formData.append('barangay', barangay);
+                    formData.append('category', category);
+                    formData.append('image', imageFile);
+                    
+                    // We can't set Authorization header with FormData in certain browsers
+                    // so append it to the URL if needed
+                    let endpoint = `${API_BASE_URL}/createWithImage`;
+                    if (idToken) {
+                        endpoint += `?auth=${encodeURIComponent(idToken)}`;
                     }
                     
-                    if (response && response.ok) {
-                        apiSuccess = true;
-                        // If server returned an ID, use that
-                        try {
-                            const result = await response.json();
-                            if (result && result.id && !id) { // Only update ID for new announcements
-                                announcement.id = result.id;
-                                console.log("Server assigned ID:", result.id);
-                            }
-                        } catch (parseError) {
-                            console.log('Response not JSON:', parseError);
-                        }
-                    }
-                } catch (apiError) {
-                    console.error('API call failed:', apiError);
+                    response = await fetch(endpoint, {
+                        method: 'POST',
+                        body: formData
+                    });
+                } else if (id) {
+                    // Update existing announcement
+                    response = await fetch(`${API_BASE_URL}/updateAnnouncement/${id}`, {
+                        method: 'PUT',
+                        headers: headers,
+                        body: JSON.stringify(announcement)
+                    });
+                } else {
+                    // Create without image
+                    response = await fetch(`${API_BASE_URL}/createAnnouncements`, {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify(announcement)
+                    });
                 }
                 
-                // Save to Firebase with the correct ID
-                await saveAnnouncementToFirebase(announcement);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Error: ${response.status} - ${errorText}`);
+                }
                 
                 // Success message
-                showAlert(id ? 'Announcement updated successfully' : 'Announcement created successfully', 
-                          apiSuccess ? 'success' : 'warning');
+                showAlert(id ? 'Announcement updated successfully' : 'Announcement created successfully', 'success');
                 
                 // Reset form and refresh announcements
                 resetForm();
@@ -1030,28 +810,29 @@
             }
         }
 
-        // Save a single announcement to Firebase
-        async function saveAnnouncementToFirebase(announcement) {
-            if (!announcement || !announcement.id) {
-                throw new Error('Invalid announcement data');
-            }
-            
-            try {
-                // Save directly using the ID as the key
-                const announcementRef = ref(database, `Announcements/${announcement.id}`);
-                await set(announcementRef, announcement);
-                return true;
-            } catch (error) {
-                console.error('Error saving to Firebase:', error);
-                throw error;
-            }
-        }
-
-        // Reset form
+        // Reset form function
         function resetForm() {
             form.reset();
             idInput.value = '';
+            document.getElementById('existing-image-data').value = '';
+            document.getElementById('existing-image-url').value = '';
             formTitle.textContent = 'Create New Announcement';
+        }
+
+        // Helper function for handling image uploads with Firebase Storage
+        // We still need this since controller may not handle all image upload needs
+        async function uploadImageToStorage(imageFile) {
+            if (!imageFile) return null;
+            
+            try {
+                const imageRef = storageRef(storage, 'announcements/' + Date.now() + '_' + imageFile.name);
+                const snapshot = await uploadBytes(imageRef, imageFile);
+                const downloadUrl = await getDownloadURL(snapshot.ref);
+                return downloadUrl;
+            } catch (error) {
+                console.error("Error uploading image:", error);
+                throw error;
+            }
         }
     </script>
 </body>

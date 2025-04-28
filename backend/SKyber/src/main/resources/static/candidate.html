@@ -1,0 +1,1074 @@
+\static\candidates.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Management | SKyber</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding-bottom: 50px;
+        }
+        .navbar {
+            background-color: #2980b9;
+        }
+        .card-header {
+            background-color: #3498db;
+            color: white;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background-color: #3498db;
+            border-color: #2980b9;
+        }
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2471a3;
+        }
+        .btn-danger {
+            background-color: #e74c3c;
+            border-color: #c0392b;
+        }
+        .btn-danger:hover {
+            background-color: #c0392b;
+            border-color: #a93226;
+        }
+        .partylist-badge-independent {
+            background-color: #95a5a6;
+            color: white;
+        }
+        .partylist-badge-1 {
+            background-color: #3498db;
+            color: white;
+        }
+        .partylist-badge-2 {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .partylist-badge-3 {
+            background-color: #f39c12;
+            color: white;
+        }
+        .partylist-badge-4 {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .candidate-card {
+            transition: transform 0.3s;
+        }
+        .candidate-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .candidate-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 5px 5px 0 0;
+        }
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="welcome.html">SKyber</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="welcome.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="announcement.html">Announcements</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pt.html">Project Transparency</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="candidates.html">Candidates</a>
+                    </li>
+                </ul>
+                <button id="logoutBtn" class="btn btn-outline-light">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Alert Container -->
+        <div class="alert-container"></div>
+        
+        <!-- Main Content -->
+        <div class="row">
+            <!-- Form Column -->
+            <div class="col-lg-4">
+                <div class="card mb-4 shadow">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 id="formTitle" class="mb-0">Add New Candidate</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="candidateForm">
+                            <!-- Hidden input for ID when editing -->
+                            <input type="hidden" id="candidateId">
+                            
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label for="firstName" class="form-label">First Name*</label>
+                                    <input type="text" class="form-control" id="firstName" required>
+                                </div>
+                                <div class="col">
+                                    <label for="lastName" class="form-label">Last Name*</label>
+                                    <input type="text" class="form-control" id="lastName" required>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label for="age" class="form-label">Age</label>
+                                    <input type="text" class="form-control" id="age">
+                                </div>
+                                <div class="col">
+                                    <label for="partylist" class="form-label">Partylist</label>
+                                    <input type="text" class="form-control" id="partylist">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="address">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="platform" class="form-label">Platform</label>
+                                <textarea class="form-control" id="platform" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="candidateImage" class="form-label">Candidate Image</label>
+                                <input type="file" class="form-control" id="candidateImage" accept="image/*">
+                            </div>
+
+                            <!-- Image Preview -->
+                            <div id="imagePreviewContainer" class="mb-3 d-none">
+                                <label class="form-label">Image Preview</label>
+                                <div class="text-center">
+                                    <img id="imagePreview" class="img-fluid rounded profile-pic mx-auto d-block" alt="Image preview">
+                                </div>
+                            </div>
+
+                            <!-- Hidden fields for image data when editing -->
+                            <input type="hidden" id="existingImageData">
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <button type="button" id="resetBtn" class="btn btn-secondary">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Candidates Column -->
+            <div class="col-lg-8">
+                <div class="card shadow mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Candidates</h5>
+                        <div>
+                            <button id="refreshBtn" class="btn btn-sm btn-outline-light">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="loadingMessage" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3">Loading candidates...</p>
+                        </div>
+                        
+                        <div id="errorMessage" class="alert alert-danger d-none"></div>
+                        
+                        <div id="noCandidatesMessage" class="text-center py-5 d-none">
+                            <div class="text-muted">
+                                <i class="fas fa-users fa-3x mb-3"></i>
+                                <p>No candidates found. Add your first candidate to get started!</p>
+                            </div>
+                        </div>
+                        
+                        <div id="candidatesContainer" class="row g-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+        // Import the necessary Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+        import { getDatabase, ref, onValue, set, push, remove, update, get } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+
+        // Check if hashCode function exists and remove it
+        if (String.prototype.hashCode) {
+            console.log("FOUND HASHCODE FUNCTION - REMOVING IT");
+            delete String.prototype.hashCode;
+        }
+
+        // Check for keyToId function and remove/replace it if found
+        function findAndFixKeyToIdFunction() {
+            // Search all defined functions
+            for (let key in window) {
+                if (typeof window[key] === 'function' && 
+                    window[key].toString().includes('hashCode')) {
+                    console.log("Found potential ID conversion function:", key);
+                    window[key] = function(id) { 
+                        console.log(`ID conversion attempted on: ${id}, returning original`);
+                        return id; 
+                    };
+                }
+            }
+        }
+
+        // Call this early
+        findAndFixKeyToIdFunction();
+
+        // Debug function to see what's happening with IDs
+        function logCandidateIds(candidates) {
+            console.log("==== CANDIDATE IDS ====");
+            candidates.forEach(c => {
+                console.log(`${c.firstName} ${c.lastName}: ID=${c.id} (${typeof c.id})`);
+            });
+            console.log("======================");
+        }
+
+        // Add this debugging function
+        function debugIdType(id, label) {
+            console.log(`DEBUG ${label}: ID=${id}, Type=${typeof id}, isNaN=${isNaN(id)}`);
+            return String(id); // Always return string ID
+        }
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAuF4fCivSrXo8wHnmzXzYbaxGdZBdlDAo",
+            authDomain: "skyber-57fa5.firebaseapp.com",
+            projectId: "skyber-57fa5",
+            storageBucket: "skyber-57fa5.appspot.com",
+            messagingSenderId: "627178043013",
+            appId: "1:627178043013:android:eb879a84075c6dbccf9bec",
+            databaseURL: "https://skyber-57fa5-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+        const storage = getStorage(app);
+
+        // API base URL
+        const API_BASE_URL = "/api/candidates";
+
+        // DOM elements
+        const candidateForm = document.getElementById('candidateForm');
+        const candidateId = document.getElementById('candidateId');
+        const firstNameInput = document.getElementById('firstName');
+        const lastNameInput = document.getElementById('lastName');
+        const ageInput = document.getElementById('age');
+        const addressInput = document.getElementById('address');
+        const partylistInput = document.getElementById('partylist');
+        const platformInput = document.getElementById('platform');
+        const candidateImageInput = document.getElementById('candidateImage');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const existingImageData = document.getElementById('existingImageData');
+        const formTitle = document.getElementById('formTitle');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const noCandidatesMessage = document.getElementById('noCandidatesMessage');
+        const candidatesContainer = document.getElementById('candidatesContainer');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Check authentication
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "login.html";
+            }
+        });
+
+        // Initialize function
+        function initialize() {
+            // Set up event listeners
+            candidateForm.addEventListener('submit', submitForm);
+            resetBtn.addEventListener('click', resetForm);
+            refreshBtn.addEventListener('click', loadCandidates);
+            logoutBtn.addEventListener('click', handleLogout);
+            candidateImageInput.addEventListener('change', handleImagePreview);
+            
+            // Load candidates on page load
+            loadCandidates();
+        }
+
+        // Load all candidates
+        async function loadCandidates() {
+            // Show loading message, hide error and candidates
+            loadingMessage.style.display = 'block';
+            errorMessage.classList.add('d-none');
+            candidatesContainer.innerHTML = '';
+            noCandidatesMessage.classList.add('d-none');
+            
+            try {
+                // Always use the controller method first
+                console.log("Fetching candidates from API...");
+                const response = await fetch(`${API_BASE_URL}/getAllCandidates`);
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const candidates = await response.json();
+                
+                // Deduplicate candidates based on ID
+                const uniqueCandidates = [];
+                const seenIds = new Set();
+                
+                candidates.forEach(candidate => {
+                    if (!seenIds.has(candidate.id)) {
+                        seenIds.add(candidate.id);
+                        uniqueCandidates.push(candidate);
+                    }
+                });
+                
+                displayCandidates(uniqueCandidates);
+                
+            } catch (error) {
+                console.error("API fetch failed, trying Firebase", error);
+                
+                // Only use Firebase as fallback
+                try {
+                    const candidates = await getCandidatesFromFirebase();
+                    displayCandidates(candidates);
+                    showAlert("Showing candidates from local cache. Some information might not be up to date.", "warning");
+                } catch (fbError) {
+                    console.error("Firebase fetch also failed", fbError);
+                    errorMessage.textContent = "Failed to load candidates. Please try again later.";
+                    errorMessage.classList.remove('d-none');
+                }
+            } finally {
+                loadingMessage.style.display = 'none';
+            }
+        }
+        
+        // Get candidates from Firebase
+        function getCandidatesFromFirebase() {
+            return new Promise((resolve, reject) => {
+                const candidatesRef = ref(database, 'Candidates');
+                
+                onValue(candidatesRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        const candidates = [];
+                        snapshot.forEach((childSnapshot) => {
+                            const key = childSnapshot.key;
+                            const data = childSnapshot.val();
+                            
+                            // Create candidate object
+                            const candidate = {
+                                id: key,
+                                firstName: data.firstName || '',
+                                lastName: data.lastName || '',
+                                age: data.age || '',
+                                address: data.address || '',
+                                partylist: data.partylist || '',
+                                platform: data.platform || '',
+                                candidateImage: data.candidateImage || ''
+                            };
+                            
+                            candidates.push(candidate);
+                        });
+                        
+                        resolve(candidates);
+                    } else {
+                        resolve([]);
+                    }
+                }, (error) => {
+                    reject(error);
+                });
+            });
+        }
+        
+        // Display candidates
+        function displayCandidates(candidates) {
+            // Add this line
+            logCandidateIds(candidates);
+            
+            candidatesContainer.innerHTML = '';
+            
+            if (!candidates || candidates.length === 0) {
+                noCandidatesMessage.classList.remove('d-none');
+                return;
+            }
+            
+            candidates.forEach(candidate => {
+                // Determine partylist badge class
+                let partylistBadgeClass = 'partylist-badge-independent';
+                if (candidate.partylist) {
+                    // Simple logic to assign colors based on first character
+                    const firstChar = candidate.partylist.charAt(0).toLowerCase();
+                    if ('abcd'.includes(firstChar)) partylistBadgeClass = 'partylist-badge-1';
+                    else if ('efghi'.includes(firstChar)) partylistBadgeClass = 'partylist-badge-2';
+                    else if ('jklmnopq'.includes(firstChar)) partylistBadgeClass = 'partylist-badge-3';
+                    else if ('rstuvwxyz'.includes(firstChar)) partylistBadgeClass = 'partylist-badge-4';
+                }
+                
+                // Create candidate card
+                const candidateCard = document.createElement('div');
+                candidateCard.className = 'col-md-6 mb-4';
+                candidateCard.innerHTML = `
+                    <div class="card candidate-card h-100 shadow">
+                        <div class="card-body text-center pt-4 pb-2">
+                            ${candidate.candidateImage ? 
+                                `<img src="data:image/jpeg;base64,${candidate.candidateImage}" class="profile-pic mb-3" alt="${candidate.firstName} ${candidate.lastName}">` : 
+                                `<div class="profile-pic bg-light mx-auto mb-3 d-flex align-items-center justify-content-center">
+                                   <i class="fas fa-user fa-2x text-muted"></i>
+                                 </div>`
+                            }
+                            <h5 class="card-title mb-1">${candidate.firstName} ${candidate.lastName}</h5>
+                            ${candidate.partylist ? 
+                                `<span class="badge ${partylistBadgeClass} mb-2">${candidate.partylist}</span>` : 
+                                '<span class="badge partylist-badge-independent mb-2">Independent</span>'
+                            }
+                            ${candidate.age ? 
+                                `<div class="text-muted small mb-2">Age: ${candidate.age}</div>` : ''
+                            }
+                            ${candidate.address ? 
+                                `<div class="text-muted small mb-3">From: ${candidate.address}</div>` : ''
+                            }
+                            ${candidate.platform ? 
+                                `<div class="bg-light p-2 mb-3 rounded">
+                                    <p class="small text-start mb-0"><strong>Platform:</strong> ${truncateText(candidate.platform, 100)}</p>
+                                 </div>` : ''
+                            }
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-sm btn-outline-primary view-btn" data-id="${candidate.id}">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-secondary edit-btn" data-id="${candidate.id}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${candidate.id}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Attach event listeners
+                const viewBtn = candidateCard.querySelector('.view-btn');
+                const editBtn = candidateCard.querySelector('.edit-btn');
+                const deleteBtn = candidateCard.querySelector('.delete-btn');
+                
+                viewBtn.addEventListener('click', () => viewCandidate(candidate));
+                
+                // Update edit/delete handlers to explicitly convert IDs
+                editBtn.addEventListener('click', () => {
+                    const stringId = String(candidate.id);
+                    console.log("Edit clicked with string ID:", stringId);
+                    editCandidate(stringId);
+                });
+
+                deleteBtn.addEventListener('click', () => {
+                    const stringId = String(candidate.id);
+                    console.log("Delete clicked with string ID:", stringId);
+                    confirmDeleteCandidate(stringId, `${candidate.firstName} ${candidate.lastName}`);
+                });
+                
+                candidatesContainer.appendChild(candidateCard);
+            });
+        }
+        
+        // Helper to truncate text
+        function truncateText(text, maxLength) {
+            if (!text) return '';
+            return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+        }
+        
+        // View candidate details (modal)
+        function viewCandidate(candidate) {
+            // Create modal element
+            const modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.id = 'candidateModal';
+            modal.setAttribute('tabindex', '-1');
+            modal.innerHTML = `
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Candidate Profile</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-4 text-center mb-3">
+                                    ${candidate.candidateImage ? 
+                                        `<img src="data:image/jpeg;base64,${candidate.candidateImage}" class="img-fluid rounded mb-3" alt="${candidate.firstName} ${candidate.lastName}" style="max-height: 250px;">` : 
+                                        `<div class="bg-light text-center py-5 mb-3 rounded">
+                                            <i class="fas fa-user fa-3x text-muted"></i>
+                                            <p class="mt-2">No image available</p>
+                                        </div>`
+                                    }
+                                </div>
+                                <div class="col-md-8">
+                                    <h4>${candidate.firstName} ${candidate.lastName}</h4>
+                                    <div class="mb-3">
+                                        ${candidate.partylist ? 
+                                            `<span class="badge ${getPartylistBadgeClass(candidate.partylist)}">${candidate.partylist}</span>` : 
+                                            '<span class="badge partylist-badge-independent">Independent</span>'
+                                        }
+                                    </div>
+                                    <div class="mb-3">
+                                        <strong>Age:</strong> ${candidate.age || 'Not specified'}
+                                    </div>
+                                    <div class="mb-3">
+                                        <strong>Address:</strong><br>
+                                        ${candidate.address || 'Not specified'}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <h6>Platform</h6>
+                                        <p>${candidate.platform || 'No platform provided'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary edit-btn" data-id="${candidate.id}">Edit Candidate</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add to body and show
+            document.body.appendChild(modal);
+            const modalInstance = new bootstrap.Modal(modal);
+            modalInstance.show();
+            
+            // Handle edit button in modal
+            const modalEditBtn = modal.querySelector('.edit-btn');
+            modalEditBtn.addEventListener('click', () => {
+                modalInstance.hide();
+                editCandidate(candidate.id);
+                // Remove modal after hiding
+                modal.addEventListener('hidden.bs.modal', () => {
+                    modal.remove();
+                });
+            });
+            
+            // Remove modal from DOM after it's hidden
+            modal.addEventListener('hidden.bs.modal', () => {
+                modal.remove();
+            });
+        }
+        
+        // Get partylist badge class
+        function getPartylistBadgeClass(partylist) {
+            if (!partylist) return 'partylist-badge-independent';
+            
+            // Simple logic to assign colors based on first character
+            const firstChar = partylist.charAt(0).toLowerCase();
+            if ('abcd'.includes(firstChar)) return 'partylist-badge-1';
+            else if ('efghi'.includes(firstChar)) return 'partylist-badge-2';
+            else if ('jklmnopq'.includes(firstChar)) return 'partylist-badge-3';
+            else if ('rstuvwxyz'.includes(firstChar)) return 'partylist-badge-4';
+            
+            return 'partylist-badge-independent';
+        }
+        
+        // Edit candidate
+        async function editCandidate(id) {
+            showLoading();
+            console.log("Edit request for candidate ID:", id);
+            
+            try {
+                // First, get the candidate details
+                const candidate = await getCandidateById(id);
+                
+                if (!candidate) {
+                    throw new Error('Candidate not found');
+                }
+                
+                console.log("Loaded candidate for editing:", candidate);
+                
+                // Populate form with candidate data
+                candidateId.value = candidate.id;
+                firstNameInput.value = candidate.firstName || '';
+                lastNameInput.value = candidate.lastName || '';
+                ageInput.value = candidate.age || '';
+                addressInput.value = candidate.address || '';
+                partylistInput.value = candidate.partylist || '';
+                platformInput.value = candidate.platform || '';
+                
+                // Store image data in hidden field
+                existingImageData.value = candidate.candidateImage || '';
+                
+                // Show image preview if exists
+                if (candidate.candidateImage) {
+                    imagePreview.src = `data:image/jpeg;base64,${candidate.candidateImage}`;
+                    imagePreviewContainer.classList.remove('d-none');
+                } else {
+                    imagePreviewContainer.classList.add('d-none');
+                }
+                
+                // Update form title
+                formTitle.textContent = 'Edit Candidate';
+                
+                // Scroll to form
+                candidateForm.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error editing candidate:', error);
+                showAlert('Failed to load candidate for editing: ' + error.message, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Replace the getCandidateById function with this implementation
+        async function getCandidateById(id) {
+            try {
+                // Ensure ID is a string
+                const stringId = String(id);
+                console.log("Fetching candidate with ID:", stringId, "Type:", typeof stringId);
+                
+                if (!stringId) {
+                    console.error("Invalid candidate ID:", stringId);
+                    throw new Error("Invalid candidate ID");
+                }
+                
+                // Try from API first using string ID
+                const response = await fetch(`${API_BASE_URL}/getCandidate/${stringId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.warn(`API error (${response.status}): ${errorText}`);
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const candidate = await response.json();
+                console.log("API returned candidate:", candidate);
+                return candidate;
+            } catch (apiError) {
+                console.log('API fetch failed, trying Firebase for ID:', id);
+                
+                // Try from Firebase as fallback
+                return new Promise((resolve, reject) => {
+                    // Ensure string ID for Firebase lookup
+                    const stringId = String(id);
+                    const candidateRef = ref(database, `Candidates/${stringId}`);
+                    
+                    get(candidateRef).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const data = snapshot.val();
+                            data.id = snapshot.key; // Ensure the ID is the Firebase key (string)
+                            console.log("Found candidate in Firebase:", data);
+                            resolve(data);
+                        } else {
+                            console.error("Candidate not found in Firebase either");
+                            reject(new Error('Candidate not found'));
+                        }
+                    }).catch((error) => {
+                        console.error("Firebase fetch error:", error);
+                        reject(error);
+                    });
+                });
+            }
+        }
+        
+        // Handle form submission
+        async function submitForm(e) {
+            e.preventDefault();
+            showLoading();
+            
+            try {
+                const id = candidateId.value;
+                const isEditing = !!id;
+                
+                // Debug info
+                console.log("Form submission - isEditing:", isEditing, "ID:", id);
+                
+                // Get form values
+                const candidateData = {
+                    firstName: firstNameInput.value,
+                    lastName: lastNameInput.value,
+                    age: ageInput.value,
+                    address: addressInput.value,
+                    partylist: partylistInput.value,
+                    platform: platformInput.value
+                };
+                
+                // Handle different submission paths (create/update, with/without image)
+                if (isEditing) {
+                    console.log("Updating existing candidate with ID:", id);
+                    
+                    let updatedImageData = null;
+                    
+                    // Check if we have a new image to upload
+                    if (candidateImageInput.files[0]) {
+                        console.log("New image selected, updating image first");
+                        
+                        try {
+                            // First update the image
+                            const formData = new FormData();
+                            formData.append('image', candidateImageInput.files[0]);
+                            
+                            // Log image details to help debug
+                            console.log("Image details:", {
+                                name: candidateImageInput.files[0].name,
+                                size: candidateImageInput.files[0].size,
+                                type: candidateImageInput.files[0].type
+                            });
+                            
+                            // Try image upload
+                            const imageResponse = await fetch(`${API_BASE_URL}/updateCandidate/${id}/image`, {
+                                method: 'PUT',
+                                body: formData
+                            });
+                            
+                            if (!imageResponse.ok) {
+                                const errorText = await imageResponse.text();
+                                console.error("Failed to update image:", errorText);
+                                throw new Error(`Failed to update image: ${imageResponse.status} - ${errorText}`);
+                            }
+                            
+                            const updatedCandidate = await imageResponse.json();
+                            console.log("Image updated successfully");
+                            
+                            // Store the updated image for Firebase
+                            if (updatedCandidate && updatedCandidate.candidateImage) {
+                                updatedImageData = updatedCandidate.candidateImage;
+                                candidateData.candidateImage = updatedCandidate.candidateImage;
+                            }
+                        } catch (imageError) {
+                            console.error("Error updating image:", imageError);
+                            
+                            // Still proceed with updating other fields
+                            showAlert(`Image update failed: ${imageError.message}. Other fields will still be updated.`, 'warning');
+                        }
+                    } else if (existingImageData.value) {
+                        // Keep existing image if no new one is provided
+                        candidateData.candidateImage = existingImageData.value;
+                    }
+                    
+                    // Then update the rest of the candidate data
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/updateCandidate/${id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(candidateData)
+                        });
+                        
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            throw new Error(`API error (${response.status}): ${errorText}`);
+                        }
+                        
+                        const updatedCandidate = await response.json();
+                        console.log("Candidate data updated successfully");
+                        
+                        // Update Firebase
+                        try {
+                            // Make sure to use the image we got earlier if available
+                            saveToFirebase(id, {
+                                ...candidateData,
+                                id: id,
+                                candidateImage: updatedImageData || candidateData.candidateImage
+                            });
+                        } catch (firebaseError) {
+                            console.error("Firebase update error:", firebaseError);
+                        }
+                        
+                        showAlert('Candidate updated successfully', 'success');
+                        resetForm();
+                        loadCandidates();
+                    } catch (updateError) {
+                        console.error("Error updating candidate data:", updateError);
+                        showAlert(`Error updating candidate: ${updateError.message}`, 'danger');
+                    }
+                } else {
+                    // CREATE NEW CANDIDATE
+                    console.log("Creating new candidate");
+                    let response;
+
+                    if (candidateImageInput.files[0]) {
+                        // Create with image using controller method
+                        const formData = new FormData();
+                        formData.append('firstName', candidateData.firstName);
+                        formData.append('lastName', candidateData.lastName);
+                        formData.append('age', candidateData.age);
+                        formData.append('address', candidateData.address);
+                        formData.append('partylist', candidateData.partylist);
+                        formData.append('platform', candidateData.platform);
+                        formData.append('image', candidateImageInput.files[0]);
+                        
+                        console.log("Submitting with image using controller method");
+                        
+                        response = await fetch(`${API_BASE_URL}/createCandidate/with-image`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                    } else {
+                        // Create without image using controller method
+                        console.log("Submitting without image using controller method");
+                        response = await fetch(`${API_BASE_URL}/createCandidate`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(candidateData)
+                        });
+                    }
+
+                    // Handle API response
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`API error (${response.status}): ${errorText}`);
+                    }
+
+                    const createdCandidate = await response.json();
+                    console.log("Candidate created successfully via controller:", createdCandidate);
+
+                    // No need to save to Firebase again - the controller already does this
+                    showAlert('Candidate created successfully', 'success');
+                    resetForm();
+                    loadCandidates();
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                showAlert(`Error: ${error.message}`, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Save candidate to Firebase
+        function saveToFirebase(id, candidateData) {
+            if (!id) {
+                console.error("No ID provided for Firebase save");
+                return;
+            }
+
+            const candidateRef = ref(database, `Candidates/${id}`);
+            
+            // Add ID to candidate data
+            candidateData.id = id;
+            
+            // Use update instead of set for existing records to prevent duplication
+            update(candidateRef, candidateData)
+                .then(() => {
+                    console.log('Updated in Firebase successfully');
+                })
+                .catch((error) => {
+                    console.error('Error updating Firebase:', error);
+                });
+        }
+        
+        // Confirm delete candidate
+        function confirmDeleteCandidate(id, name) {
+            if (confirm(`Are you sure you want to delete candidate "${name}"?`)) {
+                deleteCandidate(id);
+            }
+        }
+        
+        // Delete candidate
+        async function deleteCandidate(id) {
+            showLoading();
+            
+            try {
+                console.log("Attempting to delete candidate with ID:", id);
+                
+                // Try API delete - FIX: Changed from updateCandidate to deleteCandidate
+                const response = await fetch(`${API_BASE_URL}/deleteCandidate/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error(`API delete failed with status ${response.status}: ${errorText}`);
+                    
+                    // Even if API fails, try to delete from Firebase
+                    console.log("Attempting Firebase delete as fallback");
+                    const candidateRef = ref(database, `Candidates/${id}`);
+                    await remove(candidateRef);
+                    showAlert('Candidate deleted from local cache', 'warning');
+                    loadCandidates();
+                    return;
+                }
+                
+                // Delete from Firebase as well
+                try {
+                    const candidateRef = ref(database, `Candidates/${id}`);
+                    await remove(candidateRef);
+                } catch (fbError) {
+                    console.error('Error deleting from Firebase:', fbError);
+                }
+                
+                showAlert('Candidate deleted successfully', 'success');
+                loadCandidates();
+            } catch (error) {
+                console.error('Error deleting candidate:', error);
+                showAlert(`Error deleting candidate: ${error.message}. Try again later.`, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Reset form
+        function resetForm() {
+            candidateForm.reset();
+            candidateId.value = '';
+            formTitle.textContent = 'Add New Candidate';
+            imagePreviewContainer.classList.add('d-none');
+            existingImageData.value = '';
+        }
+        
+        // Handle image preview
+        function handleImagePreview(e) {
+            const file = e.target.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.classList.remove('d-none');
+                    
+                    // Clear any existing image data to ensure we use the new image
+                    existingImageData.value = '';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // If no file is selected, keep showing the existing image if available
+                if (!existingImageData.value) {
+                    imagePreviewContainer.classList.add('d-none');
+                }
+            }
+        }
+        
+        // Handle logout
+        async function handleLogout() {
+            try {
+                await signOut(auth);
+                window.location.href = "login.html";
+            } catch (error) {
+                console.error('Error logging out:', error);
+                showAlert('Error logging out', 'danger');
+            }
+        }
+        
+        // Show loading spinner
+        function showLoading() {
+            loadingSpinner.style.display = 'flex';
+        }
+        
+        // Hide loading spinner
+        function hideLoading() {
+            loadingSpinner.style.display = 'none';
+        }
+        
+        // Show alert message
+        function showAlert(message, type) {
+            const alertContainer = document.querySelector('.alert-container');
+            
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            alertContainer.appendChild(alert);
+            
+            // Auto dismiss after 5 seconds
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => {
+                    alert.remove();
+                }, 300);
+            }, 5000);
+        }
+        
+        // Initialize the page
+        initialize();
+    </script>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

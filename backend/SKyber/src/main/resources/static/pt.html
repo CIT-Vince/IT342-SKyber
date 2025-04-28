@@ -340,32 +340,6 @@
             loadProjects();
         }
 
-        // Add this helper function
-
-        // Convert Firebase string key to numeric ID
-        function keyToId(key) {
-            return key.hashCode(); // You'll need to implement a hashCode function
-        }
-
-        // Implementation of a simple hashCode function for strings
-        String.prototype.hashCode = function() {
-            let hash = 0;
-            for (let i = 0; i < this.length; i++) {
-                const char = this.charCodeAt(i);
-                hash = ((hash << 5) - hash) + char;
-                hash = hash & hash; // Convert to 32bit integer
-            }
-            return hash;
-        };
-
-        // Convert numeric ID back to Firebase key (this is approximate)
-        // Use this when you need to get a project by ID
-        function findKeyForId(id) {
-            // This is a simplified approach - in a real app you would 
-            // probably store and retrieve the mapping
-            return id.toString();
-        }
-
         // Load all projects
         async function loadProjects() {
             // Show loading message, hide error and projects
@@ -521,8 +495,18 @@
                 const deleteBtn = projectCard.querySelector('.delete-btn');
                 
                 viewBtn.addEventListener('click', () => viewProject(project));
-                editBtn.addEventListener('click', () => editProject(project.id));
-                deleteBtn.addEventListener('click', () => confirmDeleteProject(project.id, project.projectName));
+                editBtn.addEventListener('click', () => {
+                    // Use the string ID directly
+                    const stringId = String(project.id);
+                    console.log("Edit clicked with string ID:", stringId);
+                    editProject(stringId);
+                });
+                deleteBtn.addEventListener('click', () => {
+                    // Use the string ID directly
+                    const stringId = String(project.id);
+                    console.log("Delete clicked with string ID:", stringId);
+                    confirmDeleteProject(stringId, project.projectName);
+                });
                 
                 projectsContainer.appendChild(projectCard);
             });
@@ -1142,3 +1126,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+``` 

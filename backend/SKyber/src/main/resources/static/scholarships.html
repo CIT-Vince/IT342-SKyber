@@ -1,0 +1,864 @@
+resources\static\scholarship.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKyber - Scholarships</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            padding-top: 60px;
+            background-color: #f8f9fa;
+        }
+        .form-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .scholarship-card {
+            height: 100%;
+            transition: transform 0.2s;
+        }
+        .scholarship-card:hover {
+            transform: translateY(-5px);
+        }
+        .scholarship-badge-1 {
+            background-color: #4285F4;
+        }
+        .scholarship-badge-2 {
+            background-color: #34A853;
+        }
+        .scholarship-badge-3 {
+            background-color: #FBBC05;
+            color: #212529;
+        }
+        .scholarship-badge-4 {
+            background-color: #EA4335;
+        }
+        .scholarship-badge-independent {
+            background-color: #9E9E9E;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .spinner-container {
+            text-align: center;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        #imagePreviewContainer {
+            max-width: 100%;
+            max-height: 300px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-graduation-cap me-2"></i>SKyber Scholarships
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="candidate.html">
+                            <i class="fas fa-user-tie me-1"></i> Candidates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="scholarship.html">
+                            <i class="fas fa-graduation-cap me-1"></i> Scholarships
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pt.html">
+                            <i class="fas fa-clipboard-list me-1"></i> Projects
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="refreshBtn" class="btn btn-outline-light btn-sm mt-1 ms-2">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button id="logoutBtn" class="btn btn-outline-light btn-sm mt-1 ms-2">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-container">
+                    <h3 id="formTitle" class="mb-4">Add New Scholarship</h3>
+                    <form id="scholarshipForm">
+                        <input type="hidden" id="scholarshipId">
+                        <input type="hidden" id="existingImageData">
+                        <div class="mb-3">
+                            <label for="titleInput" class="form-label">Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="titleInput" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="typeInput" class="form-label">Scholarship Type <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="typeInput" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descriptionInput" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="descriptionInput" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="linkInput" class="form-label">Application Link</label>
+                            <input type="url" class="form-control" id="linkInput">
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactEmailInput" class="form-label">Contact Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="contactEmailInput" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="scholarshipImageInput" class="form-label">Scholarship Image</label>
+                            <input type="file" class="form-control" id="scholarshipImageInput" accept="image/*">
+                        </div>
+                        <div id="imagePreviewContainer" class="d-none">
+                            <img id="imagePreview" src="#" alt="Image Preview" class="img-thumbnail">
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save Scholarship
+                            </button>
+                            <button type="button" id="resetBtn" class="btn btn-outline-secondary">
+                                <i class="fas fa-redo me-1"></i> Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div id="alertContainer"></div>
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h3 class="mb-0">All Scholarships</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="loadingMessage" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading scholarships...</p>
+                        </div>
+                        <div id="errorMessage" class="alert alert-danger text-center py-3" style="display: none;">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span id="errorText">Failed to load scholarships.</span>
+                        </div>
+                        <div id="noScholarshipsMessage" class="text-center py-5" style="display: none;">
+                            <i class="fas fa-graduation-cap fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">No scholarships found</h4>
+                            <p class="text-muted">Add your first scholarship using the form.</p>
+                        </div>
+                        <div id="scholarshipsContainer" class="row row-cols-1 row-cols-md-2 g-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="spinner-container">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Processing...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js';
+        import { getDatabase, ref, push, set, remove, get, child } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js';
+        //import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqLvqp-b0lViulsx4b0R7Ol7jhoPZhPXI",
+            authDomain: "it342-skyber.firebaseapp.com",
+            projectId: "it342-skyber",
+            storageBucket: "it342-skyber.appspot.com",
+            messagingSenderId: "722519299026",
+            appId: "1:722519299026:web:5b9d2b2c50e54f946c2f57",
+            measurementId: "G-JPZ1HDEN70"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // API base URL
+        const API_BASE_URL = '/api/scholarships';
+
+        // DOM elements
+        const scholarshipForm = document.getElementById('scholarshipForm');
+        const formTitle = document.getElementById('formTitle');
+        const scholarshipId = document.getElementById('scholarshipId');
+        const titleInput = document.getElementById('titleInput');
+        const typeInput = document.getElementById('typeInput');
+        const descriptionInput = document.getElementById('descriptionInput');
+        const linkInput = document.getElementById('linkInput');
+        const contactEmailInput = document.getElementById('contactEmailInput');
+        const scholarshipImageInput = document.getElementById('scholarshipImageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const existingImageData = document.getElementById('existingImageData');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const noScholarshipsMessage = document.getElementById('noScholarshipsMessage');
+        const scholarshipsContainer = document.getElementById('scholarshipsContainer');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Check authentication
+        console.log("Scholarship page loaded - No auth required");
+
+        // Initialize function
+        function initialize() {
+            // Set up event listeners
+            scholarshipForm.addEventListener('submit', submitForm);
+            resetBtn.addEventListener('click', resetForm);
+            refreshBtn.addEventListener('click', loadScholarships);
+            logoutBtn.addEventListener('click', handleLogout);
+            scholarshipImageInput.addEventListener('change', handleImagePreview);
+            
+            // Load scholarships on page load
+            loadScholarships();
+        }
+
+        // Load all scholarships
+        async function loadScholarships() {
+            showLoading();
+            hideError();
+            
+            try {
+                // Always use the controller method first
+                console.log("Fetching scholarships from API...");
+                const response = await fetch(`${API_BASE_URL}/getAllScholarships`);
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const scholarships = await response.json();
+                console.log(`Loaded ${scholarships.length} scholarships from API`);
+                
+                displayScholarships(scholarships);
+            } catch (error) {
+                console.error('Error loading scholarships:', error);
+                showError('Failed to load scholarships. Please try again later.');
+                
+                // Try to load from Firebase as fallback
+                try {
+                    console.log("Trying Firebase as fallback...");
+                    const scholarshipsRef = ref(database, 'Scholarships');
+                    const snapshot = await get(scholarshipsRef);
+                    
+                    if (snapshot.exists()) {
+                        const scholarships = [];
+                        snapshot.forEach((childSnapshot) => {
+                            const data = childSnapshot.val();
+                            // Make sure to set the ID
+                            data.id = childSnapshot.key;
+                            scholarships.push(data);
+                        });
+                        
+                        console.log(`Loaded ${scholarships.length} scholarships from Firebase`);
+                        displayScholarships(scholarships);
+                    } else {
+                        console.log("No scholarships found in Firebase");
+                        displayScholarships([]);
+                    }
+                } catch (firebaseError) {
+                    console.error('Firebase fallback failed:', firebaseError);
+                    // Already showing error from API, no need to update
+                }
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Display scholarships
+        function displayScholarships(scholarships) {
+            scholarshipsContainer.innerHTML = '';
+            
+            if (scholarships.length === 0) {
+                noScholarshipsMessage.style.display = 'block';
+                return;
+            }
+            
+            noScholarshipsMessage.style.display = 'none';
+            
+            scholarships.forEach(scholarship => {
+                const scholarshipCard = document.createElement('div');
+                scholarshipCard.className = 'col';
+                scholarshipCard.innerHTML = `
+                    <div class="card scholarship-card h-100 shadow">
+                        ${scholarship.scholarImage ? 
+                            `<div style="height: 140px; overflow: hidden; text-align: center; background-color: #f8f9fa;">
+                                <img src="data:image/jpeg;base64,${scholarship.scholarImage}" class="card-img-top" alt="${scholarship.title}" style="max-height: 140px; object-fit: cover;">
+                             </div>` : 
+                            `<div class="card-img-top text-center py-4 bg-light">
+                                <i class="fas fa-graduation-cap fa-3x text-muted"></i>
+                             </div>`
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">${scholarship.title}</h5>
+                            <span class="badge bg-primary mb-2">${scholarship.type}</span>
+                            <p class="card-text small text-muted mb-3">${truncateText(scholarship.description, 100)}</p>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-sm btn-outline-primary view-btn" data-id="${scholarship.id}">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-secondary edit-btn" data-id="${scholarship.id}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${scholarship.id}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Attach event listeners
+                const viewBtn = scholarshipCard.querySelector('.view-btn');
+                const editBtn = scholarshipCard.querySelector('.edit-btn');
+                const deleteBtn = scholarshipCard.querySelector('.delete-btn');
+                
+                viewBtn.addEventListener('click', () => viewScholarship(scholarship));
+                
+                editBtn.addEventListener('click', () => {
+                    // Use string ID
+                    const stringId = String(scholarship.id);
+                    console.log("Edit clicked with string ID:", stringId);
+                    editScholarship(stringId);
+                });
+                
+                deleteBtn.addEventListener('click', () => {
+                    // Use string ID
+                    const stringId = String(scholarship.id);
+                    console.log("Delete clicked with string ID:", stringId);
+                    confirmDeleteScholarship(stringId, scholarship.title);
+                });
+                
+                scholarshipsContainer.appendChild(scholarshipCard);
+            });
+        }
+
+        // View scholarship details
+        function viewScholarship(scholarship) {
+            // Create modal element
+            const modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.id = 'scholarshipModal';
+            modal.setAttribute('tabindex', '-1');
+            modal.innerHTML = `
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Scholarship Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-4 text-center mb-3">
+                                    ${scholarship.scholarImage ? 
+                                        `<img src="data:image/jpeg;base64,${scholarship.scholarImage}" class="img-fluid rounded mb-3" alt="${scholarship.title}" style="max-height: 250px;">` : 
+                                        `<div class="bg-light text-center py-5 mb-3 rounded">
+                                            <i class="fas fa-graduation-cap fa-3x text-muted"></i>
+                                            <p class="mt-2">No image available</p>
+                                        </div>`
+                                    }
+                                </div>
+                                <div class="col-md-8">
+                                    <h4>${scholarship.title}</h4>
+                                    <div class="mb-3">
+                                        <span class="badge bg-primary">${scholarship.type}</span>
+                                    </div>
+                                    <h6>Description:</h6>
+                                    <p>${scholarship.description || 'No description provided.'}</p>
+                                    ${scholarship.link ? `<p><strong>Application Link:</strong> <a href="${scholarship.link}" target="_blank">${scholarship.link}</a></p>` : ''}
+                                    <p><strong>Contact:</strong> ${scholarship.contactEmail || 'Not provided'}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary edit-modal-btn">
+                                <i class="fas fa-edit me-1"></i> Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add to document
+            document.body.appendChild(modal);
+            
+            // Get Bootstrap modal instance and show it
+            const modalInstance = new bootstrap.Modal(modal);
+            modalInstance.show();
+            
+            // Add event listener for edit button in modal
+            const editBtn = modal.querySelector('.edit-modal-btn');
+            editBtn.addEventListener('click', () => {
+                modalInstance.hide();
+                editScholarship(scholarship.id);
+            });
+            
+            // Clean up when modal is hidden
+            modal.addEventListener('hidden.bs.modal', function () {
+                document.body.removeChild(modal);
+            });
+        }
+
+        // Edit scholarship
+        async function editScholarship(id) {
+            showLoading();
+            console.log("Edit request for scholarship ID:", id);
+            
+            try {
+                // First, get the scholarship details
+                const scholarship = await getScholarshipById(id);
+                
+                if (!scholarship) {
+                    throw new Error('Scholarship not found');
+                }
+                
+                console.log("Loaded scholarship for editing:", scholarship);
+                
+                // Populate form with scholarship data
+                scholarshipId.value = scholarship.id;
+                titleInput.value = scholarship.title || '';
+                typeInput.value = scholarship.type || '';
+                descriptionInput.value = scholarship.description || '';
+                linkInput.value = scholarship.link || '';
+                contactEmailInput.value = scholarship.contactEmail || '';
+                
+                // Store image data in hidden field
+                existingImageData.value = scholarship.scholarImage || '';
+                
+                // Show image preview if exists
+                if (scholarship.scholarImage) {
+                    imagePreview.src = `data:image/jpeg;base64,${scholarship.scholarImage}`;
+                    imagePreviewContainer.classList.remove('d-none');
+                } else {
+                    imagePreviewContainer.classList.add('d-none');
+                }
+                
+                // Update form title
+                formTitle.textContent = 'Edit Scholarship';
+                
+                // Scroll to form
+                scholarshipForm.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error editing scholarship:', error);
+                showAlert('Failed to load scholarship for editing: ' + error.message, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Get scholarship by ID
+        async function getScholarshipById(id) {
+            try {
+                // Ensure ID is a string
+                const stringId = String(id);
+                console.log("Fetching scholarship with ID:", stringId, "Type:", typeof stringId);
+                
+                if (!stringId) {
+                    console.error("Invalid scholarship ID:", stringId);
+                    throw new Error("Invalid scholarship ID");
+                }
+                
+                // Try from API first
+                const response = await fetch(`${API_BASE_URL}/getScholarship/${stringId}`);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.warn(`API error (${response.status}): ${errorText}`);
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const scholarship = await response.json();
+                console.log("API returned scholarship:", scholarship);
+                return scholarship;
+            } catch (apiError) {
+                console.log('API fetch failed, trying Firebase for ID:', id);
+                
+                // Try from Firebase as fallback
+                return new Promise((resolve, reject) => {
+                    const scholarshipRef = ref(database, `Scholarships/${id}`);
+                    
+                    get(scholarshipRef).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const data = snapshot.val();
+                            data.id = snapshot.key; // Ensure the ID is the Firebase key
+                            console.log("Found scholarship in Firebase:", data);
+                            resolve(data);
+                        } else {
+                            console.error("Scholarship not found in Firebase either");
+                            reject(new Error('Scholarship not found'));
+                        }
+                    }).catch((error) => {
+                        console.error("Firebase fetch error:", error);
+                        reject(error);
+                    });
+                });
+            }
+        }
+
+        // Delete scholarship confirmation
+        function confirmDeleteScholarship(id, title) {
+            if (confirm(`Are you sure you want to delete the scholarship "${title}"?`)) {
+                deleteScholarship(id);
+            }
+        }
+
+        // Delete scholarship
+        async function deleteScholarship(id) {
+            showLoading();
+            
+            try {
+                console.log("Attempting to delete scholarship with ID:", id);
+                
+                // Try API delete
+                const response = await fetch(`${API_BASE_URL}/deleteScholarship/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error(`API delete failed with status ${response.status}: ${errorText}`);
+                    
+                    // Even if API fails, try to delete from Firebase
+                    console.log("Attempting Firebase delete as fallback");
+                    const scholarshipRef = ref(database, `Scholarships/${id}`);
+                    await remove(scholarshipRef);
+                    showAlert('Scholarship deleted from local cache', 'warning');
+                    loadScholarships();
+                    return;
+                }
+                
+                console.log("Scholarship deleted successfully via API");
+                showAlert('Scholarship deleted successfully', 'success');
+                
+                // Reload scholarships
+                loadScholarships();
+            } catch (error) {
+                console.error('Error deleting scholarship:', error);
+                showAlert(`Error deleting scholarship: ${error.message}`, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Submit form handler
+        async function submitForm(e) {
+            e.preventDefault();
+            showLoading();
+            
+            try {
+                // Check if form is valid
+                if (!scholarshipForm.checkValidity()) {
+                    scholarshipForm.reportValidity();
+                    return;
+                }
+                
+                // Get form data
+                const scholarshipData = {
+                    title: titleInput.value.trim(),
+                    type: typeInput.value.trim(),
+                    description: descriptionInput.value.trim(),
+                    link: linkInput.value.trim(),
+                    contactEmail: contactEmailInput.value.trim()
+                };
+                
+                let response;
+                const isEditing = scholarshipId.value.trim() !== '';
+                
+                // If editing
+                if (isEditing) {
+                    const id = scholarshipId.value;
+                    
+                    // Check if image is being updated
+                    if (scholarshipImageInput.files[0]) {
+                        try {
+                            const formData = new FormData();
+                            formData.append('image', scholarshipImageInput.files[0]);
+                            
+                            // Update image first
+                            const imageResponse = await fetch(`${API_BASE_URL}/updateScholarship/${id}/image`, {
+                                method: 'PUT',
+                                body: formData
+                            });
+                            
+                            const updatedScholarship = await imageResponse.json();
+                            console.log("Image updated successfully");
+                            
+                            // Store the updated image
+                            if (updatedScholarship && updatedScholarship.scholarImage) {
+                                scholarshipData.scholarImage = updatedScholarship.scholarImage;
+                            }
+                        } catch (imageError) {
+                            console.error("Error updating image:", imageError);
+                            showAlert(`Image update failed: ${imageError.message}. Other fields will still be updated.`, 'warning');
+                        }
+                    } else if (existingImageData.value) {
+                        // Keep existing image if no new one is provided
+                        scholarshipData.scholarImage = existingImageData.value;
+                    }
+                    
+                    // Then update the rest of the scholarship data
+                    try {
+                        response = await fetch(`${API_BASE_URL}/updateScholarship/${id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(scholarshipData)
+                        });
+                        
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            throw new Error(`API error (${response.status}): ${errorText}`);
+                        }
+                        
+                        console.log("Scholarship updated successfully");
+                        showAlert('Scholarship updated successfully', 'success');
+                        resetForm();
+                        loadScholarships();
+                    } catch (updateError) {
+                        console.error("Error updating scholarship:", updateError);
+                        
+                        // Try Firebase update as fallback
+                        try {
+                            console.log("Trying Firebase update as fallback...");
+                            await saveToFirebase(id, scholarshipData);
+                            showAlert('Scholarship updated in local cache', 'warning');
+                            resetForm();
+                            loadScholarships();
+                        } catch (firebaseError) {
+                            console.error("Firebase update failed:", firebaseError);
+                            showAlert(`Failed to update scholarship: ${updateError.message}`, 'danger');
+                        }
+                    }
+                } else {
+                    // Creating new scholarship
+                    if (scholarshipImageInput.files[0]) {
+                        // Create with image using controller method
+                        const formData = new FormData();
+                        formData.append('title', scholarshipData.title);
+                        formData.append('type', scholarshipData.type);
+                        formData.append('description', scholarshipData.description);
+                        formData.append('link', scholarshipData.link);
+                        formData.append('contactEmail', scholarshipData.contactEmail);
+                        formData.append('image', scholarshipImageInput.files[0]);
+                        
+                        console.log("Submitting with image using controller method");
+                        
+                        response = await fetch(`${API_BASE_URL}/createScholarship/with-image`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                    } else {
+                        // Create without image using controller method
+                        console.log("Submitting without image using controller method");
+                        response = await fetch(`${API_BASE_URL}/createScholarship`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(scholarshipData)
+                        });
+                    }
+
+                    // Handle API response
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`API error (${response.status}): ${errorText}`);
+                    }
+
+                    const createdScholarship = await response.json();
+                    console.log("Scholarship created successfully via controller:", createdScholarship);
+
+                    showAlert('Scholarship created successfully', 'success');
+                    resetForm();
+                    loadScholarships();
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                showAlert(`Error: ${error.message}`, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Save scholarship to Firebase
+        function saveToFirebase(id, scholarshipData) {
+            return new Promise((resolve, reject) => {
+                try {
+                    let scholarshipRef;
+                    
+                    if (id) {
+                        // Update existing scholarship
+                        scholarshipRef = ref(database, `Scholarships/${id}`);
+                        set(scholarshipRef, { ...scholarshipData, id: id })
+                            .then(() => {
+                                console.log("Scholarship updated in Firebase");
+                                resolve();
+                            })
+                            .catch(reject);
+                    } else {
+                        // Create new scholarship
+                        scholarshipRef = push(ref(database, 'Scholarships'));
+                        const newId = scholarshipRef.key;
+                        set(scholarshipRef, { ...scholarshipData, id: newId })
+                            .then(() => {
+                                console.log("Scholarship created in Firebase with ID:", newId);
+                                resolve(newId);
+                            })
+                            .catch(reject);
+                    }
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        // Handle image preview
+        function handleImagePreview(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.classList.remove('d-none');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                imagePreviewContainer.classList.add('d-none');
+            }
+        }
+
+        // Reset form
+        function resetForm() {
+            scholarshipId.value = '';
+            existingImageData.value = '';
+            scholarshipForm.reset();
+            imagePreviewContainer.classList.add('d-none');
+            formTitle.textContent = 'Add New Scholarship';
+        }
+
+        // Handle logout - REPLACE THIS FUNCTION
+        function handleLogout() {
+            // Since we're not using auth yet, just redirect to home
+            window.location.href = "userlogin.html";
+        }
+
+        // Show loading overlay
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        // Hide loading overlay
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        // Show loading in container
+        function showLoadingInContainer() {
+            loadingMessage.style.display = 'block';
+        }
+
+        // Hide loading in container
+        function hideLoadingInContainer() {
+            loadingMessage.style.display = 'none';
+        }
+
+        // Show error
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        // Hide error
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            alertContainer.appendChild(alert);
+            
+            // Auto dismiss after 5 seconds
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => {
+                    alertContainer.removeChild(alert);
+                }, 150);
+            }, 5000);
+        }
+
+        // Helper function to truncate text
+        function truncateText(text, maxLength) {
+            if (!text) return '';
+            return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+        }
+
+        // Call initialize when document is ready
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
