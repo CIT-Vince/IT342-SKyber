@@ -83,6 +83,9 @@ fun VolunteerHub(navController: NavHostController) {
                 Log.e("VolunteerHubFetch", "Failed to load volunteer events", it)
                 isLoading = false
             }
+
+        kotlinx.coroutines.delay(10000)
+        isLoading = false
     }
     if (isLoading) {
         Box(

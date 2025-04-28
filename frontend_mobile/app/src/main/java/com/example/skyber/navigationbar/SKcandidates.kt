@@ -76,6 +76,10 @@ fun SKcandidates(navController: NavHostController) {
                 Log.e("Candidates Fetch", "Failed to load Candidate Profiles", it)
                 isLoading = false
             }
+
+
+        kotlinx.coroutines.delay(10000) // Delay for 10 seconds
+        isLoading = false
     }
     if (isLoading) {
         Box(
