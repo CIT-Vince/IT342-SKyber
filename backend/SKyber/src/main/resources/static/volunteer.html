@@ -1,0 +1,1042 @@
+\src\main\resources\static\volunteer.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKyber - Volunteer Opportunities</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            padding-top: 60px;
+            background-color: #f8f9fa;
+        }
+        .form-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .volunteer-card {
+            height: 100%;
+            transition: transform 0.2s;
+        }
+        .volunteer-card:hover {
+            transform: translateY(-5px);
+        }
+        .category-badge-community {
+            background-color: #4285F4;
+        }
+        .category-badge-education {
+            background-color: #34A853;
+        }
+        .category-badge-environment {
+            background-color: #FBBC05;
+            color: #212529;
+        }
+        .category-badge-health {
+            background-color: #EA4335;
+        }
+        .category-badge-other {
+            background-color: #9E9E9E;
+        }
+        .status-badge-active {
+            background-color: #198754;
+        }
+        .status-badge-upcoming {
+            background-color: #0d6efd;
+        }
+        .status-badge-completed {
+            background-color: #6c757d;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .spinner-container {
+            text-align: center;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        #imagePreviewContainer {
+            max-width: 100%;
+            max-height: 300px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-hands-helping me-2"></i>SKyber Volunteer Opportunities
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="candidate.html">
+                            <i class="fas fa-user-tie me-1"></i> Candidates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="scholarship.html">
+                            <i class="fas fa-graduation-cap me-1"></i> Scholarships
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="job-listing.html">
+                            <i class="fas fa-briefcase me-1"></i> Jobs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="refreshBtn" class="btn btn-outline-light btn-sm mt-1 ms-2">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button id="homeBtn" class="btn btn-outline-light btn-sm mt-1 ms-2">
+                            <i class="fas fa-home"></i> Home
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-container">
+                    <h3 id="formTitle" class="mb-4">Add New Volunteer Opportunity</h3>
+                    <form id="volunteerForm">
+                        <input type="hidden" id="volunteerId">
+                        <input type="hidden" id="existingImageData">
+                        
+                        <div class="mb-3">
+                            <label for="titleInput" class="form-label">Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="titleInput" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="categoryInput" class="form-label">Category <span class="text-danger">*</span></label>
+                            <select class="form-control" id="categoryInput" required>
+                                <option value="">Select Category</option>
+                                <option value="Community Service">Community Service</option>
+                                <option value="Education">Education</option>
+                                <option value="Environment">Environment</option>
+                                <option value="Health">Health</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="locationInput" class="form-label">Location <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="locationInput" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="eventDateInput" class="form-label">Event Date</label>
+                            <input type="date" class="form-control" id="eventDateInput">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="statusInput" class="form-label">Status <span class="text-danger">*</span></label>
+                            <select class="form-control" id="statusInput" required>
+                                <option value="">Select Status</option>
+                                <option value="Active">Active</option>
+                                <option value="Upcoming">Upcoming</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="descriptionInput" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="descriptionInput" rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="requirementsInput" class="form-label">Requirements</label>
+                            <textarea class="form-control" id="requirementsInput" rows="2"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="contactPersonInput" class="form-label">Contact Person</label>
+                            <input type="text" class="form-control" id="contactPersonInput">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="contactEmailInput" class="form-label">Contact Email</label>
+                            <input type="email" class="form-control" id="contactEmailInput">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="registerLinkInput" class="form-label">Registration Link</label>
+                            <input type="url" class="form-control" id="registerLinkInput">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="volunteerImageInput" class="form-label">Event Image</label>
+                            <input type="file" class="form-control" id="volunteerImageInput" accept="image/*">
+                        </div>
+                        
+                        <div id="imagePreviewContainer" class="d-none">
+                            <img id="imagePreview" src="#" alt="Image Preview" class="img-thumbnail">
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i> Save Opportunity
+                            </button>
+                            <button type="button" id="resetBtn" class="btn btn-outline-secondary">
+                                <i class="fas fa-redo me-1"></i> Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div id="alertContainer"></div>
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h3 class="mb-0">All Volunteer Opportunities</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="loadingMessage" class="text-center py-5">
+                            <div class="spinner-border text-success" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading volunteer opportunities...</p>
+                        </div>
+                        <div id="errorMessage" class="alert alert-danger text-center py-3" style="display: none;">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span id="errorText">Failed to load volunteer opportunities.</span>
+                        </div>
+                        <div id="noVolunteersMessage" class="text-center py-5" style="display: none;">
+                            <i class="fas fa-hands-helping fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">No volunteer opportunities found</h4>
+                            <p class="text-muted">Add your first volunteer opportunity using the form.</p>
+                        </div>
+                        <div id="volunteersContainer" class="row row-cols-1 row-cols-md-2 g-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="spinner-container">
+            <div class="spinner-border text-success" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Processing...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules - NO AUTH
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js';
+        import { getDatabase, ref, push, set, remove, get, child } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqLvqp-b0lViulsx4b0R7Ol7jhoPZhPXI",
+            authDomain: "it342-skyber.firebaseapp.com",
+            projectId: "it342-skyber",
+            storageBucket: "it342-skyber.appspot.com",
+            messagingSenderId: "722519299026",
+            appId: "1:722519299026:web:5b9d2b2c50e54f946c2f57",
+            measurementId: "G-JPZ1HDEN70"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // API base URL
+        const API_BASE_URL = '/api/volunteers';
+
+        // DOM elements
+        const volunteerForm = document.getElementById('volunteerForm');
+        const formTitle = document.getElementById('formTitle');
+        const volunteerId = document.getElementById('volunteerId');
+        const titleInput = document.getElementById('titleInput');
+        const categoryInput = document.getElementById('categoryInput');
+        const locationInput = document.getElementById('locationInput');
+        const eventDateInput = document.getElementById('eventDateInput');
+        const statusInput = document.getElementById('statusInput');
+        const descriptionInput = document.getElementById('descriptionInput');
+        const requirementsInput = document.getElementById('requirementsInput');
+        const contactPersonInput = document.getElementById('contactPersonInput');
+        const contactEmailInput = document.getElementById('contactEmailInput');
+        const registerLinkInput = document.getElementById('registerLinkInput');
+        const volunteerImageInput = document.getElementById('volunteerImageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const existingImageData = document.getElementById('existingImageData');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const noVolunteersMessage = document.getElementById('noVolunteersMessage');
+        const volunteersContainer = document.getElementById('volunteersContainer');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const homeBtn = document.getElementById('homeBtn');
+
+        // Initialize function - NO AUTH CHECK
+        function initialize() {
+            console.log("Initializing volunteer opportunities page - NO AUTH");
+            
+            // Set up event listeners
+            volunteerForm.addEventListener('submit', submitForm);
+            resetBtn.addEventListener('click', resetForm);
+            refreshBtn.addEventListener('click', loadVolunteers);
+            homeBtn.addEventListener('click', () => window.location.href = "index.html");
+            volunteerImageInput.addEventListener('change', handleImagePreview);
+            
+            // Load volunteer opportunities on page load
+            loadVolunteers();
+        }
+
+        // Load all volunteer opportunities
+        async function loadVolunteers() {
+            showLoading();
+            hideError();
+            
+            try {
+                // Always use the controller method first
+                console.log("Fetching volunteer opportunities from API...");
+                const response = await fetch(`${API_BASE_URL}/getAllVolunteers`);
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const volunteers = await response.json();
+                console.log(`Loaded ${volunteers.length} volunteer opportunities from API`);
+                
+                displayVolunteers(volunteers);
+            } catch (error) {
+                console.error('Error loading volunteer opportunities:', error);
+                showError('Failed to load volunteer opportunities. Please try again later.');
+                
+                // Try to load from Firebase as fallback
+                try {
+                    console.log("Trying Firebase as fallback...");
+                    const volunteersRef = ref(database, 'Volunteers');
+                    const snapshot = await get(volunteersRef);
+                    
+                    if (snapshot.exists()) {
+                        const volunteers = [];
+                        snapshot.forEach((childSnapshot) => {
+                            const data = childSnapshot.val();
+                            // Make sure to set the ID
+                            data.id = childSnapshot.key;
+                            volunteers.push(data);
+                        });
+                        
+                        console.log(`Loaded ${volunteers.length} volunteer opportunities from Firebase`);
+                        displayVolunteers(volunteers);
+                    } else {
+                        console.log("No volunteer opportunities found in Firebase");
+                        displayVolunteers([]);
+                    }
+                } catch (firebaseError) {
+                    console.error('Firebase fallback failed:', firebaseError);
+                    // Already showing error from API, no need to update
+                }
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Display volunteer opportunities
+        function displayVolunteers(volunteers) {
+            volunteersContainer.innerHTML = '';
+            
+            if (volunteers.length === 0) {
+                noVolunteersMessage.style.display = 'block';
+                return;
+            }
+            
+            noVolunteersMessage.style.display = 'none';
+            
+            volunteers.forEach(volunteer => {
+                const volunteerCard = document.createElement('div');
+                volunteerCard.className = 'col';
+                
+                // Format date if available
+                let dateDisplay = '';
+                if (volunteer.eventDate) {
+                    // Handle date format from backend
+                    const dateObj = new Date(volunteer.eventDate);
+                    if (!isNaN(dateObj)) {
+                        dateDisplay = `<p class="card-text small"><i class="fas fa-calendar-alt me-1"></i> ${dateObj.toLocaleDateString()}</p>`;
+                    }
+                }
+                
+                volunteerCard.innerHTML = `
+                    <div class="card volunteer-card h-100 shadow">
+                        ${volunteer.volunteerImage ? 
+                            `<div style="height: 140px; overflow: hidden; text-align: center; background-color: #f8f9fa;">
+                                <img src="data:image/jpeg;base64,${volunteer.volunteerImage}" class="card-img-top" alt="${volunteer.title}" style="max-height: 140px; object-fit: cover;">
+                             </div>` : 
+                            `<div class="card-img-top text-center py-4 bg-light">
+                                <i class="fas fa-hands-helping fa-3x text-muted"></i>
+                             </div>`
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">${volunteer.title}</h5>
+                            <div class="mb-2">
+                                <span class="badge ${getCategoryBadgeClass(volunteer.category)}">${volunteer.category || 'Uncategorized'}</span>
+                                <span class="badge ${getStatusBadgeClass(volunteer.status)} ms-1">${volunteer.status || 'Unknown Status'}</span>
+                            </div>
+                            <p class="card-text small"><i class="fas fa-map-marker-alt me-1"></i> ${volunteer.location || 'Location not specified'}</p>
+                            ${dateDisplay}
+                            <p class="card-text small text-muted mb-3">${truncateText(volunteer.description, 60)}</p>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-sm btn-outline-success view-btn" data-id="${volunteer.id}">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-secondary edit-btn" data-id="${volunteer.id}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${volunteer.id}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Attach event listeners
+                const viewBtn = volunteerCard.querySelector('.view-btn');
+                const editBtn = volunteerCard.querySelector('.edit-btn');
+                const deleteBtn = volunteerCard.querySelector('.delete-btn');
+                
+                viewBtn.addEventListener('click', () => viewVolunteer(volunteer));
+                
+                editBtn.addEventListener('click', () => {
+                    // Use string ID
+                    const stringId = String(volunteer.id);
+                    console.log("Edit clicked with string ID:", stringId);
+                    editVolunteer(stringId);
+                });
+                
+                deleteBtn.addEventListener('click', () => {
+                    // Use string ID
+                    const stringId = String(volunteer.id);
+                    console.log("Delete clicked with string ID:", stringId);
+                    confirmDeleteVolunteer(stringId, volunteer.title);
+                });
+                
+                volunteersContainer.appendChild(volunteerCard);
+            });
+        }
+
+        // Get category badge class
+        function getCategoryBadgeClass(category) {
+            if (!category) return 'category-badge-other';
+            
+            const normalizedCategory = category.toLowerCase().trim();
+            
+            if (normalizedCategory.includes('community')) return 'category-badge-community';
+            else if (normalizedCategory.includes('education')) return 'category-badge-education';
+            else if (normalizedCategory.includes('environment')) return 'category-badge-environment';
+            else if (normalizedCategory.includes('health')) return 'category-badge-health';
+            
+            return 'category-badge-other';
+        }
+        
+        // Get status badge class
+        function getStatusBadgeClass(status) {
+            if (!status) return 'status-badge-upcoming';
+            
+            const normalizedStatus = status.toLowerCase().trim();
+            
+            if (normalizedStatus.includes('active')) return 'status-badge-active';
+            else if (normalizedStatus.includes('upcoming')) return 'status-badge-upcoming';
+            else if (normalizedStatus.includes('completed')) return 'status-badge-completed';
+            
+            return 'status-badge-upcoming';
+        }
+
+        // View volunteer opportunity details
+        function viewVolunteer(volunteer) {
+            // Format date if available
+            let dateDisplay = 'Date not specified';
+            if (volunteer.eventDate) {
+                // Handle date format from backend
+                const dateObj = new Date(volunteer.eventDate);
+                if (!isNaN(dateObj)) {
+                    dateDisplay = dateObj.toLocaleDateString();
+                }
+            }
+            
+            // Create modal element
+            const modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.id = 'volunteerModal';
+            modal.setAttribute('tabindex', '-1');
+            modal.innerHTML = `
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Volunteer Opportunity Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-4 text-center mb-3">
+                                    ${volunteer.volunteerImage ? 
+                                        `<img src="data:image/jpeg;base64,${volunteer.volunteerImage}" class="img-fluid rounded mb-3" alt="${volunteer.title}" style="max-height: 200px;">` : 
+                                        `<div class="bg-light text-center py-5 mb-3 rounded">
+                                            <i class="fas fa-hands-helping fa-3x text-muted"></i>
+                                            <p class="mt-2">No image available</p>
+                                        </div>`
+                                    }
+                                    <div class="mb-3">
+                                        <span class="badge ${getCategoryBadgeClass(volunteer.category)}">${volunteer.category || 'Uncategorized'}</span>
+                                        <span class="badge ${getStatusBadgeClass(volunteer.status)} ms-1">${volunteer.status || 'Unknown Status'}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <h4>${volunteer.title}</h4>
+                                    <p><i class="fas fa-map-marker-alt me-2"></i> ${volunteer.location || 'Location not specified'}</p>
+                                    <p><i class="fas fa-calendar-alt me-2"></i> ${dateDisplay}</p>
+                                    
+                                    <h6>Description:</h6>
+                                    <p>${volunteer.description || 'No description provided.'}</p>
+                                    
+                                    ${volunteer.requirements ? 
+                                        `<h6>Requirements:</h6>
+                                        <p>${volunteer.requirements}</p>` : 
+                                        ''}
+                                        
+                                    <h6>Contact Information:</h6>
+                                    <p>${volunteer.contactPerson ? `<strong>Contact Person:</strong> ${volunteer.contactPerson}<br>` : ''}
+                                    ${volunteer.contactEmail ? `<strong>Email:</strong> ${volunteer.contactEmail}` : 'No contact information provided.'}</p>
+                                    
+                                    ${volunteer.registerLink ? 
+                                        `<p><a href="${volunteer.registerLink}" target="_blank" class="btn btn-success btn-sm mt-2">
+                                            <i class="fas fa-external-link-alt me-1"></i> Register Now
+                                        </a></p>` : 
+                                        ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-success edit-modal-btn">
+                                <i class="fas fa-edit me-1"></i> Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add to document
+            document.body.appendChild(modal);
+            
+            // Get Bootstrap modal instance and show it
+            const modalInstance = new bootstrap.Modal(modal);
+            modalInstance.show();
+            
+            // Add event listener for edit button in modal
+            const editBtn = modal.querySelector('.edit-modal-btn');
+            editBtn.addEventListener('click', () => {
+                modalInstance.hide();
+                editVolunteer(volunteer.id);
+            });
+            
+            // Clean up when modal is hidden
+            modal.addEventListener('hidden.bs.modal', function () {
+                document.body.removeChild(modal);
+            });
+        }
+
+        // Edit volunteer opportunity
+        async function editVolunteer(id) {
+            showLoading();
+            console.log("Edit request for volunteer opportunity ID:", id);
+            
+            try {
+                // First, get the volunteer details
+                const volunteer = await getVolunteerById(id);
+                
+                if (!volunteer) {
+                    throw new Error('Volunteer opportunity not found');
+                }
+                
+                console.log("Loaded volunteer opportunity for editing:", volunteer);
+                
+                // Populate form with volunteer data
+                volunteerId.value = volunteer.id;
+                titleInput.value = volunteer.title || '';
+                categoryInput.value = volunteer.category || '';
+                locationInput.value = volunteer.location || '';
+                statusInput.value = volunteer.status || '';
+                descriptionInput.value = volunteer.description || '';
+                requirementsInput.value = volunteer.requirements || '';
+                contactPersonInput.value = volunteer.contactPerson || '';
+                contactEmailInput.value = volunteer.contactEmail || '';
+                registerLinkInput.value = volunteer.registerLink || '';
+                
+                // Handle date
+                if (volunteer.eventDate) {
+                    // Convert date string to YYYY-MM-DD for input
+                    let dateValue = volunteer.eventDate;
+                    if (typeof dateValue === 'string' && dateValue.includes('T')) {
+                        dateValue = dateValue.split('T')[0];
+                    }
+                    eventDateInput.value = dateValue;
+                } else {
+                    eventDateInput.value = '';
+                }
+                
+                // Store image data in hidden field
+                existingImageData.value = volunteer.volunteerImage || '';
+                
+                // Show image preview if exists
+                if (volunteer.volunteerImage) {
+                    imagePreview.src = `data:image/jpeg;base64,${volunteer.volunteerImage}`;
+                    imagePreviewContainer.classList.remove('d-none');
+                } else {
+                    imagePreviewContainer.classList.add('d-none');
+                }
+                
+                // Update form title
+                formTitle.textContent = 'Edit Volunteer Opportunity';
+                
+                // Scroll to form
+                volunteerForm.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error editing volunteer opportunity:', error);
+                showAlert('Failed to load volunteer opportunity for editing: ' + error.message, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Get volunteer opportunity by ID
+        async function getVolunteerById(id) {
+            try {
+                // Ensure ID is a string
+                const stringId = String(id);
+                console.log("Fetching volunteer opportunity with ID:", stringId, "Type:", typeof stringId);
+                
+                if (!stringId) {
+                    console.error("Invalid volunteer ID:", stringId);
+                    throw new Error("Invalid volunteer ID");
+                }
+                
+                // Try from API first
+                const response = await fetch(`${API_BASE_URL}/getVolunteer/${stringId}`);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.warn(`API error (${response.status}): ${errorText}`);
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const volunteer = await response.json();
+                console.log("API returned volunteer:", volunteer);
+                return volunteer;
+            } catch (apiError) {
+                console.log('API fetch failed, trying Firebase for ID:', id);
+                
+                // Try from Firebase as fallback
+                return new Promise((resolve, reject) => {
+                    const volunteerRef = ref(database, `Volunteers/${id}`);
+                    
+                    get(volunteerRef).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const data = snapshot.val();
+                            data.id = snapshot.key; // Ensure the ID is the Firebase key
+                            console.log("Found volunteer opportunity in Firebase:", data);
+                            resolve(data);
+                        } else {
+                            console.error("Volunteer opportunity not found in Firebase either");
+                            reject(new Error('Volunteer opportunity not found'));
+                        }
+                    }).catch((error) => {
+                        console.error("Firebase fetch error:", error);
+                        reject(error);
+                    });
+                });
+            }
+        }
+
+        // Delete volunteer confirmation
+        function confirmDeleteVolunteer(id, title) {
+            if (confirm(`Are you sure you want to delete the volunteer opportunity "${title}"?`)) {
+                deleteVolunteer(id);
+            }
+        }
+
+        // Delete volunteer
+        async function deleteVolunteer(id) {
+            showLoading();
+            
+            try {
+                console.log("Attempting to delete volunteer opportunity with ID:", id);
+                
+                // Try API delete
+                const response = await fetch(`${API_BASE_URL}/deleteVolunteer/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error(`API delete failed with status ${response.status}: ${errorText}`);
+                    
+                    // Even if API fails, try to delete from Firebase
+                    console.log("Attempting Firebase delete as fallback");
+                    const volunteerRef = ref(database, `Volunteers/${id}`);
+                    await remove(volunteerRef);
+                    showAlert('Volunteer opportunity deleted from local cache', 'warning');
+                    loadVolunteers();
+                    return;
+                }
+                
+                console.log("Volunteer opportunity deleted successfully via API");
+                showAlert('Volunteer opportunity deleted successfully', 'success');
+                
+                // Reload volunteers
+                loadVolunteers();
+            } catch (error) {
+                console.error('Error deleting volunteer opportunity:', error);
+                showAlert(`Error deleting volunteer opportunity: ${error.message}`, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Submit form handler
+        async function submitForm(e) {
+            e.preventDefault();
+            showLoading();
+            
+            try {
+                // Check if form is valid
+                if (!volunteerForm.checkValidity()) {
+                    volunteerForm.reportValidity();
+                    return;
+                }
+                
+                // Get form data
+                const volunteerData = {
+                    title: titleInput.value.trim(),
+                    category: categoryInput.value.trim(),
+                    location: locationInput.value.trim(),
+                    status: statusInput.value.trim(),
+                    description: descriptionInput.value.trim(),
+                    requirements: requirementsInput.value.trim(),
+                    contactPerson: contactPersonInput.value.trim(),
+                    contactEmail: contactEmailInput.value.trim(),
+                    registerLink: registerLinkInput.value.trim()
+                };
+                
+                // Add event date if provided
+                if (eventDateInput.value) {
+                    volunteerData.eventDate = eventDateInput.value; // ISO format date string
+                }
+                
+                let response;
+                const isEditing = volunteerId.value.trim() !== '';
+                
+                // If editing
+                if (isEditing) {
+                    const id = volunteerId.value;
+                    
+                    // Check if image is being updated
+                    if (volunteerImageInput.files[0]) {
+                        try {
+                            const formData = new FormData();
+                            formData.append('image', volunteerImageInput.files[0]);
+                            
+                            // Update image first
+                            const imageResponse = await fetch(`${API_BASE_URL}/updateVolunteer/${id}/image`, {
+                                method: 'PUT',
+                                body: formData
+                            });
+                            
+                            if (!imageResponse.ok) {
+                                const errorText = await imageResponse.text();
+                                throw new Error(`Image update failed: ${imageResponse.status} - ${errorText}`);
+                            }
+                            
+                            const updatedVolunteer = await imageResponse.json();
+                            console.log("Image updated successfully");
+                            
+                            // Store the updated image
+                            if (updatedVolunteer && updatedVolunteer.volunteerImage) {
+                                volunteerData.volunteerImage = updatedVolunteer.volunteerImage;
+                            }
+                        } catch (imageError) {
+                            console.error("Error updating image:", imageError);
+                            showAlert(`Image update failed: ${imageError.message}. Other fields will still be updated.`, 'warning');
+                        }
+                    } else if (existingImageData.value) {
+                        // Keep existing image if no new one is provided
+                        volunteerData.volunteerImage = existingImageData.value;
+                    }
+                    
+                    // Then update the rest of the volunteer data
+                    try {
+                        response = await fetch(`${API_BASE_URL}/updateVolunteer/${id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(volunteerData)
+                        });
+                        
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            throw new Error(`API error (${response.status}): ${errorText}`);
+                        }
+                        
+                        console.log("Volunteer opportunity updated successfully");
+                        showAlert('Volunteer opportunity updated successfully', 'success');
+                        resetForm();
+                        loadVolunteers();
+                    } catch (updateError) {
+                        console.error("Error updating volunteer opportunity:", updateError);
+                        
+                        // Try Firebase update as fallback
+                        try {
+                            console.log("Trying Firebase update as fallback...");
+                            await saveToFirebase(id, volunteerData);
+                            showAlert('Volunteer opportunity updated in local cache', 'warning');
+                            resetForm();
+                            loadVolunteers();
+                        } catch (firebaseError) {
+                            console.error("Firebase update failed:", firebaseError);
+                            showAlert(`Failed to update volunteer opportunity: ${updateError.message}`, 'danger');
+                        }
+                    }
+                } else {
+                    // Creating new volunteer opportunity
+                    if (volunteerImageInput.files[0]) {
+                        // Create with image using controller method
+                        const formData = new FormData();
+                        formData.append('title', volunteerData.title);
+                        formData.append('category', volunteerData.category);
+                        formData.append('location', volunteerData.location);
+                        formData.append('status', volunteerData.status);
+                        formData.append('description', volunteerData.description);
+                        
+                        if (volunteerData.eventDate) {
+                            formData.append('eventDate', volunteerData.eventDate);
+                        }
+                        
+                        if (volunteerData.requirements) {
+                            formData.append('requirements', volunteerData.requirements);
+                        }
+                        
+                        if (volunteerData.contactPerson) {
+                            formData.append('contactPerson', volunteerData.contactPerson);
+                        }
+                        
+                        if (volunteerData.contactEmail) {
+                            formData.append('contactEmail', volunteerData.contactEmail);
+                        }
+                        
+                        if (volunteerData.registerLink) {
+                            formData.append('registerLink', volunteerData.registerLink);
+                        }
+                        
+                        formData.append('image', volunteerImageInput.files[0]);
+                        
+                        console.log("Submitting with image using controller method");
+                        
+                        response = await fetch(`${API_BASE_URL}/createVolunteer/with-image`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                    } else {
+                        // Create without image using controller method
+                        console.log("Submitting without image using controller method");
+                        response = await fetch(`${API_BASE_URL}/createVolunteer`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(volunteerData)
+                        });
+                    }
+
+                    // Handle API response
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`API error (${response.status}): ${errorText}`);
+                    }
+
+                    const createdVolunteer = await response.json();
+                    console.log("Volunteer opportunity created successfully via controller:", createdVolunteer);
+
+                    showAlert('Volunteer opportunity created successfully', 'success');
+                    resetForm();
+                    loadVolunteers();
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                showAlert(`Error: ${error.message}`, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Save volunteer to Firebase
+        function saveToFirebase(id, volunteerData) {
+            return new Promise((resolve, reject) => {
+                try {
+                    let volunteerRef;
+                    
+                    // Handle date conversion for Firebase
+                    if (volunteerData.eventDate) {
+                        volunteerData.eventDate = volunteerData.eventDate;
+                    }
+                    
+                    if (id) {
+                        // Update existing volunteer
+                        volunteerRef = ref(database, `Volunteers/${id}`);
+                        set(volunteerRef, { ...volunteerData, id: id })
+                            .then(() => {
+                                console.log("Volunteer opportunity updated in Firebase");
+                                resolve();
+                            })
+                            .catch(reject);
+                    } else {
+                        // Create new volunteer
+                        volunteerRef = push(ref(database, 'Volunteers'));
+                        const newId = volunteerRef.key;
+                        set(volunteerRef, { ...volunteerData, id: newId })
+                            .then(() => {
+                                console.log("Volunteer opportunity created in Firebase with ID:", newId);
+                                resolve(newId);
+                            })
+                            .catch(reject);
+                    }
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        // Handle image preview
+        function handleImagePreview(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.classList.remove('d-none');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                imagePreviewContainer.classList.add('d-none');
+            }
+        }
+
+        // Reset form
+        function resetForm() {
+            volunteerId.value = '';
+            existingImageData.value = '';
+            volunteerForm.reset();
+            imagePreviewContainer.classList.add('d-none');
+            formTitle.textContent = 'Add New Volunteer Opportunity';
+        }
+
+        // Show loading overlay
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        // Hide loading overlay
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        // Show loading in container
+        function showLoadingInContainer() {
+            loadingMessage.style.display = 'block';
+        }
+
+        // Hide loading in container
+        function hideLoadingInContainer() {
+            loadingMessage.style.display = 'none';
+        }
+
+        // Show error
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        // Hide error
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            alertContainer.appendChild(alert);
+            
+            // Auto dismiss after 5 seconds
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => {
+                    alertContainer.removeChild(alert);
+                }, 150);
+            }, 5000);
+        }
+
+        // Helper function to truncate text
+        function truncateText(text, maxLength) {
+            if (!text) return '';
+            return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+        }
+
+        // Call initialize when document is ready
+        document.addEventListener('DOMContentLoaded', initialize);
+        console.log("DOM content loaded event registered");
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

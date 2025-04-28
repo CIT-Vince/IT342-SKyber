@@ -1,0 +1,1130 @@
+\static\sk-profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKyber - SK Profiles</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            padding-top: 60px;
+            background-color: #f8f9fa;
+        }
+        .form-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .profile-card {
+            height: 100%;
+            transition: transform 0.2s;
+        }
+        .profile-card:hover {
+            transform: translateY(-5px);
+        }
+        .role-badge-admin {
+            background-color: #6c757d;
+        }
+        .role-badge-user {
+            background-color: #0d6efd;
+        }
+        .role-badge-moderator {
+            background-color: #198754;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .spinner-container {
+            text-align: center;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        .profile-image-container {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 10px;
+            background-color: #f0f0f0;
+        }
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .avatar-container {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background-color: #6c757d;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            margin: 0 auto 10px;
+        }
+        #imagePreviewContainer {
+            max-width: 100%;
+            max-height: 200px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        #imagePreview {
+            max-height: 200px;
+            max-width: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-id-card me-2"></i>SK Profiles Management
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="volunteer.html">
+                            <i class="fas fa-hands-helping me-1"></i> Volunteer
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="job-listing.html">
+                            <i class="fas fa-briefcase me-1"></i> Jobs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="scholarship.html">
+                            <i class="fas fa-graduation-cap me-1"></i> Scholarships
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="refreshBtn" class="btn btn-outline-light btn-sm mt-1 ms-2">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button id="homeBtn" class="btn btn-outline-light btn-sm mt-1 ms-2">
+                            <i class="fas fa-home"></i> Home
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-container">
+                    <h3 id="formTitle" class="mb-4">Add New SK Profile</h3>
+                    <form id="profileForm">
+                        <input type="hidden" id="profileUid">
+                        <input type="hidden" id="existingImageData">
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstNameInput" class="form-label">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="firstNameInput" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastNameInput" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="lastNameInput" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="emailInput" class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="emailInput" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="positionInput" class="form-label">Position <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="positionInput" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="termInput" class="form-label">Term <small class="text-muted">(e.g., 2015-2018)</small></label>
+                            <input type="text" class="form-control" id="termInput" placeholder="YYYY-YYYY">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="platformInput" class="form-label">Platform</label>
+                            <textarea class="form-control" id="platformInput" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="birthdateInput" class="form-label">Birthdate</label>
+                                <input type="date" class="form-control" id="birthdateInput">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="genderInput" class="form-label">Gender</label>
+                                <select class="form-control" id="genderInput">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                    <option value="Prefer not to say">Prefer not to say</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="ageInput" class="form-label">Age</label>
+                                <input type="number" class="form-control" id="ageInput" min="18" max="100">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="phoneNumberInput" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phoneNumberInput">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="addressInput" class="form-label">Address</label>
+                            <textarea class="form-control" id="addressInput" rows="2"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="roleInput" class="form-label">Role</label>
+                            <select class="form-control" id="roleInput">
+                                <option value="ADMIN">Admin</option>
+                                <option value="USER">User</option>
+                                <option value="MODERATOR">Moderator</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="profileImageInput" class="form-label">Profile Image</label>
+                            <input type="file" class="form-control" id="profileImageInput" accept="image/*">
+                        </div>
+                        
+                        <div id="imagePreviewContainer" class="d-none">
+                            <img id="imagePreview" src="#" alt="Image Preview" class="img-thumbnail">
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-dark">
+                                <i class="fas fa-save me-1"></i> Save Profile
+                            </button>
+                            <button type="button" id="resetBtn" class="btn btn-outline-secondary">
+                                <i class="fas fa-redo me-1"></i> Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div id="alertContainer"></div>
+                <div class="card">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">SK Profiles</h3>
+                        <div>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-secondary btn-sm filter-btn active" data-role="ALL">All</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm filter-btn" data-role="ADMIN">Admin</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm filter-btn" data-role="USER">User</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm filter-btn" data-role="MODERATOR">Moderator</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="loadingMessage" class="text-center py-5">
+                            <div class="spinner-border text-dark" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading SK profiles...</p>
+                        </div>
+                        <div id="errorMessage" class="alert alert-danger text-center py-3" style="display: none;">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span id="errorText">Failed to load profiles.</span>
+                        </div>
+                        <div id="noProfilesMessage" class="text-center py-5" style="display: none;">
+                            <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">No profiles found</h4>
+                            <p class="text-muted">Add your first profile using the form.</p>
+                        </div>
+                        <div id="profilesContainer" class="row row-cols-1 row-cols-md-2 g-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="spinner-container">
+            <div class="spinner-border text-dark" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Processing...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules - NO AUTH
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js';
+        import { getDatabase, ref, push, set, remove, get, child } from 'https://www.gstatic.com/firebasejs/9.21.0/firebase-database.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqLvqp-b0lViulsx4b0R7Ol7jhoPZhPXI",
+            authDomain: "it342-skyber.firebaseapp.com",
+            projectId: "it342-skyber",
+            storageBucket: "it342-skyber.appspot.com",
+            messagingSenderId: "722519299026",
+            appId: "1:722519299026:web:5b9d2b2c50e54f946c2f57",
+            measurementId: "G-JPZ1HDEN70"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // API base URL
+        const API_BASE_URL = '/api/profiles';
+        
+        // Current filter
+        let currentFilter = "ALL";
+
+        // DOM elements
+        const profileForm = document.getElementById('profileForm');
+        const formTitle = document.getElementById('formTitle');
+        const profileUid = document.getElementById('profileUid');
+        const existingImageData = document.getElementById('existingImageData');
+        const firstNameInput = document.getElementById('firstNameInput');
+        const lastNameInput = document.getElementById('lastNameInput');
+        const emailInput = document.getElementById('emailInput');
+        const positionInput = document.getElementById('positionInput');
+        const termInput = document.getElementById('termInput');
+        const platformInput = document.getElementById('platformInput');
+        const birthdateInput = document.getElementById('birthdateInput');
+        const genderInput = document.getElementById('genderInput');
+        const ageInput = document.getElementById('ageInput');
+        const phoneNumberInput = document.getElementById('phoneNumberInput');
+        const addressInput = document.getElementById('addressInput');
+        const roleInput = document.getElementById('roleInput');
+        const profileImageInput = document.getElementById('profileImageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const noProfilesMessage = document.getElementById('noProfilesMessage');
+        const profilesContainer = document.getElementById('profilesContainer');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const homeBtn = document.getElementById('homeBtn');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+
+        // Initialize function - NO AUTH CHECK
+        function initialize() {
+            console.log("Initializing SK profiles page - NO AUTH");
+            
+            // Set up event listeners
+            profileForm.addEventListener('submit', submitForm);
+            resetBtn.addEventListener('click', resetForm);
+            refreshBtn.addEventListener('click', loadProfiles);
+            homeBtn.addEventListener('click', () => window.location.href = "index.html");
+            profileImageInput.addEventListener('change', handleImagePreview);
+            
+            // Set up filter buttons
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    // Update active button
+                    filterBtns.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    
+                    // Apply filter
+                    currentFilter = e.target.dataset.role;
+                    loadProfiles();
+                });
+            });
+            
+            // Calculate age from birthdate
+            birthdateInput.addEventListener('change', calculateAge);
+            
+            // Load profiles on page load
+            loadProfiles();
+        }
+
+        // Calculate age from birthdate
+        function calculateAge() {
+            const birthdate = birthdateInput.value;
+            if (birthdate) {
+                const today = new Date();
+                const birthDate = new Date(birthdate);
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const month = today.getMonth() - birthDate.getMonth();
+                
+                if (month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                
+                ageInput.value = age;
+            }
+        }
+
+        // Handle image preview
+        function handleImagePreview(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.classList.remove('d-none');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                imagePreviewContainer.classList.add('d-none');
+            }
+        }
+
+        // Load all profiles
+        async function loadProfiles() {
+            showLoading();
+            hideError();
+            
+            try {
+                // Get profiles based on current filter
+                let profiles = [];
+                
+                if (currentFilter === "ALL") {
+                    // Get all profiles
+                    console.log("Fetching all SK profiles from API...");
+                    const response = await fetch(`${API_BASE_URL}/getAllProfiles`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.status}`);
+                    }
+                    
+                    profiles = await response.json();
+                } else {
+                    // Get filtered profiles
+                    console.log(`Fetching SK profiles with role ${currentFilter} from API...`);
+                    const response = await fetch(`${API_BASE_URL}/getProfilesByRole?role=${currentFilter}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.status}`);
+                    }
+                    
+                    profiles = await response.json();
+                }
+                
+                console.log(`Loaded ${profiles.length} SK profiles from API`);
+                displayProfiles(profiles);
+            } catch (error) {
+                console.error('Error loading SK profiles:', error);
+                showError('Failed to load SK profiles. Please try again later.');
+                
+                // Try to load from Firebase as fallback
+                try {
+                    console.log("Trying Firebase as fallback...");
+                    const profilesRef = ref(database, 'SKProfiles');
+                    const snapshot = await get(profilesRef);
+                    
+                    if (snapshot.exists()) {
+                        let profiles = [];
+                        snapshot.forEach((childSnapshot) => {
+                            const data = childSnapshot.val();
+                            // Make sure to set the UID
+                            data.uid = childSnapshot.key;
+                            
+                            // Apply filter if needed
+                            if (currentFilter === "ALL" || data.role === currentFilter) {
+                                profiles.push(data);
+                            }
+                        });
+                        
+                        console.log(`Loaded ${profiles.length} SK profiles from Firebase`);
+                        displayProfiles(profiles);
+                    } else {
+                        console.log("No SK profiles found in Firebase");
+                        displayProfiles([]);
+                    }
+                } catch (firebaseError) {
+                    console.error('Firebase fallback failed:', firebaseError);
+                    // Already showing error from API, no need to update
+                }
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Display profiles
+        function displayProfiles(profiles) {
+            profilesContainer.innerHTML = '';
+            
+            if (profiles.length === 0) {
+                noProfilesMessage.style.display = 'block';
+                return;
+            }
+            
+            noProfilesMessage.style.display = 'none';
+            
+            profiles.forEach(profile => {
+                const profileCard = document.createElement('div');
+                profileCard.className = 'col';
+                
+                // Create avatar with initials for fallback
+                const initials = ((profile.firstName ? profile.firstName.charAt(0) : '') + 
+                                 (profile.lastName ? profile.lastName.charAt(0) : '')).toUpperCase();
+                
+                // Choose between image or avatar with initials
+                let profileImageHTML = '';
+                if (profile.skImage) {
+                    profileImageHTML = `
+                        <div class="profile-image-container">
+                            <img src="data:image/jpeg;base64,${profile.skImage}" class="profile-image" alt="${profile.firstName} ${profile.lastName}">
+                        </div>
+                    `;
+                } else {
+                    profileImageHTML = `
+                        <div class="avatar-container">
+                            <span>${initials}</span>
+                        </div>
+                    `;
+                }
+                
+                profileCard.innerHTML = `
+                    <div class="card profile-card h-100 shadow">
+                        <div class="card-body text-center">
+                            ${profileImageHTML}
+                            <h5 class="card-title">${profile.firstName || ''} ${profile.lastName || ''}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">${profile.position || 'Position not specified'}</h6>
+                            <span class="badge ${getRoleBadgeClass(profile.role)} mb-2">${profile.role || 'ADMIN'}</span>
+                            <p class="card-text small mb-1"><i class="fas fa-envelope me-1"></i> ${profile.email || 'Email not specified'}</p>
+                            ${profile.term ? `<p class="card-text small mb-2"><i class="fas fa-calendar-alt me-1"></i> Term: ${profile.term}</p>` : ''}
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-sm btn-outline-dark view-btn" data-uid="${profile.uid}">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-secondary edit-btn" data-uid="${profile.uid}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-uid="${profile.uid}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Attach event listeners
+                const viewBtn = profileCard.querySelector('.view-btn');
+                const editBtn = profileCard.querySelector('.edit-btn');
+                const deleteBtn = profileCard.querySelector('.delete-btn');
+                
+                viewBtn.addEventListener('click', () => viewProfile(profile.uid));
+                editBtn.addEventListener('click', () => editProfile(profile.uid));
+                deleteBtn.addEventListener('click', () => confirmDeleteProfile(profile.uid, `${profile.firstName} ${profile.lastName}`));
+                
+                profilesContainer.appendChild(profileCard);
+            });
+        }
+
+        // Get role badge class
+        function getRoleBadgeClass(role) {
+            if (!role) return 'role-badge-admin';
+            
+            const normalizedRole = role.toLowerCase().trim();
+            
+            if (normalizedRole.includes('admin')) return 'role-badge-admin';
+            else if (normalizedRole.includes('user')) return 'role-badge-user';
+            else if (normalizedRole.includes('moderator')) return 'role-badge-moderator';
+            
+            return 'role-badge-admin';
+        }
+
+        // View profile details
+        async function viewProfile(uid) {
+            showLoading();
+            
+            try {
+                const profile = await getProfileByUid(uid);
+                
+                if (!profile) {
+                    throw new Error('Profile not found');
+                }
+                
+                // Format birthdate if available
+                let birthdateDisplay = profile.birthdate || 'Not specified';
+                
+                // Create avatar with initials for fallback
+                const initials = ((profile.firstName ? profile.firstName.charAt(0) : '') + 
+                                 (profile.lastName ? profile.lastName.charAt(0) : '')).toUpperCase();
+                
+                // Choose between image or avatar with initials
+                let profileImageHTML = '';
+                if (profile.skImage) {
+                    profileImageHTML = `
+                        <div class="text-center mb-3">
+                            <img src="data:image/jpeg;base64,${profile.skImage}" 
+                                class="rounded-circle" alt="${profile.firstName} ${profile.lastName}" 
+                                style="width: 150px; height: 150px; object-fit: cover;">
+                        </div>
+                    `;
+                } else {
+                    profileImageHTML = `
+                        <div class="avatar-container mb-3" style="width: 150px; height: 150px; font-size: 3rem; margin: 0 auto;">
+                            <span>${initials}</span>
+                        </div>
+                    `;
+                }
+                
+                // Create modal element
+                const modal = document.createElement('div');
+                modal.className = 'modal fade';
+                modal.id = 'profileModal';
+                modal.setAttribute('tabindex', '-1');
+                modal.innerHTML = `
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Profile Details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-4 text-center mb-3">
+                                        ${profileImageHTML}
+                                        <h4>${profile.firstName} ${profile.lastName}</h4>
+                                        <h6 class="text-muted">${profile.position}</h6>
+                                        <span class="badge ${getRoleBadgeClass(profile.role)} mb-2 px-3 py-2">${profile.role || 'ADMIN'}</span>
+                                        <p class="small mt-2">Term: ${profile.term || 'Not specified'}</p>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <h5>Contact Information</h5>
+                                        <ul class="list-group list-group-flush mb-4">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span><i class="fas fa-envelope me-2"></i> Email:</span>
+                                                <span>${profile.email || 'Not provided'}</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span><i class="fas fa-phone me-2"></i> Phone:</span>
+                                                <span>${profile.phoneNumber || 'Not provided'}</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span><i class="fas fa-map-marker-alt me-2"></i> Address:</span>
+                                                <span>${profile.address || 'Not provided'}</span>
+                                            </li>
+                                        </ul>
+                                        
+                                        <h5>Personal Information</h5>
+                                        <ul class="list-group list-group-flush mb-4">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span><i class="fas fa-birthday-cake me-2"></i> Birthdate:</span>
+                                                <span>${birthdateDisplay}</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span><i class="fas fa-user me-2"></i> Gender:</span>
+                                                <span>${profile.gender || 'Not specified'}</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span><i class="fas fa-sort-numeric-up me-2"></i> Age:</span>
+                                                <span>${profile.age || 'Not provided'}</span>
+                                            </li>
+                                        </ul>
+                                        
+                                        ${profile.platform ? 
+                                            `<h5>Platform</h5>
+                                            <div class="border rounded p-3 mb-3 bg-light">
+                                                <p class="mb-0">${profile.platform}</p>
+                                            </div>` : 
+                                            ''}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-dark edit-modal-btn" data-uid="${profile.uid}">
+                                    <i class="fas fa-edit me-1"></i> Edit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add to document
+                document.body.appendChild(modal);
+                
+                // Hide loading
+                hideLoading();
+                
+                // Get Bootstrap modal instance and show it
+                const modalInstance = new bootstrap.Modal(modal);
+                modalInstance.show();
+                
+                // Add event listener for edit button in modal
+                const editBtn = modal.querySelector('.edit-modal-btn');
+                editBtn.addEventListener('click', () => {
+                    modalInstance.hide();
+                    editProfile(profile.uid);
+                });
+                
+                // Clean up when modal is hidden
+                modal.addEventListener('hidden.bs.modal', function () {
+                    document.body.removeChild(modal);
+                });
+            } catch (error) {
+                console.error('Error viewing profile:', error);
+                hideLoading();
+                showAlert(`Failed to load profile: ${error.message}`, 'danger');
+            }
+        }
+
+        // Edit profile
+        async function editProfile(uid) {
+            showLoading();
+            console.log("Edit request for profile UID:", uid);
+            
+            try {
+                // First, get the profile details
+                const profile = await getProfileByUid(uid);
+                
+                if (!profile) {
+                    throw new Error('Profile not found');
+                }
+                
+                console.log("Loaded profile for editing:", profile);
+                
+                // Populate form with profile data
+                profileUid.value = profile.uid;
+                firstNameInput.value = profile.firstName || '';
+                lastNameInput.value = profile.lastName || '';
+                emailInput.value = profile.email || '';
+                positionInput.value = profile.position || '';
+                termInput.value = profile.term || '';
+                platformInput.value = profile.platform || '';
+                birthdateInput.value = profile.birthdate || '';
+                genderInput.value = profile.gender || '';
+                ageInput.value = profile.age || '';
+                phoneNumberInput.value = profile.phoneNumber || '';
+                addressInput.value = profile.address || '';
+                roleInput.value = profile.role || 'ADMIN';
+                
+                // Store existing image data in hidden field
+                existingImageData.value = profile.skImage || '';
+                
+                // Show image preview if exists
+                if (profile.skImage) {
+                    imagePreview.src = `data:image/jpeg;base64,${profile.skImage}`;
+                    imagePreviewContainer.classList.remove('d-none');
+                } else {
+                    imagePreviewContainer.classList.add('d-none');
+                }
+                
+                // Update form title
+                formTitle.textContent = 'Edit SK Profile';
+                
+                // Scroll to form
+                profileForm.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error editing profile:', error);
+                showAlert('Failed to load profile for editing: ' + error.message, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Get profile by UID
+        async function getProfileByUid(uid) {
+            try {
+                console.log("Fetching profile with UID:", uid);
+                
+                // Try from API first
+                const response = await fetch(`${API_BASE_URL}/getProfile/${uid}`);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.warn(`API error (${response.status}): ${errorText}`);
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const profile = await response.json();
+                console.log("API returned profile:", profile);
+                return profile;
+            } catch (apiError) {
+                console.log('API fetch failed, trying Firebase for UID:', uid);
+                
+                // Try from Firebase as fallback
+                return new Promise((resolve, reject) => {
+                    const profileRef = ref(database, `SKProfiles/${uid}`);
+                    
+                    get(profileRef).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            const data = snapshot.val();
+                            data.uid = snapshot.key; // Ensure the UID is the Firebase key
+                            console.log("Found profile in Firebase:", data);
+                            resolve(data);
+                        } else {
+                            console.error("Profile not found in Firebase either");
+                            reject(new Error('Profile not found'));
+                        }
+                    }).catch((error) => {
+                        console.error("Firebase fetch error:", error);
+                        reject(error);
+                    });
+                });
+            }
+        }
+
+        // Delete profile confirmation
+        function confirmDeleteProfile(uid, name) {
+            if (confirm(`Are you sure you want to delete the profile for "${name}"?`)) {
+                deleteProfile(uid);
+            }
+        }
+
+        // Delete profile
+        async function deleteProfile(uid) {
+            showLoading();
+            
+            try {
+                console.log("Attempting to delete profile with UID:", uid);
+                
+                // Try API delete
+                const response = await fetch(`${API_BASE_URL}/deleteProfile/${uid}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error(`API delete failed with status ${response.status}: ${errorText}`);
+                    
+                    // Even if API fails, try to delete from Firebase
+                    console.log("Attempting Firebase delete as fallback");
+                    const profileRef = ref(database, `SKProfiles/${uid}`);
+                    await remove(profileRef);
+                    showAlert('Profile deleted from local cache', 'warning');
+                    loadProfiles();
+                    return;
+                }
+                
+                console.log("Profile deleted successfully via API");
+                showAlert('Profile deleted successfully', 'success');
+                
+                // Reload profiles
+                loadProfiles();
+            } catch (error) {
+                console.error('Error deleting profile:', error);
+                showAlert(`Error deleting profile: ${error.message}`, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Submit form handler
+        async function submitForm(e) {
+            e.preventDefault();
+            showLoading();
+            
+            try {
+                // Check if form is valid
+                if (!profileForm.checkValidity()) {
+                    profileForm.reportValidity();
+                    hideLoading();
+                    return;
+                }
+                
+                // Get form data
+                const profileData = {
+                    firstName: firstNameInput.value.trim(),
+                    lastName: lastNameInput.value.trim(),
+                    email: emailInput.value.trim(),
+                    position: positionInput.value.trim(),
+                    term: termInput.value.trim(),
+                    platform: platformInput.value.trim(),
+                    birthdate: birthdateInput.value,
+                    gender: genderInput.value,
+                    age: parseInt(ageInput.value) || 0,
+                    phoneNumber: phoneNumberInput.value.trim(),
+                    address: addressInput.value.trim(),
+                    role: roleInput.value
+                };
+                
+                const isEditing = profileUid.value.trim() !== '';
+                
+                if (isEditing) {
+                    // Updating existing profile
+                    const uid = profileUid.value;
+                    profileData.uid = uid;
+                    
+                    // Check if image is being updated
+                    if (profileImageInput.files[0]) {
+                        try {
+                            const formData = new FormData();
+                            formData.append('image', profileImageInput.files[0]);
+                            
+                            // Update image first
+                            const imageResponse = await fetch(`${API_BASE_URL}/updateProfile/${uid}/image`, {
+                                method: 'PUT',
+                                body: formData
+                            });
+                            
+                            if (!imageResponse.ok) {
+                                const errorText = await imageResponse.text();
+                                throw new Error(`Image update failed: ${imageResponse.status} - ${errorText}`);
+                            }
+                            
+                            const updatedProfile = await imageResponse.json();
+                            console.log("Image updated successfully");
+                            
+                            // Store the updated image
+                            if (updatedProfile && updatedProfile.skImage) {
+                                profileData.skImage = updatedProfile.skImage;
+                            }
+                        } catch (imageError) {
+                            console.error("Error updating image:", imageError);
+                            showAlert(`Image update failed: ${imageError.message}. Other fields will still be updated.`, 'warning');
+                        }
+                    } else if (existingImageData.value) {
+                        // Keep existing image if no new one is provided
+                        profileData.skImage = existingImageData.value;
+                    }
+                    
+                    // Then update the rest of the profile data
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/updateProfile/${uid}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(profileData)
+                        });
+                        
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            throw new Error(`API error (${response.status}): ${errorText}`);
+                        }
+                        
+                        console.log("Profile updated successfully");
+                        showAlert('Profile updated successfully', 'success');
+                        resetForm();
+                        loadProfiles();
+                    } catch (updateError) {
+                        console.error("Error updating profile:", updateError);
+                        
+                        // Try Firebase update as fallback
+                        try {
+                            console.log("Trying Firebase update as fallback...");
+                            const profileRef = ref(database, `SKProfiles/${uid}`);
+                            await set(profileRef, profileData);
+                            
+                            showAlert('Profile updated in local cache', 'warning');
+                            resetForm();
+                            loadProfiles();
+                        } catch (firebaseError) {
+                            console.error("Firebase update failed:", firebaseError);
+                            showAlert(`Failed to update profile: ${updateError.message}`, 'danger');
+                        }
+                    }
+                } else {
+                    // Creating new profile
+                    if (profileImageInput.files[0]) {
+                        // Create with image using the with-image endpoint
+                        try {
+                            const formData = new FormData();
+                            formData.append('firstName', profileData.firstName);
+                            formData.append('lastName', profileData.lastName);
+                            formData.append('email', profileData.email);
+                            formData.append('position', profileData.position);
+                            
+                            if (profileData.term) {
+                                formData.append('term', profileData.term);
+                            }
+                            
+                            if (profileData.platform) {
+                                formData.append('platform', profileData.platform);
+                            }
+                            
+                            if (profileData.birthdate) {
+                                formData.append('birthdate', profileData.birthdate);
+                            }
+                            
+                            if (profileData.gender) {
+                                formData.append('gender', profileData.gender);
+                            }
+                            
+                            formData.append('age', profileData.age);
+                            
+                            if (profileData.phoneNumber) {
+                                formData.append('phoneNumber', profileData.phoneNumber);
+                            }
+                            
+                            if (profileData.address) {
+                                formData.append('address', profileData.address);
+                            }
+                            
+                            formData.append('role', profileData.role);
+                            formData.append('image', profileImageInput.files[0]);
+                            
+                            const response = await fetch(`${API_BASE_URL}/createProfile/with-image`, {
+                                method: 'POST',
+                                body: formData
+                            });
+                            
+                            if (!response.ok) {
+                                const errorText = await response.text();
+                                throw new Error(`API error (${response.status}): ${errorText}`);
+                            }
+                            
+                            const createdProfile = await response.json();
+                            console.log("Profile with image created successfully:", createdProfile);
+                            
+                            showAlert('Profile created successfully', 'success');
+                            resetForm();
+                            loadProfiles();
+                        } catch (createError) {
+                            console.error("Error creating profile with image:", createError);
+                            showAlert(`Failed to create profile: ${createError.message}`, 'danger');
+                        }
+                    } else {
+                        // Create without image
+                        try {
+                            const response = await fetch(`${API_BASE_URL}/createProfile`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(profileData)
+                            });
+
+                            if (!response.ok) {
+                                const errorText = await response.text();
+                                throw new Error(`API error (${response.status}): ${errorText}`);
+                            }
+
+                            const createdProfile = await response.json();
+                            console.log("Profile created successfully via API:", createdProfile);
+
+                            showAlert('Profile created successfully', 'success');
+                            resetForm();
+                            loadProfiles();
+                        } catch (createError) {
+                            console.error("Error creating profile:", createError);
+                            
+                            // Try Firebase create as fallback
+                            try {
+                                console.log("Trying Firebase create as fallback...");
+                                const newProfileRef = push(ref(database, 'SKProfiles'));
+                                const uid = newProfileRef.key;
+                                profileData.uid = uid;
+                                
+                                await set(newProfileRef, profileData);
+                                
+                                showAlert('Profile created in local cache', 'warning');
+                                resetForm();
+                                loadProfiles();
+                            } catch (firebaseError) {
+                                console.error("Firebase create failed:", firebaseError);
+                                showAlert(`Failed to create profile: ${createError.message}`, 'danger');
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                showAlert(`Error: ${error.message}`, 'danger');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Reset form
+        function resetForm() {
+            profileUid.value = '';
+            existingImageData.value = '';
+            profileForm.reset();
+            imagePreviewContainer.classList.add('d-none');
+            formTitle.textContent = 'Add New SK Profile';
+            roleInput.value = 'ADMIN'; // Set default role
+        }
+
+        // Show loading overlay
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        // Hide loading overlay
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        // Show loading in container
+        function showLoadingInContainer() {
+            loadingMessage.style.display = 'block';
+        }
+
+        // Hide loading in container
+        function hideLoadingInContainer() {
+            loadingMessage.style.display = 'none';
+        }
+
+        // Show error
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        // Hide error
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} alert-dismissible fade show`;
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            alertContainer.appendChild(alert);
+            
+            // Auto dismiss after 5 seconds
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => {
+                    alertContainer.removeChild(alert);
+                }, 150);
+            }, 5000);
+        }
+
+        // Call initialize when document is ready
+        document.addEventListener('DOMContentLoaded', initialize);
+        console.log("DOM content loaded event registered");
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
