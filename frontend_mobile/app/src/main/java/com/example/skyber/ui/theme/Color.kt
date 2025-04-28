@@ -1,7 +1,16 @@
 package com.example.skyber.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 
+
+// Add the gradient definition
+val SKyberDarkBlueGradient = Brush.verticalGradient(
+    colors = listOf(
+        Color(0xFF0134AA), // Start color (#0134AA)
+        Color(0xFF001544)  // End color (#001544)
+    )
+)
 val Purple80 = Color(0xFFDDE1E1)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)
