@@ -14,7 +14,7 @@ import App from './App.jsx'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <MantineProvider withGlobalStyles withNormalizeCSS>
-    <Notifications position="top-right" />
+    <Notifications position="top-left" />
       <ModalsProvider>
         <AuthProvider>
           <App />

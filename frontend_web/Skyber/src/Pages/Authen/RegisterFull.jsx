@@ -440,7 +440,7 @@ const RegisterFull = () => {
             {/* Sign In Button */}
               <button
                 type="submit"
-                className="w-full py-3 bg-gradient-to-r from-pink-400 to-blue-500 text-white font-semibold rounded-full shadow-lg hover:scale-105 hover:opacity-90 transition-all duration-200 cursor-pointer"
+                className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold rounded-full shadow-lg hover:scale-105 hover:opacity-90 transition-all duration-200 cursor-pointer"
                 disabled={loading}
               >
                 {loading ? 'Creating Account...' : 'Create Account'}

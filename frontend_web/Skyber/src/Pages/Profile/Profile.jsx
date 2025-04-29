@@ -46,18 +46,22 @@ const Profile = () => {
         if (snapshot.exists()) {
           const data = snapshot.val();
           
-          // Convert birthdate string to Date object if it exists
-          if (data.birthdate) {
-            data.birthdate = new Date(data.birthdate);
+          const normalizedData = {
+            ...data,
+            firstName: data.firstname || data.firstName || '',
+            lastName: data.lastname || data.lastName || '',
+          };
+          
+          if (normalizedData.birthdate) {
+            normalizedData.birthdate = new Date(normalizedData.birthdate);
           }
           
-          // Format phone number if needed
-          if (data.phoneNumber && !data.phone) {
-            data.phone = data.phoneNumber;
+          if (normalizedData.phoneNumber && !normalizedData.phone) {
+            normalizedData.phone = normalizedData.phoneNumber;
           }
           
-          setUserData(data);
-          setOriginalData(data);
+          setUserData(normalizedData);
+          setOriginalData(normalizedData);
         } else {
           console.log("No user data found!");
           // Set defaults from Firebase Auth

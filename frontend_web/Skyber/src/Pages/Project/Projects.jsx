@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import { useDisclosure } from '@mantine/hooks';
@@ -32,6 +32,7 @@ import {
 import sample1 from '../../assets/proj/sample1.png';
 import sample2 from '../../assets/proj/sample2.png';
 import sample3 from '../../assets/proj/sample3.png';
+import { showNotification } from '@mantine/notifications';
 
 // Renamed from announcements to projects for clarity
 const projects = [
@@ -112,6 +113,8 @@ const Projects = () => {
   const [projectData, setProjectData] = useState(projects);
   const [selectedProject, setSelectedProject] = useState(null);
   const [opened, { open, close }] = useDisclosure(false);
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null); 
 
   // Filter projects based on search and status
   const filteredProjects = projectData.filter(project => {
@@ -137,7 +140,107 @@ const Projects = () => {
       default: return 'gray';
     }
   };
-
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        
+        // API URL constant (move to config file in production)
+        const API_URL = 'http://localhost:8080/api/projects/all';
+        console.log("Fetching projects from:", API_URL);
+        
+        const response = await fetch(API_URL);
+        
+        // Better error handling
+        if (!response.ok) {
+          console.error(`Server responded with ${response.status}: ${response.statusText}`);
+          throw new Error(`Server responded with ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log("Retrieved projects data:", data);
+        
+        // Check if data exists and is not empty
+        if (data && data.length > 0) {
+          // Transform data
+          const transformedData = data.map(item => ({
+            id: item.id || Math.random().toString(),
+            title: item.projectName || "Untitled Project",
+            status: item.status || "Pending",
+            startDate: item.startDate || "N/A",
+            endDate: item.endDate || "N/A",
+            image: item.projectImage ? `data:image/jpeg;base64,${item.projectImage}` : sample1,
+            description: item.description || "No description provided.",
+            progress: calculateProgress(item.status),
+            volunteers: 15, // Default value if not provided by API
+            budget: item.budget || "₱0",
+            manager: {
+              name: item.projectManager || "Not Assigned",
+              image: "https://i.pravatar.cc/150?img=32"
+            },
+            teamMembers: parseTeamMembers(item.teamMembers),
+            stakeholders: parseStakeholders(item.stakeholders),
+            sustainabilityGoal: item.sustainabilityGoals || "None specified"
+          }));
+          
+          setProjectData(transformedData);
+          setError(null);
+          
+          showNotification({
+            title: 'Projects Loaded',
+            message: `Successfully loaded ${transformedData.length} projects`,
+            color: 'green'
+          });
+        } else {
+          console.warn("Server returned empty projects data");
+          throw new Error("No projects found in server response");
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        setError(error.message);
+        
+        // Use fallback data
+        setProjectData(projects);
+        
+        showNotification({
+          title: 'Using Sample Data',
+          message: 'Could not load projects from server. Showing sample data.',
+          color: 'yellow'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    // Helper functions for data transformation
+    const calculateProgress = (status) => {
+      switch(status) {
+        case 'Complete': return 100;
+        case 'Closed': return 0;
+        default: return Math.floor(Math.random() * 60) + 20; // 20-80% for ongoing projects
+      }
+    };
+    
+    const parseTeamMembers = (teamMembersString) => {
+      if (!teamMembersString) return [];
+      
+      // Split by comma if it's a string
+      const names = teamMembersString.split(',').map(name => name.trim());
+      
+      // Generate team members with avatars
+      return names.map((name, index) => ({
+        name: name,
+        image: `https://i.pravatar.cc/150?img=${30 + index}`
+      }));
+    };
+    
+    const parseStakeholders = (stakeholdersString) => {
+      if (!stakeholdersString) return [];
+      return stakeholdersString.split(',').map(s => s.trim());
+    };
+    
+    fetchProjects();
+  }, []);
   return (
     <>
       {/* Header with gradient background */}
