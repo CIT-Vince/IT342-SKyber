@@ -2,12 +2,15 @@ package com.example.skyber.dataclass
 
 data class User(
     val id: String? = null,
+
     val firstname: String? = null,
     val lastname: String? = null,
+    val email: String? = null,
     val password: String? = null,
+
     val age: String? = null,
     val birthdate: String? = null,
-    val email: String? = null,
+
     val gender: String? = null,
     val role: String? = null,
     val phoneNumber: String? = null,

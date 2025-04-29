@@ -81,7 +81,7 @@ fun VolunteerList(navController: NavHostController, userProfile: MutableState<Us
 
                 val matchedPosts = postSnapshot.children.mapNotNull { postSnap -> //Logic for matching user applied events and VolunteerHubEvents
                     val post = postSnap.getValue(VolunteerPost::class.java)
-                    val eventId = post?.eventId
+                    val eventId = post?.id
                     if (eventId in volunteeredActivities) {
                         Log.d("VolunteerDebug", "MATCH FOUND: eventId=$eventId")
                         post

@@ -65,11 +65,10 @@ fun PostJob(navController: NavHostController, userProfile: MutableState<User?>){
     var jobtitle by remember { mutableStateOf("") }
     var companyname by remember {mutableStateOf("")}
     var description by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf("") }
-    var location by remember { mutableStateOf("") }
+    var employmentType by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
-    var contactperson by remember { mutableStateOf("") }
-    var contact by remember { mutableStateOf("") }
+    var applicationLink by remember { mutableStateOf("") }
+
     val context = LocalContext.current
 
         if (user == null){
@@ -149,34 +148,17 @@ fun PostJob(navController: NavHostController, userProfile: MutableState<User?>){
                                 Spacer(modifier = Modifier.height(12.dp))
 
                                 CategoryDropdown(
-                                    selectedCategory = category,
-                                    onCategorySelected = { category = it }
+                                    selectedCategory = employmentType,
+                                    onCategorySelected = { employmentType = it }
                                 )
 
 
                                 Spacer(modifier = Modifier.height(12.dp))
 
                                 TextField(
-                                    value = contactperson,
-                                    onValueChange = { contactperson = it },
-                                    label = { Text("Contact Person") },
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(20.dp))
-                                        .fillMaxWidth(),
-                                    colors = TextFieldDefaults.textFieldColors(
-                                        focusedIndicatorColor = SKyberYellow,
-                                        unfocusedIndicatorColor = SKyberYellow,
-                                        focusedLabelColor = SKyberYellow,
-                                        unfocusedLabelColor = SKyberYellow
-                                    )
-                                )
-
-                                Spacer(modifier = Modifier.height(12.dp))
-
-                                TextField(
-                                    value = contact,
-                                    onValueChange = { contact = it },
-                                    label = { Text("Contact Information") },
+                                    value = applicationLink,
+                                    onValueChange = { applicationLink = it },
+                                    label = { Text("Apply Here") },
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(20.dp))
                                         .fillMaxWidth(),
@@ -201,23 +183,6 @@ fun PostJob(navController: NavHostController, userProfile: MutableState<User?>){
                                         .padding(0.dp),
                                     maxLines = 10
                                     ,
-                                    colors = TextFieldDefaults.textFieldColors(
-                                        focusedIndicatorColor = SKyberYellow,
-                                        unfocusedIndicatorColor = SKyberYellow,
-                                        focusedLabelColor = SKyberYellow,
-                                        unfocusedLabelColor = SKyberYellow
-                                    )
-                                )
-
-                                Spacer(modifier = Modifier.height(12.dp))
-
-                                TextField(
-                                    value = location,
-                                    onValueChange = { location = it },
-                                    label = { Text("Location") },
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(20.dp))
-                                        .fillMaxWidth(),
                                     colors = TextFieldDefaults.textFieldColors(
                                         focusedIndicatorColor = SKyberYellow,
                                         unfocusedIndicatorColor = SKyberYellow,
@@ -257,21 +222,21 @@ fun PostJob(navController: NavHostController, userProfile: MutableState<User?>){
                             ),
                             onClick = {
                                 // Create Job Listing  object
-                                if(jobtitle.isBlank() || contactperson.isBlank() || contact.isBlank() || companyname.isBlank() || address.isBlank() ||location.isBlank()){
+                                if(jobtitle.isBlank()  || companyname.isBlank() || address.isBlank() || applicationLink.isBlank()){
                                     showToast(context, "Please fill out required fields")
                                 }else{
                                     val databaseRef = FirebaseHelper.databaseReference.child("JobListing").push()
                                     val postId = databaseRef.key
                                     if(postId != null){
                                         val newJobListing = JobListing(
-                                            jobtitle = jobtitle,
-                                            companyname = companyname,
+                                            jobTitle = jobtitle,
+                                            companyName = companyname,
                                             description = description,
-                                            contact = contact,
-                                            location = location,
-                                            contactperson = contactperson,
+                                            //contact = contact,
+                                            //location = location,
+                                            applicationLink = applicationLink,
                                             address = address,
-                                            category = category,
+                                            employmentType = employmentType,
                                         )
                                         // Upload the Job listing post
                                         uploadJobListing(databaseRef, newJobListing, context)

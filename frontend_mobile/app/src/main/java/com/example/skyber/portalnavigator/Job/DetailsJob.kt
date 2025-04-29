@@ -61,23 +61,19 @@ fun DetailsJob(navController: NavHostController){
     var newCompanyname by remember { mutableStateOf("") }
     var newDescription by remember { mutableStateOf("") }
     var newCategory by remember { mutableStateOf("") }
-    var newLocation by remember { mutableStateOf("") }
+    var newApplicationLink by remember { mutableStateOf("") }
     var newAddress by remember { mutableStateOf("") }
-    var newContactperson by remember { mutableStateOf("") }
-    var newContact by remember { mutableStateOf("") }
     val context = LocalContext.current
     var isEditMode by remember {mutableStateOf(false)}
 
     LaunchedEffect(isEditMode){
         if (isEditMode && joblisting != null) {
-            newJobtitle = joblisting.jobtitle
-            newCompanyname = joblisting.companyname
+            newJobtitle = joblisting.jobTitle
+            newCompanyname = joblisting.companyName
             newDescription = joblisting.description
-            newCategory = joblisting.category
-            newLocation = joblisting.location
+            newCategory = joblisting.employmentType
             newAddress = joblisting.address
-            newContactperson = joblisting.contactperson
-            newContact = joblisting.contact
+            newApplicationLink = joblisting.applicationLink
         }
     }
 
@@ -91,7 +87,7 @@ fun DetailsJob(navController: NavHostController){
         }
         return
     }else {
-        val jobCategory = joblisting.category.lowercase() == "full-time"
+        val jobCategory = joblisting.employmentType.lowercase() == "full-time"
         val statusColor = if (jobCategory) BoxGreen else SoftCardContainerBlue
         val textColor = if (jobCategory)  BoxTextGreen else SoftCardFontBlue
         Scaffold() { innerPadding ->
@@ -183,6 +179,23 @@ fun DetailsJob(navController: NavHostController){
 
                                 Spacer(modifier = Modifier.height(12.dp))
 
+                                TextField(
+                                    value = newApplicationLink,
+                                    onValueChange = { newApplicationLink = it },
+                                    label = { Text("Apply Here") },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(20.dp)),
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        focusedIndicatorColor = SKyberYellow,
+                                        unfocusedIndicatorColor = SKyberYellow,
+                                        focusedLabelColor = SKyberYellow,
+                                        unfocusedLabelColor = SKyberYellow
+                                    )
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
                                 CategoryDropdown(
                                     selectedCategory = newCategory,
                                     onCategorySelected = { newCategory = it }
@@ -191,39 +204,6 @@ fun DetailsJob(navController: NavHostController){
 
                                 Spacer(modifier = Modifier.height(12.dp))
 
-                                TextField(
-                                    value = newContactperson,
-                                    onValueChange = { newContactperson = it },
-                                    label = { Text("Contact Person") },
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(20.dp))
-                                        .fillMaxWidth(),
-                                    colors = TextFieldDefaults.textFieldColors(
-                                        focusedIndicatorColor = SKyberYellow,
-                                        unfocusedIndicatorColor = SKyberYellow,
-                                        focusedLabelColor = SKyberYellow,
-                                        unfocusedLabelColor = SKyberYellow
-                                    )
-                                )
-
-                                Spacer(modifier = Modifier.height(12.dp))
-
-                                TextField(
-                                    value = newContact,
-                                    onValueChange = { newContact = it },
-                                    label = { Text("Contact Information") },
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(20.dp))
-                                        .fillMaxWidth(),
-                                    colors = TextFieldDefaults.textFieldColors(
-                                        focusedIndicatorColor = SKyberYellow,
-                                        unfocusedIndicatorColor = SKyberYellow,
-                                        focusedLabelColor = SKyberYellow,
-                                        unfocusedLabelColor = SKyberYellow
-                                    )
-                                )
-
-                                Spacer(modifier = Modifier.height(12.dp))
 
                                 TextField(
                                     value = newDescription,
@@ -236,23 +216,6 @@ fun DetailsJob(navController: NavHostController){
                                         .padding(0.dp),
                                     maxLines = 10
                                     ,
-                                    colors = TextFieldDefaults.textFieldColors(
-                                        focusedIndicatorColor = SKyberYellow,
-                                        unfocusedIndicatorColor = SKyberYellow,
-                                        focusedLabelColor = SKyberYellow,
-                                        unfocusedLabelColor = SKyberYellow
-                                    )
-                                )
-
-                                Spacer(modifier = Modifier.height(12.dp))
-
-                                TextField(
-                                    value = newLocation,
-                                    onValueChange = { newLocation = it },
-                                    label = { Text("Location") },
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(20.dp))
-                                        .fillMaxWidth(),
                                     colors = TextFieldDefaults.textFieldColors(
                                         focusedIndicatorColor = SKyberYellow,
                                         unfocusedIndicatorColor = SKyberYellow,
@@ -288,13 +251,11 @@ fun DetailsJob(navController: NavHostController){
                                         // Build updated joblisting
                                         val updatedJoblisting = JobListing(
                                             id = jobListingId,
-                                            jobtitle = newJobtitle.ifEmpty { joblisting.jobtitle },
-                                            companyname = newCompanyname.ifEmpty { joblisting.companyname },
+                                            jobTitle = newJobtitle.ifEmpty { joblisting.jobTitle },
+                                            companyName = newCompanyname.ifEmpty { joblisting.companyName },
                                             description = newDescription.ifEmpty { joblisting.description },
-                                            contact = newContact.ifEmpty {joblisting.contact},
-                                            category = newCategory.ifEmpty { joblisting.category},
-                                            location = newLocation.ifEmpty { joblisting.location },
-                                            contactperson = newContactperson.ifEmpty { joblisting.contactperson },
+                                            applicationLink = newApplicationLink.ifEmpty { joblisting.applicationLink },
+                                            employmentType = newCategory.ifEmpty { joblisting.employmentType},
                                             address = newAddress.ifEmpty { joblisting.address }
                                         )
                                         database.child("JobListing").child(jobListingId).setValue(updatedJoblisting)
@@ -337,7 +298,7 @@ fun DetailsJob(navController: NavHostController){
                             verticalAlignment = Alignment.Bottom
                         ){
                             Text(
-                                text = joblisting.jobtitle,
+                                text = joblisting.jobTitle,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 28.sp,
                                 color = SKyberBlue
@@ -354,7 +315,7 @@ fun DetailsJob(navController: NavHostController){
 
                             ){
                                 Text(
-                                    text = joblisting.category,
+                                    text = joblisting.employmentType,
                                     fontSize = 18.sp,
                                     color = textColor,
                                     fontWeight = FontWeight.SemiBold
@@ -366,7 +327,7 @@ fun DetailsJob(navController: NavHostController){
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
-                            text = "Company Name: ${joblisting.companyname}",
+                            text = "Company Name: ${joblisting.companyName}",
                             fontSize = 16.sp,
                             color = SKyberBlue
                         )
@@ -374,7 +335,7 @@ fun DetailsJob(navController: NavHostController){
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = "Location: ${joblisting.location}",
+                            text = "Apply at: ${joblisting.applicationLink}",
                             fontSize = 16.sp,
                             color = SKyberBlue
                         )
@@ -408,21 +369,6 @@ fun DetailsJob(navController: NavHostController){
                             color = SKyberBlue
                         )
 
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        Text(
-                            text = joblisting.contactperson,
-                            fontSize = 16.sp,
-                            color = SKyberBlue
-                        )
-
-                        Spacer(modifier = Modifier.height(18.dp))
-
-                        Text(
-                            text = joblisting.contact,
-                            fontSize = 16.sp,
-                            color = SKyberBlue
-                        )
                         Button(
                             onClick = {
                                 isEditMode = true

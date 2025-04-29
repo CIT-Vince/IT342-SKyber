@@ -69,8 +69,8 @@ fun Job(navController: NavHostController) {
 
     // Filter for event status on selected tab
     val filteredJobListings = when (selectedTab) {
-        "Part-Time" -> allJobListings.filter { it.category == "Part-Time" }
-        "Full-Time" -> allJobListings.filter { it.category == "Full-Time" }
+        "Part-Time" -> allJobListings.filter { it.employmentType == "Part-Time" }
+        "Full-Time" -> allJobListings.filter { it.employmentType == "Full-Time" }
         else -> allJobListings
     }
 

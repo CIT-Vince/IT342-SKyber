@@ -7,15 +7,15 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @IgnoreExtraProperties
 data class VolunteerPost(
-    val eventId: String ="",
+    val id: String ="",
     val title: String = "",
     val description: String = "",
+    val registerLink: String = "",
     val category: String = "",
     val location: String = "",
-    val eventdate: String = "",
-    val contactperson: String = "",
-    val contact: String = "",//number
-    val email: String = "",
+    val eventDate: String = "",
+    val contactPerson: String = "",
+    val contactEmail: String = "",//email
     val status: String = "", //Status should only be Ongoing and Completed
     val requirements: String =""
 ) : Parcelable

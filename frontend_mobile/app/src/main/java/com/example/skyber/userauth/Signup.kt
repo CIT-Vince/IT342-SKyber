@@ -676,10 +676,10 @@ fun RadioButtonGenders(
     }
 }
 
-@Preview(showBackground = true, device = "id:pixel_6")
+/*@Preview(showBackground = true, device = "id:pixel_6")
 @Composable
 fun SignupScreenPreview() {
     SkyberTheme {
         SignupScreen(rememberNavController())
     }
-}
+}*/
