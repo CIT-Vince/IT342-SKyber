@@ -129,19 +129,15 @@ fun DetailsVolunteerList(navController: NavHostController) {
                         Spacer(modifier = Modifier.height(12.dp))
 
                         Text(
-                            text = "Contact: ${volunteerPost.contactperson}",
+                            text = "Contact: ${volunteerPost.contactPerson}",
                             fontSize = 16.sp,
                             color = SKyberBlue
                         )
 
-                        Text(
-                            text = "Phone: ${volunteerPost.contact}",
-                            fontSize = 14.sp,
-                            color = SKyberBlue
-                        )
+                        Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
-                            text = "Email: ${volunteerPost.email}",
+                            text = "Contact Email: ${volunteerPost.contactEmail}",
                             fontSize = 14.sp,
                             color = SKyberBlue
                         )
@@ -173,7 +169,7 @@ fun DetailsVolunteerList(navController: NavHostController) {
                         )
 
                         Text(
-                            text = "Event Date: ${volunteerPost.eventdate}",
+                            text = "Event Date: ${volunteerPost.eventDate}",
                             fontSize = 16.sp,
                             color = SKyberBlue
                         )

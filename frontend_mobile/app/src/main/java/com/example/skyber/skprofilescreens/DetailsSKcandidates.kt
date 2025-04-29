@@ -110,7 +110,7 @@ fun DetailsSKcandidates(navController: NavHostController) {
                                 verticalAlignment = Alignment.Bottom,
                             ) {
                                 Text(
-                                    text = "${candidateProfile.firstname}",
+                                    text = "${candidateProfile.firstName}",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 28.sp,
                                     color = SKyberBlue
@@ -119,7 +119,7 @@ fun DetailsSKcandidates(navController: NavHostController) {
                                 Spacer(modifier = Modifier.width(14.dp))
 
                                 Text(
-                                    text = "${candidateProfile.lastname}",
+                                    text = "${candidateProfile.lastName}",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 28.sp,
                                     color = SKyberBlue
@@ -151,17 +151,19 @@ fun DetailsSKcandidates(navController: NavHostController) {
 
                             Spacer(modifier = Modifier.height(12.dp))
 
-                            Text(
+                            /*Text(
                                 text = "Email: ${candidateProfile.email}",
                                 fontSize = 16.sp,
                                 color = SKyberBlue
-                            )
+                            )*/
 
                             Text(
-                                text = "Party: ${candidateProfile.partylist}",
+                                text = "Party: ${candidateProfile.partyList}",
                                 fontSize = 14.sp,
                                 color = SKyberBlue
                             )
+
+                            Spacer(modifier = Modifier.height(16.dp))
 
                             Text(
                                 text = "Email: ${candidateProfile.address}",

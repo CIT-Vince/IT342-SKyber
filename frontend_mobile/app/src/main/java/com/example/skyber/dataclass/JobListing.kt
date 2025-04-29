@@ -8,12 +8,10 @@ import kotlinx.parcelize.Parcelize
 @IgnoreExtraProperties
 data class JobListing (
     val id: String = "",
-    val jobtitle: String = "",
-    val companyname: String = "",
-    val description: String = "",
-    val contact: String = "",
-    val location: String = "",
-    val contactperson: String = "",
+    val jobTitle: String = "",
+    val companyName: String = "",
     val address: String = "",
-    val category: String = "",//Part-Time or Full-Time
+    val description: String = "",
+    val applicationLink: String = "",
+    val employmentType: String = "",//Part-Time or Full-Time
 ): Parcelable

@@ -9,9 +9,8 @@ import kotlinx.parcelize.Parcelize
 data class Scholarship (
     val id: String = "",
     val title: String = "",
-    val institution: String = "",
     val description: String = "",
-    val contactemail: String = "",
-    val applicationlink: String ="",
-    val category: String = "",//Private or Public or institution-type Agnostic
+    val link: String ="",
+    val contactEmail: String = "",
+    val type: String = "",//Private or Public or institution-type Agnostic
 ): Parcelable

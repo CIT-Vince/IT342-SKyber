@@ -61,7 +61,6 @@ fun PostScholarship(navController: NavHostController, userProfile: MutableState<
     val user = userProfile.value//passed logged in user
 
     var title by remember { mutableStateOf("") }
-    var institution by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var contactemail by remember { mutableStateOf("") }
     var applicationlink by remember { mutableStateOf("") }
@@ -128,23 +127,6 @@ fun PostScholarship(navController: NavHostController, userProfile: MutableState<
 
                             Spacer(modifier = Modifier.height(12.dp))
 
-                            TextField(
-                                value = institution,
-                                onValueChange = { institution = it },
-                                label = { Text("Institution") },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(20.dp)),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    focusedIndicatorColor = SKyberYellow,
-                                    unfocusedIndicatorColor = SKyberYellow,
-                                    focusedLabelColor = SKyberYellow,
-                                    unfocusedLabelColor = SKyberYellow
-                                )
-                            )
-
-                            Spacer(modifier = Modifier.height(12.dp))
-
                             ScholarshipCategoryDropdown(
                                 selectedCategory = category,
                                 onCategorySelected = { category = it }
@@ -174,7 +156,7 @@ fun PostScholarship(navController: NavHostController, userProfile: MutableState<
                             TextField(
                                 value = applicationlink,
                                 onValueChange = { applicationlink = it },
-                                label = { Text("Application Link") },
+                                label = { Text("Apply here") },
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(20.dp))
                                     .fillMaxWidth(),
@@ -221,7 +203,7 @@ fun PostScholarship(navController: NavHostController, userProfile: MutableState<
                         ),
                         onClick = {
                             // Create Job Listing  object
-                            if(title.isBlank() || contactemail.isBlank() || institution.isBlank() || applicationlink.isBlank()  || category.isBlank()){
+                            if(title.isBlank() || contactemail.isBlank() || applicationlink.isBlank()  || category.isBlank()){
                                 showToast(context, "Please fill out required fields")
                             }else{
                                 val databaseRef = FirebaseHelper.databaseReference.child("Scholarship").push()
@@ -229,11 +211,10 @@ fun PostScholarship(navController: NavHostController, userProfile: MutableState<
                                 if(postId != null){
                                     val newScholarship = Scholarship(
                                         title = title,
-                                        institution = institution,
                                         description = description,
-                                        contactemail = contactemail,
-                                        applicationlink = applicationlink,
-                                        category = category,
+                                        contactEmail = contactemail,
+                                        link = applicationlink,
+                                        type = category,
                                     )
                                     // Upload the Job listing post
                                     uploadJScholarship(databaseRef, newScholarship, context)

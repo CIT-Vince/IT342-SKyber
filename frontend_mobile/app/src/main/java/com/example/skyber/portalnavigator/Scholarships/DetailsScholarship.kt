@@ -58,7 +58,7 @@ fun DetailsScholarship(navController: NavHostController){
         }
         return
     }else {
-        val category = scholarship.category.lowercase()
+        val category = scholarship.type.lowercase()
         val (statusColor,textColor) = when (category){
             "all" -> BoxGreen to BoxTextGreen
             "private" -> SoftCardContainerMaroon to SoftCardFontGold
@@ -134,7 +134,7 @@ fun DetailsScholarship(navController: NavHostController){
 
                         ){
                             Text(
-                                text = scholarship.category,
+                                text = scholarship.type,
                                 fontSize = 18.sp,
                                 color = textColor,
                                 fontWeight = FontWeight.SemiBold
@@ -143,24 +143,24 @@ fun DetailsScholarship(navController: NavHostController){
                     }
 
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    /*Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
                         text = "Institution: ${scholarship.institution}",
                         fontSize = 16.sp,
                         color = SKyberBlue
-                    )
+                    )*/
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Apply At: ${scholarship.applicationlink}",
+                        text = "Apply At: ${scholarship.link}",
                         fontSize = 16.sp,
                         color = SKyberBlue
                     )
 
                     Text(
-                        text = "Contact: ${scholarship.contactemail}",
+                        text = "Contact: ${scholarship.contactEmail}",
                         fontSize = 16.sp,
                         color = SKyberBlue
                     )

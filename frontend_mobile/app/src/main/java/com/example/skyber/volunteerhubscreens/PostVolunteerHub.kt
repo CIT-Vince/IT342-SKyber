@@ -64,7 +64,6 @@ fun PostVolunteerHub(navController: NavHostController, userProfile: MutableState
     var location by remember { mutableStateOf("") }
     var eventdate by remember { mutableStateOf("") }
     var contactperson by remember { mutableStateOf("") }
-    var contact by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var requirements by remember { mutableStateOf("") }
     val context = LocalContext.current
@@ -131,23 +130,6 @@ fun PostVolunteerHub(navController: NavHostController, userProfile: MutableState
                                 value = contactperson,
                                 onValueChange = { contactperson = it },
                                 label = { Text("Contact Person") },
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(20.dp))
-                                    .fillMaxWidth(),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    focusedIndicatorColor = SKyberYellow,
-                                    unfocusedIndicatorColor = SKyberYellow,
-                                    focusedLabelColor = SKyberYellow,
-                                    unfocusedLabelColor = SKyberYellow
-                                )
-                            )
-
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            TextField(
-                                value = contact,
-                                onValueChange = { contact = it },
-                                label = { Text("Contact Information") },
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(20.dp))
                                     .fillMaxWidth(),
@@ -281,15 +263,14 @@ fun PostVolunteerHub(navController: NavHostController, userProfile: MutableState
                                 val postId = databaseRef.key
                                 if(postId != null){
                                     val newVolunteerPost = VolunteerPost(
-                                        eventId = postId,
+                                        id = postId,
                                         title = title,
                                         description = description,
                                         category = category,
                                         location = location,
-                                        eventdate = eventdate,
-                                        contactperson = contactperson,
-                                        contact = contact,
-                                        email = email,
+                                        eventDate = eventdate,
+                                        contactPerson = contactperson,
+                                        contactEmail = email,
                                         status = "Ongoing",
                                         requirements = requirements
                                     )

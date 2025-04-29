@@ -130,7 +130,7 @@ fun CandidateCard(
             verticalArrangement = Arrangement.spacedBy(8.dp) // Consistent spacing between elements
         ) {
             Text(
-                text = "${candidateProfile.firstname} ${candidateProfile.lastname}",
+                text = "${candidateProfile.firstName} ${candidateProfile.lastName}",
                 fontSize = 24.sp, // Slightly smaller font for better balance
                 fontWeight = FontWeight.Bold,
                 color = fontColor,
@@ -139,7 +139,7 @@ fun CandidateCard(
             )
 
             Text(
-                text = "${candidateProfile.partylist}",
+                text = "${candidateProfile.partyList}",
                 fontSize = 20.sp, // Consistent font size
                 color = SoftCardFontGreen,
                 fontWeight = FontWeight.Medium, // Adjusted weight for better readability
@@ -391,7 +391,7 @@ fun VolunteerCard(backgroundColor: Color = White,
                 Text(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    text = "${volunteerPost.contactperson} • ${volunteerPost.contact}",
+                    text = "${volunteerPost.contactPerson} • ${volunteerPost.contactEmail}",
                     fontSize = 20.sp,
                     color = fontColor,
                     maxLines = 3,
@@ -401,7 +401,7 @@ fun VolunteerCard(backgroundColor: Color = White,
                 Text(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    text = "${volunteerPost.location} • ${volunteerPost.eventdate}",
+                    text = "${volunteerPost.location} • ${volunteerPost.eventDate}",
                     fontSize = 20.sp,
                     color = fontColor,
                     maxLines = 3,
@@ -420,7 +420,7 @@ fun JobListingCard(
     joblisting: JobListing,
     onClick: () -> Unit
 ) {
-    val jobCategory = joblisting.category.lowercase() == "full-time"
+    val jobCategory = joblisting.employmentType.lowercase() == "full-time"
     val statusColor = if (jobCategory) BoxGreen else SoftCardContainerBlue
     val textColor = if (jobCategory) BoxTextGreen else SoftCardFontBlue
 
@@ -447,7 +447,7 @@ fun JobListingCard(
                 horizontalArrangement = Arrangement.SpaceBetween // Aligns elements evenly
             ) {
                 Text(
-                    text = joblisting.companyname,
+                    text = joblisting.companyName,
                     fontSize = 24.sp, // Slightly smaller font for better balance
                     fontWeight = FontWeight.Bold,
                     color = fontColor,
@@ -461,7 +461,7 @@ fun JobListingCard(
                         .padding(horizontal = 12.dp, vertical = 4.dp) // Adjusted padding for better proportions
                 ) {
                     Text(
-                        text = joblisting.category,
+                        text = joblisting.employmentType,
                         fontSize = 16.sp, // Smaller font for better hierarchy
                         color = textColor,
                         fontWeight = FontWeight.Medium
@@ -470,7 +470,7 @@ fun JobListingCard(
             }
 
             Text(
-                text = joblisting.jobtitle,
+                text = joblisting.jobTitle,
                 fontSize = 20.sp, // Consistent font size
                 color = fontColor,
                 maxLines = 2,
@@ -483,19 +483,13 @@ fun JobListingCard(
                 horizontalArrangement = Arrangement.SpaceBetween // Aligns contact details evenly
             ) {
                 Text(
-                    text = joblisting.contactperson,
+                    text = joblisting.address,
                     fontSize = 18.sp,
                     color = fontColor,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    text = joblisting.contact,
-                    fontSize = 18.sp,
-                    color = fontColor,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+
             }
         }
     }
@@ -509,7 +503,7 @@ fun ScholarshipCard(
     scholarship: Scholarship,
     onClick: () -> Unit
 ) {
-    val category = scholarship.category.lowercase()
+    val category = scholarship.type.lowercase()
     val (statusColor, textColor) = when (category) {
         "all" -> BoxGreen to BoxTextGreen
         "private" -> SoftCardContainerMaroon to SoftCardFontGold
@@ -556,7 +550,7 @@ fun ScholarshipCard(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = scholarship.category,
+                        text = scholarship.type,
                         fontSize = 16.sp, // Smaller font for better hierarchy
                         color = textColor,
                         fontWeight = FontWeight.Medium,
@@ -565,14 +559,14 @@ fun ScholarshipCard(
                 }
             }
 
-            Text(
+            /*Text(
                 text = scholarship.institution,
                 fontSize = 20.sp, // Consistent font size
                 fontWeight = FontWeight.Medium,
                 color = fontColor,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
-            )
+            )*/
         }
     }
 }

@@ -222,7 +222,7 @@ fun PostSKcandidates(navController: NavHostController, userProfile: MutableState
                                 )
                             )
 
-                            Spacer(modifier = Modifier.height(12.dp))
+                            /*Spacer(modifier = Modifier.height(12.dp))
 
                             TextField(
                                 value = email,
@@ -238,7 +238,7 @@ fun PostSKcandidates(navController: NavHostController, userProfile: MutableState
                                     focusedLabelColor = SKyberYellow,
                                     unfocusedLabelColor = SKyberYellow
                                 )
-                            )
+                            )*/
 
                             Spacer(modifier = Modifier.height(12.dp))
 
@@ -292,12 +292,12 @@ fun PostSKcandidates(navController: NavHostController, userProfile: MutableState
                                         val databaseRef = FirebaseHelper.databaseReference.child("CandidateProfile").push()
                                         val candidateId = databaseRef.key
                                         val newCandidateProfile = CandidateProfile(
-                                            candidateId = candidateId,
-                                            firstname = firstname,
-                                            lastname = lastname,
-                                            email = email,
+                                            id = candidateId,
+                                            firstName = firstname,
+                                            lastName = lastname,
+                                            //email = email,
                                             age = age,
-                                            partylist = partylist,
+                                            partyList = partylist,
                                             platform = platform,
                                             address = address,
                                             //status = status

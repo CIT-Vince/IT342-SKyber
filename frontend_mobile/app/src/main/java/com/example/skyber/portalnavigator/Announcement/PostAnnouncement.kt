@@ -81,7 +81,7 @@ fun PostAnnouncement(navController: NavHostController, userProfile: MutableState
 
                 Column(
                     modifier = Modifier
-                        .padding(top = 32.dp)
+                        .padding(top = 16.dp)
                         .fillMaxWidth()
                         .fillMaxHeight()
                         .padding(0.dp)

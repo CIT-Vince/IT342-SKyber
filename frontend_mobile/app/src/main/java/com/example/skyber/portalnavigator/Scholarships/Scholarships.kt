@@ -60,8 +60,8 @@ fun Scholarships(navController: NavHostController){
     var selectedTab by remember { mutableStateOf("All") }
 
     val filteredScholarship = when (selectedTab) {
-        "Private" -> allScholarships.filter {  it.category.equals("Private", ignoreCase = true)}
-        "Public" -> allScholarships.filter {  it.category.equals("Private", ignoreCase = true) }
+        "Private" -> allScholarships.filter {  it.type.equals("Private", ignoreCase = true)}
+        "Public" -> allScholarships.filter {  it.type.equals("Private", ignoreCase = true) }
         else -> allScholarships
     }
 
