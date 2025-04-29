@@ -22,39 +22,11 @@ import { IconSearch, IconBell, IconCalendar, IconArrowLeft, IconShare, IconHeart
 import sample1 from '../../assets/announce/sample1.png';
 import sample2 from '../../assets/announce/sample2.png';
 import sample3 from '../../assets/announce/sample3.png';
+import { useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { showNotification } from '@mantine/notifications';
 
-const announcements = [
-  {
-    id: 1,
-    title: 'Sangguniang Kabataan Announcement 1',
-    category: 'Community',
-    date: '04/09/2025',
-    image: sample1,
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    likes: 24,
-    isLiked: false
-  },
-  {
-    id: 2,
-    title: 'Sangguniang Kabataan Announcement 2',
-    category: 'Utilities',
-    date: '04/10/2025',
-    image: sample2,
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    likes: 14,
-    isLiked: true
-  },
-  {
-    id: 3,
-    title: 'Sangguniang Kabataan Announcement 3',
-    category: 'Register',
-    date: '04/11/2025',
-    image: sample3,
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    likes: 32,
-    isLiked: false
-  },
-];
+
 
 function trimToWords(text, wordLimit = 200) {
   if (!text) return '';
@@ -64,11 +36,13 @@ function trimToWords(text, wordLimit = 200) {
 }
 
 const Announcements = () => {
+  const { currentUser } = useAuth();
+  const [loading, setLoading] = useState(true);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [userRegistered, setUserRegistered] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
-  const [announceData, setAnnounceData] = useState(announcements);
+  const [announceData, setAnnounceData] = useState([]);
   const navigate = useNavigate();
   const [opened, { open, close }] = useDisclosure(false);
 
@@ -88,11 +62,26 @@ const Announcements = () => {
   };
 
   const handleLikeToggle = (id) => {
+    // If user is not logged in, show notification
+    if (!currentUser) {
+      showNotification({
+        title: 'Login Required',
+        message: 'Please log in to like announcements',
+        color: 'blue',
+        position: 'top-left'
+      });
+      return;
+    }
+    
+    // Otherwise update the UI immediately for responsiveness
     setAnnounceData(announceData.map(item => 
       item.id === id 
         ? { ...item, isLiked: !item.isLiked, likes: item.isLiked ? item.likes - 1 : item.likes + 1 } 
         : item
     ));
+    
+    // In a real app, you would persist this to your backend
+    // Example: await fetch(`http://localhost:8080/api/announcements/like/${id}`...
   };
 
   // Filter announcements based on search and category
@@ -104,6 +93,106 @@ const Announcements = () => {
     return matchesSearch && matchesCategory;
   });
 
+  // In your useEffect
+useEffect(() => {
+  const fetchAnnouncements = async () => {
+    try {
+      setLoading(true);
+      
+      // API URL constant (move to config file in production)
+      const API_URL = 'http://localhost:8080/api/announcements/getAllAnnouncements';
+      console.log("Fetching announcements from:", API_URL);
+      
+      const response = await fetch(API_URL);
+      
+      // Better error handling
+      if (!response.ok) {
+        console.error(`Server responded with ${response.status}: ${response.statusText}`);
+        throw new Error(`Server responded with ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("Retrieved announcements data:", data);
+      
+      // Check if data exists and is not empty
+      if (data && data.length > 0) {
+        // Transform data with better date handling
+        const transformedData = data.map(item => ({
+          id: item.id,
+          title: item.title || "Untitled Announcement",
+          category: item.category || 'Community',
+          // Handle different date formats
+          date: item.postedAt ? new Date(item.postedAt).toLocaleDateString() : new Date().toLocaleDateString(),
+          image: item.imageData ? `data:image/jpeg;base64,${item.imageData}` : sample1,
+          description: item.content || "No description provided.",
+          likes: 0,
+          isLiked: false
+        }));
+        
+        setAnnounceData(transformedData);
+        
+        // Show success notification
+        showNotification({
+          title: 'Connected to SKyber Server',
+          message: `Loaded ${transformedData.length} announcements from backend`,
+          color: 'green',
+          position: 'top-right'
+        });
+      } else {
+        // If data is empty, show specific message
+        console.warn("Server returned empty announcement data");
+        throw new Error("No announcements found in server response");
+      }
+    } catch (error) {
+      console.error("Error fetching announcements:", error);
+      
+      // Use fallback data
+      const mockData = [
+        {
+          id: "mock1",
+          title: "Community Meeting",
+          category: "Community",
+          date: new Date().toLocaleDateString(),
+          image: sample1,
+          description: "Join us for our monthly community meeting to discuss upcoming projects and initiatives. Everyone is welcome to attend and share their ideas.",
+          likes: 15,
+          isLiked: false
+        },
+        // Add more mock data entries here
+      ];
+      
+      setAnnounceData(mockData);
+      
+      showNotification({
+        title: 'Using Demo Data',
+        message: 'Could not connect to server. Showing demo announcements.',
+        color: 'yellow',
+        position: 'top-right'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  fetchAnnouncements();
+}, []);
+
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-pink-50">
+          <div className="text-center p-8">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mb-4"></div>
+            <h2 className="text-xl font-semibold">Loading Announcements...</h2>
+            <p className="text-gray-600">Please wait while we fetch the latest updates</p>
+          </div>
+        </div>
+      </>
+    );
+  }
+  
   return (
     <>
       {/* Header */}
@@ -384,6 +473,7 @@ const Announcements = () => {
       </Modal>
     </>
   );
+
 };
 
 export default Announcements;
