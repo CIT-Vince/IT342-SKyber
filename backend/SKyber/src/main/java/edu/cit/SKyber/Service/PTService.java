@@ -22,7 +22,28 @@ import java.util.Base64;
 public class PTService {
     
     private static final Logger logger = Logger.getLogger(PTService.class.getName());
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final DateTimeFormatter[] DATE_FORMATTERS = {
+    DateTimeFormatter.ISO_LOCAL_DATE,         // yyyy-MM-dd
+    DateTimeFormatter.ofPattern("MM/dd/yyyy") // MM/dd/yyyy
+    };
+
+    // Add this method to your PTService class
+    private LocalDate parseDate(String dateStr) {
+        if (dateStr == null || dateStr.isEmpty()) {
+            return null;
+        }
+        
+        for (DateTimeFormatter formatter : DATE_FORMATTERS) {
+            try {
+                return LocalDate.parse(dateStr, formatter);
+            } catch (Exception e) {
+                // Try next formatter
+            }
+        }
+        
+        logger.warning("Could not parse date: " + dateStr);
+        return null;
+    }
     
     @Autowired
     private FirebaseDatabase firebaseDatabase;
@@ -41,8 +62,8 @@ public class PTService {
             // Date handling with null check and better formatting
             if (project.getStartDate() != null) {
                 try {
-                    projectMap.put("startDate", project.getStartDate().format(DATE_FORMATTER));
-                    logger.info("Formatted start date: " + project.getStartDate().format(DATE_FORMATTER));
+                    projectMap.put("startDate", project.getStartDate().format(DATE_FORMATTERS[0]));
+                    logger.info("Formatted start date: " + project.getStartDate().format(DATE_FORMATTERS[0]));
                 } catch (Exception e) {
                     logger.warning("Error formatting start date: " + e.getMessage());
                     projectMap.put("startDate", "");
@@ -54,8 +75,8 @@ public class PTService {
             
             if (project.getEndDate() != null) {
                 try {
-                    projectMap.put("endDate", project.getEndDate().format(DATE_FORMATTER));
-                    logger.info("Formatted end date: " + project.getEndDate().format(DATE_FORMATTER));
+                    projectMap.put("endDate", project.getEndDate().format(DATE_FORMATTERS[0]));
+                    logger.info("Formatted end date: " + project.getEndDate().format(DATE_FORMATTERS[0]));
                 } catch (Exception e) {
                     logger.warning("Error formatting end date: " + e.getMessage());
                     projectMap.put("endDate", "");
@@ -117,7 +138,7 @@ public class PTService {
         ProjectTransparency project = new ProjectTransparency();
         project.setProjectName(projectName);
         project.setDescription(description);
-        project.setBudget(budget);
+        project.setBudget(budget != null ? budget.toString() : null);
         project.setStartDate(startDate);
         project.setEndDate(endDate);
         project.setStatus(status);
@@ -170,27 +191,26 @@ public class PTService {
                                 }
                                 
                                 if (dataSnapshot.hasChild("budget")) {
-                                    project.setBudget(dataSnapshot.child("budget").getValue(Double.class));
+                                    try {
+                                        String budgetStr = dataSnapshot.child("budget").getValue(String.class);
+                                        project.setBudget(String.valueOf(Double.parseDouble(budgetStr)));
+                                    } catch (Exception e) {
+                                        project.setBudget(String.valueOf(0.0));
+                                    }
                                 }
                                 
                                 // Convert string dates back to LocalDate
+                                
                                 if (dataSnapshot.hasChild("startDate")) {
                                     String dateStr = dataSnapshot.child("startDate").getValue(String.class);
-                                    try {
-                                        project.setStartDate(LocalDate.parse(dateStr, DATE_FORMATTER));
-                                    } catch (Exception e) {
-                                        logger.warning("Error parsing start date: " + dateStr);
-                                    }
+                                    project.setStartDate(parseDate(dateStr));
                                 }
+                                
                                 
                                 if (dataSnapshot.hasChild("endDate")) {
                                     String dateStr = dataSnapshot.child("endDate").getValue(String.class);
-                                    try {
-                                        project.setEndDate(LocalDate.parse(dateStr, DATE_FORMATTER));
-                                    } catch (Exception e) {
-                                        logger.warning("Error parsing end date: " + dateStr);
-                                    }
-                                }
+                                    project.setEndDate(parseDate(dateStr));
+}
                                 
                                 if (dataSnapshot.hasChild("status")) {
                                     project.setStatus(dataSnapshot.child("status").getValue(String.class));
@@ -200,13 +220,38 @@ public class PTService {
                                     project.setProjectManager(dataSnapshot.child("projectManager").getValue(String.class));
                                 }
                                 
+                                
                                 if (dataSnapshot.hasChild("teamMembers")) {
-                                    project.setTeamMembers(dataSnapshot.child("teamMembers").getValue(String.class));
+                                    try {
+                                        Object value = dataSnapshot.child("teamMembers").getValue();
+                                        if (value instanceof ArrayList) {
+                                            // Join array elements with commas
+                                            ArrayList<String> list = (ArrayList<String>) value;
+                                            project.setTeamMembers(String.join(", ", list));
+                                        } else if (value instanceof String) {
+                                            project.setTeamMembers((String) value);
+                                        } else if (value != null) {
+                                            project.setTeamMembers(value.toString());
+                                        }
+                                    } catch (Exception e) {
+                                        logger.warning("Error converting teamMembers: " + e.getMessage());
+                                    }
                                 }
                                 
                                 if (dataSnapshot.hasChild("stakeholders")) {
-                                    project.setStakeholders(dataSnapshot.child("stakeholders").getValue(String.class));
-                                }
+                                    try {
+                                        Object value = snapshot.child("stakeholders").getValue();
+                                        if (value instanceof ArrayList) {
+                                            ArrayList<String> list = (ArrayList<String>) value;
+                                            project.setStakeholders(String.join(", ", list));
+                                        } else if (value instanceof String) {
+                                            project.setStakeholders((String) value);
+                                        } else if (value != null) {
+                                            project.setStakeholders(value.toString());
+                                        }
+                                    } catch (Exception e) {
+                                        logger.warning("Error converting stakeholders: " + e.getMessage());
+                                    }}
                                 
                                 if (dataSnapshot.hasChild("sustainabilityGoals")) {
                                     project.setSustainabilityGoals(dataSnapshot.child("sustainabilityGoals").getValue(String.class));
@@ -305,14 +350,16 @@ public class PTService {
                         }
                         
                         if (snapshot.hasChild("budget")) {
-                            p.setBudget(snapshot.child("budget").getValue(Double.class));
+                            Double budgetValue = snapshot.child("budget").getValue(Double.class);
+                            p.setBudget(budgetValue != null ? budgetValue.toString() : null);
                         }
                         
                         // Convert string dates back to LocalDate
                         if (snapshot.hasChild("startDate")) {
                             String dateStr = snapshot.child("startDate").getValue(String.class);
+                            p.setStartDate(parseDate(dateStr));
                             try {
-                                p.setStartDate(LocalDate.parse(dateStr, DATE_FORMATTER));
+                                p.setStartDate(LocalDate.parse(dateStr, DATE_FORMATTERS[0]));
                             } catch (Exception e) {
                                 logger.warning("Error parsing start date: " + dateStr);
                             }
@@ -320,8 +367,9 @@ public class PTService {
                         
                         if (snapshot.hasChild("endDate")) {
                             String dateStr = snapshot.child("endDate").getValue(String.class);
+                            p.setEndDate(parseDate(dateStr));
                             try {
-                                p.setEndDate(LocalDate.parse(dateStr, DATE_FORMATTER));
+                                p.setEndDate(LocalDate.parse(dateStr, DATE_FORMATTERS[0]));
                             } catch (Exception e) {
                                 logger.warning("Error parsing end date: " + dateStr);
                             }
@@ -336,7 +384,19 @@ public class PTService {
                         }
                         
                         if (snapshot.hasChild("teamMembers")) {
-                            p.setTeamMembers(snapshot.child("teamMembers").getValue(String.class));
+                            try {
+                                Object value = snapshot.child("teamMembers").getValue();
+                                if (value instanceof ArrayList) {
+                                    ArrayList<String> list = (ArrayList<String>) value;
+                                    p.setTeamMembers(String.join(", ", list));
+                                } else if (value instanceof String) {
+                                    p.setTeamMembers((String) value);
+                                } else if (value != null) {
+                                    p.setTeamMembers(value.toString());
+                                }
+                            } catch (Exception e) {
+                                logger.warning("Error converting teamMembers: " + e.getMessage());
+                            }
                         }
                         
                         if (snapshot.hasChild("stakeholders")) {
@@ -412,11 +472,11 @@ public class PTService {
             }
             
             if (projectDetails.getStartDate() != null) {
-                updates.put("startDate", projectDetails.getStartDate().format(DATE_FORMATTER));
+                updates.put("startDate", projectDetails.getStartDate().format(DATE_FORMATTERS[0]));
             }
             
             if (projectDetails.getEndDate() != null) {
-                updates.put("endDate", projectDetails.getEndDate().format(DATE_FORMATTER));
+                updates.put("endDate", projectDetails.getEndDate().format(DATE_FORMATTERS[0]));
             }
             
             if (projectDetails.getStatus() != null) {

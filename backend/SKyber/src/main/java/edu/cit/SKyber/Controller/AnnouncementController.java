@@ -82,7 +82,7 @@ public class AnnouncementController {
     }
     
     // Get announcement by ID
-    @GetMapping("/getAnnouncement/{id}")
+    @GetMapping("/getAnnouncements/{id}")
     public ResponseEntity<?> getAnnouncementById(@PathVariable String id) {
         try {
             Announcement announcement = announcementService.getAnnouncementById(id);

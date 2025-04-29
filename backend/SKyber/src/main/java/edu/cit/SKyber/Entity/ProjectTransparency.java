@@ -27,10 +27,13 @@ public class ProjectTransparency {
     private LocalDate startDate;
     private LocalDate endDate;
     private String status;  // For example: "Ongoing", "Completed", etc.
-    private Double budget;
     private String projectManager; 
     private String teamMembers;  // List of team members or roles
     private String stakeholders;  // External stakeholders
     private String sustainabilityGoals;  // Sustainability goals of the project
     private String projectImage;
+
+    
+    
+    private String budget;
 }
