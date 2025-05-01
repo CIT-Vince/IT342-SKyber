@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, useLocation  } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import { useDisclosure } from '@mantine/hooks';
 import { 
@@ -24,7 +24,7 @@ import sample2 from '../../assets/announce/sample2.png';
 import sample3 from '../../assets/announce/sample3.png';
 import { useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { showNotification } from '@mantine/notifications';
+import { showNotification} from '@mantine/notifications';
 
 
 
@@ -45,24 +45,78 @@ const Announcements = () => {
   const [announceData, setAnnounceData] = useState([]);
   const navigate = useNavigate();
   const [opened, { open, close }] = useDisclosure(false);
+  const params = useParams();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Check if we have an ID in the URL (e.g., /announcements/123)
+    if (params.id) {
+      const fetchSpecificAnnouncement = async () => {
+        try {
+          setLoading(true);
+          
+          const response = await fetch(`http://localhost:8080/api/announcements/getAnnouncementByHashId/${params.id}`);
+          console.log("Attempting to fetch announcement with ID:", params.id, "type:", typeof params.id);
+          if (!response.ok) throw new Error('Announcement not found');
+          
+          const data = await response.json();
+          console.log("Fetched specific announcement:", data);
+          
+          // Transform the data with all required fields
+          const announcementData = {
+            id: data.id,
+            title: data.title || "Untitled Announcement",
+            category: data.category || 'Community',
+            date: data.postedAt ? new Date(data.postedAt).toLocaleDateString() : new Date().toLocaleDateString(),
+            image: data.imageData ? `data:image/jpeg;base64,${data.imageData}` : sample1,
+            description: data.content || "No description provided.",
+            likes: 0,
+            isLiked: false
+          };
+          
+          // Open the modal with this announcement
+          setSelectedAnnouncement(announcementData);
+          open();
+        } catch (error) {
+          console.error("Error fetching announcement by ID:", error);
+          showNotification({
+            title: 'Announcement Not Found',
+            message: 'The announcement you tried to view could not be found',
+            color: 'red',
+            position: 'top-right'
+          });
+          // If announcement not found, redirect to main announcements page
+          navigate('/announcements');
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      fetchSpecificAnnouncement();
+    }
+  }, [params.id]);
 
   const handleCardClick = (announcement) => {
-    console.log('Card clicked:', announcement); 
-    if (userRegistered) {
-      navigate(`/announcements/${announcement.id}`, { state: { announcement } });
-    } else {
-      setSelectedAnnouncement(announcement);
-      open();
-    }
+    console.log('Card clicked:', announcement);
+    setSelectedAnnouncement(announcement);
+    open();
+    
+    window.history.pushState(
+      {}, 
+      announcement.title, 
+      `/announcements/${announcement.id}`
+    );
   };
 
   const handleCloseModal = () => {
     close();
     setSelectedAnnouncement(null);
+    if (params.id) {
+      window.history.pushState({}, '', '/announcements');
+    }
   };
 
   const handleLikeToggle = (id) => {
-    // If user is not logged in, show notification
     if (!currentUser) {
       showNotification({
         title: 'Login Required',
@@ -73,33 +127,30 @@ const Announcements = () => {
       return;
     }
     
-    // Otherwise update the UI immediately for responsiveness
     setAnnounceData(announceData.map(item => 
       item.id === id 
         ? { ...item, isLiked: !item.isLiked, likes: item.isLiked ? item.likes - 1 : item.likes + 1 } 
         : item
     ));
     
-    // In a real app, you would persist this to your backend
-    // Example: await fetch(`http://localhost:8080/api/announcements/like/${id}`...
   };
 
-  // Filter announcements based on search and category
+  // Filters
   const filteredAnnouncements = announceData.filter(announcement => {
     const matchesSearch = announcement.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          announcement.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = activeCategory === 'All' || announcement.category === activeCategory;
+    const matchesCategory = activeCategory === 'All' || 
+                            announcement.category.toLowerCase() === activeCategory.toLowerCase();
     
     return matchesSearch && matchesCategory;
   });
 
-  // In your useEffect
+// firebase nato
 useEffect(() => {
   const fetchAnnouncements = async () => {
     try {
       setLoading(true);
       
-      // API URL constant (move to config file in production)
       const API_URL = 'http://localhost:8080/api/announcements/getAllAnnouncements';
       console.log("Fetching announcements from:", API_URL);
       
@@ -116,12 +167,10 @@ useEffect(() => {
       
       // Check if data exists and is not empty
       if (data && data.length > 0) {
-        // Transform data with better date handling
         const transformedData = data.map(item => ({
           id: item.id,
           title: item.title || "Untitled Announcement",
           category: item.category || 'Community',
-          // Handle different date formats
           date: item.postedAt ? new Date(item.postedAt).toLocaleDateString() : new Date().toLocaleDateString(),
           image: item.imageData ? `data:image/jpeg;base64,${item.imageData}` : sample1,
           description: item.content || "No description provided.",
@@ -131,22 +180,20 @@ useEffect(() => {
         
         setAnnounceData(transformedData);
         
-        // Show success notification
-        showNotification({
-          title: 'Connected to SKyber Server',
-          message: `Loaded ${transformedData.length} announcements from backend`,
-          color: 'green',
-          position: 'top-right'
-        });
+        // showNotification({
+        //   title: 'Connected to SKyber Server',
+        //   message: `Loaded ${transformedData.length} announcements from backend`,
+        //   color: 'green',
+        //   position: 'top-right'
+        // });
       } else {
-        // If data is empty, show specific message
+        // error naa diri
         console.warn("Server returned empty announcement data");
         throw new Error("No announcements found in server response");
       }
     } catch (error) {
       console.error("Error fetching announcements:", error);
-      
-      // Use fallback data
+      // sagdai lang ni
       const mockData = [
         {
           id: "mock1",
@@ -158,12 +205,11 @@ useEffect(() => {
           likes: 15,
           isLiked: false
         },
-        // Add more mock data entries here
       ];
       
       setAnnounceData(mockData);
       
-      showNotification({
+  showNotification({
         title: 'Using Demo Data',
         message: 'Could not connect to server. Showing demo announcements.',
         color: 'yellow',
@@ -177,6 +223,25 @@ useEffect(() => {
   fetchAnnouncements();
 }, []);
 
+
+const copyToClipboard = (text) => {
+  navigator.clipboard.writeText(text)
+    .then(() => {
+      showNotification({
+        title: 'Link Copied!',
+        message: 'Share link has been copied to clipboard',
+        color: 'blue',
+      });
+    })
+    .catch(err => {
+      console.error('Failed to copy:', err);
+      showNotification({
+        title: 'Copy Failed',
+        message: 'Please try selecting and copying the URL manually',
+        color: 'red',
+      });
+    });
+};
 
   if (loading) {
     return (
@@ -203,7 +268,7 @@ useEffect(() => {
         }}
       >
         <Navbar />
-        <header className="text-left py-10 pl-10">
+        <header className="text-left py-10 pl-10 pt-30">
           <Title className="text-5xl font-bold text-white">
             Announcements
           </Title>
@@ -234,9 +299,10 @@ useEffect(() => {
                 <Tabs value={activeCategory} onChange={setActiveCategory} radius="xl" variant="pills">
                   <Tabs.List grow>
                     <Tabs.Tab value="All" leftSection={<IconBell size={16} />}>All</Tabs.Tab>
-                    <Tabs.Tab value="Utilities">Utilities</Tabs.Tab>
-                    <Tabs.Tab value="Community">Community</Tabs.Tab>
-                    <Tabs.Tab value="Register">Register</Tabs.Tab>
+                    <Tabs.Tab value="News">News</Tabs.Tab>
+                    <Tabs.Tab value="Event">Event</Tabs.Tab>
+                    <Tabs.Tab value="Notice">Notice</Tabs.Tab>
+                    <Tabs.Tab value="Emergency">Emergency</Tabs.Tab>
                   </Tabs.List>
                 </Tabs>
               </Grid.Col>
@@ -296,17 +362,6 @@ useEffect(() => {
                     <Card.Section className="p-3 bg-gradient-to-r from-blue-50 to-pink-50">
                       <Group position="apart">
                         <Group spacing="xs">
-                          <ActionIcon 
-                            variant="subtle" 
-                            color={item.isLiked ? "pink" : "gray"}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleLikeToggle(item.id);
-                            }}
-                          >
-                            <IconHeart size={16} fill={item.isLiked ? "#F472B6" : "none"} />
-                          </ActionIcon>
-                          <Text size="xs" color="dimmed">{item.likes} Likes</Text>
                         </Group>
                         <ActionIcon variant="subtle">
                           <IconShare size={16} />
@@ -348,7 +403,6 @@ useEffect(() => {
                 leftSection={<IconArrowLeft />}
                 onClick={handleCloseModal}
               >
-                Back
               </Button>
               <Title order={3} className="mx-auto pr-10">Announcement Details</Title>
             </div>
@@ -403,6 +457,8 @@ useEffect(() => {
               
               {/* Engagement Section */}
               <Group className="mt-8">
+                
+                {/*Like button 
                 <Button 
                   variant="light" 
                   color={selectedAnnouncement.isLiked ? "pink" : "gray"}
@@ -410,14 +466,43 @@ useEffect(() => {
                   onClick={() => handleLikeToggle(selectedAnnouncement.id)}
                 >
                   {selectedAnnouncement.isLiked ? "Liked" : "Like"}
-                </Button>
+                </Button> */}
                 <Button 
                   variant="light" 
                   color="blue"
                   leftSection={<IconShare size={18} />}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent modal from closing
+                    
+                    // Create a specific URL for this announcement
+                    const shareUrl = `${window.location.origin}/announcements/${String(selectedAnnouncement.id)}`;
+                    
+                    if (navigator.share) {
+                      navigator.share({
+                        title: selectedAnnouncement.title,
+                        text: `${selectedAnnouncement.title} - ${trimToWords(selectedAnnouncement.description, 15)}`,
+                        url: shareUrl,
+                      })
+                      .then(() => {
+                        showNotification({
+                          title: 'Shared Successfully',
+                          message: 'Announcement shared with your contacts',
+                          color: 'green',
+                        });
+                      })
+                      .catch(err => {
+                        console.log('Error sharing:', err);
+                        // Fall back to clipboard if share was cancelled
+                        copyToClipboard(shareUrl);
+                      });
+                    } else {
+                      // Better fallback - copy to clipboard with notification
+                      copyToClipboard(shareUrl);
+                    }
+                  }}
                 >
                   Share
-                </Button>
+                </Button>             
               </Group>
             </Paper>
             
@@ -457,16 +542,18 @@ useEffect(() => {
               </Grid>
               
               {/* Bottom Close Button */}
-              <Button 
-                fullWidth 
-                variant="gradient" 
-                gradient={{ from: 'blue', to: 'cyan' }} 
-                className="mt-6" 
-                radius="xl"
-                onClick={handleCloseModal}
-              >
-                Close
-              </Button>
+              <div className="flex justify-center w-full">
+                <Button 
+                  variant="gradient" 
+                  gradient={{ from: 'blue', to: 'cyan' }} 
+                  className="mt-6" 
+                  w="40%" // Smaller percentage for a more balanced look
+                  radius="xl"
+                  onClick={handleCloseModal}
+                >
+                  Close
+                </Button>
+              </div>
             </Paper>
           </div>
         )}
