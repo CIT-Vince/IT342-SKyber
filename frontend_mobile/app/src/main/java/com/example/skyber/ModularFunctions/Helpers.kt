@@ -55,6 +55,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import com.example.skyber.ui.theme.SKyberDarkBlueGradient
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerField(
@@ -68,7 +70,7 @@ fun DatePickerField(
         convertMillisToDate(it)
     } ?: ""*/
 
-    TextField(
+    OutlinedTextField(
         value = selectedDate,
         onValueChange = {},
         label = { Text(label) },
@@ -79,15 +81,11 @@ fun DatePickerField(
                 Icon(Icons.Default.DateRange, contentDescription = "Select date")
             }
         },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(58.dp)
-            .clip(RoundedCornerShape(40.dp)),
-        colors = TextFieldDefaults.textFieldColors(
-            focusedIndicatorColor = SKyberYellow,
-            unfocusedIndicatorColor = SKyberYellow,
-            focusedLabelColor = SKyberYellow,
-            unfocusedLabelColor = SKyberYellow
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(0xFF0066FF),
+            unfocusedBorderColor = Color(0xFFD1D5DB)
         )
     )
 
@@ -101,7 +99,7 @@ fun DatePickerField(
                     .fillMaxWidth()
                     .padding(16.dp)
                     .shadow(4.dp, RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(SKyberDarkBlueGradient)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     DatePicker(
@@ -167,8 +165,8 @@ fun PortalTile(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(150.dp)
-            .padding(8.dp)
+            .height(130.dp)
+            .padding(6.dp)
             //.aspectRatio(1f)
             .clickable { onClick() },
         shape = RoundedCornerShape(20.dp),

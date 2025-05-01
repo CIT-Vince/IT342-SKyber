@@ -55,7 +55,7 @@ import com.example.skyber.ui.theme.White
 fun Projects(navController: NavHostController) {
     val ProjectReports  = remember { mutableStateListOf<Project>() }
 
-    LaunchedEffect(Unit) {
+    /*LaunchedEffect(Unit) {
         FirebaseHelper.databaseReference.child("ProjectTransparency")
             .get().addOnSuccessListener { snapshot ->
                 ProjectReports.clear()
@@ -70,7 +70,7 @@ fun Projects(navController: NavHostController) {
             .addOnFailureListener {
                 Log.e("Project Report's Fetch", "Failed to load Reports", it)
             }
-    }
+    }*/
 
     Scaffold() {  innerPadding ->
         Column(

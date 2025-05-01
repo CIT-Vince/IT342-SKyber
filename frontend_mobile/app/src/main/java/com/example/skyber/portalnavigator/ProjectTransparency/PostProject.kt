@@ -62,7 +62,7 @@ import com.google.firebase.database.DatabaseReference
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun PostProject(navController: NavHostController, userProfile: MutableState<User?>){
+fun PostProject(navController: NavHostController, userProfile: MutableState<User?>) {
     val user = userProfile.value//passed logged in user
     var projectname by remember { mutableStateOf("") }
     var projectdescription by remember { mutableStateOf("") }
@@ -70,12 +70,8 @@ fun PostProject(navController: NavHostController, userProfile: MutableState<User
     var enddate by remember { mutableStateOf("") }
     var budget by remember { mutableStateOf("") }
     var projectmanager by remember { mutableStateOf("") }
-    // For Project Members
-    var newmember by remember { mutableStateOf("") }
-    val projectmembers = remember { mutableStateListOf<String>() }
-    // For Stakeholders
-    var newstakeholder by remember { mutableStateOf("") }
-    val stakeholders = remember { mutableStateListOf<String>() }
+    var projectmembers by remember { mutableStateOf("") }
+    var stakeholders by remember { mutableStateOf("") }
     var sustainabilitygoals by remember { mutableStateOf("") }
     val context = LocalContext.current
 
@@ -88,15 +84,15 @@ fun PostProject(navController: NavHostController, userProfile: MutableState<User
             CircularProgressIndicator(color = SKyberYellow)
         }
         return
-    }else {
-        Scaffold(){ innerPadding->
+    } else {
+        Scaffold() { innerPadding ->
             Column(
                 modifier = Modifier
                     .background(SKyberDarkBlue)
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
-            ){
+            ) {
                 HeaderBar(
                     trailingContent = {
                         NotificationHandler()
@@ -113,14 +109,14 @@ fun PostProject(navController: NavHostController, userProfile: MutableState<User
                         .background(White),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
-                ){
+                ) {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
                             .weight(1f)
                             .padding(14.dp)
                     ) {
-                        item{
+                        item {
                             //Text Fields here
                             TextField(
                                 value = projectname,
@@ -143,8 +139,8 @@ fun PostProject(navController: NavHostController, userProfile: MutableState<User
                                 onValueChange = { projectmanager = it },
                                 label = { Text("Project Manager") },
                                 modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp))
-                                .fillMaxWidth(),
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .fillMaxWidth(),
                                 colors = TextFieldDefaults.textFieldColors(
                                     focusedIndicatorColor = SKyberYellow,
                                     unfocusedIndicatorColor = SKyberYellow,
@@ -163,8 +159,7 @@ fun PostProject(navController: NavHostController, userProfile: MutableState<User
                                     .fillMaxWidth()
                                     .height(150.dp)
                                     .padding(0.dp),
-                                maxLines = 10
-                                ,
+                                maxLines = 10,
                                 colors = TextFieldDefaults.textFieldColors(
                                     focusedIndicatorColor = SKyberYellow,
                                     unfocusedIndicatorColor = SKyberYellow,
@@ -202,9 +197,9 @@ fun PostProject(navController: NavHostController, userProfile: MutableState<User
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 TextField(
-                                    value = newmember,
-                                    onValueChange = { newmember = it },
-                                    label = { Text("Add a member") },
+                                    value = projectmembers,
+                                    onValueChange = { projectmembers = it },
+                                    label = { Text("Project Members") },
                                     modifier = Modifier
                                         .weight(1f)
                                         .clip(RoundedCornerShape(20.dp))
@@ -216,41 +211,13 @@ fun PostProject(navController: NavHostController, userProfile: MutableState<User
                                         unfocusedLabelColor = SKyberYellow
                                     )
                                 )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Button(onClick = {
-                                    if (newmember.isNotBlank()) {
-                                        projectmembers.add(newmember.trim())
-                                        newmember = ""
-                                    }
-                                },
-                                    colors = ButtonDefaults.buttonColors(
-                                    containerColor = SKyberBlue,
-                                    contentColor = Color.White
-                                )
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.AddCircle,
-                                        contentDescription = "add member"
-                                    )
-                                }
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                            projectmembers.forEachIndexed { index, member ->
-                                Text("• $member", fontSize = 14.sp, color = SKyberYellow)
-                            }
 
-                            Spacer(modifier = Modifier.height(16.dp))
+                                Spacer(modifier = Modifier.height(16.dp))
 
-                            Text("Stakeholders", fontWeight = FontWeight.Bold , color = Black)
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
                                 TextField(
-                                    value = newstakeholder,
-                                    onValueChange = { newstakeholder = it },
-                                    label = { Text("Add a stakeholder") },
+                                    value = stakeholders,
+                                    onValueChange = { stakeholders = it },
+                                    label = { Text("Stakeholders") },
                                     modifier = Modifier
                                         .weight(1f)
                                         .clip(RoundedCornerShape(20.dp))
@@ -262,104 +229,89 @@ fun PostProject(navController: NavHostController, userProfile: MutableState<User
                                         unfocusedLabelColor = SKyberYellow
                                     )
                                 )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Button(onClick = {
-                                    if (newstakeholder.isNotBlank()) {
-                                        stakeholders.add(newstakeholder.trim())
-                                        newstakeholder = ""
-                                    }
-                                },
+
+                                Spacer(modifier = Modifier.height(8.dp))
+                                stakeholders.forEach { person ->
+                                    Text("• $person", fontSize = 14.sp, color = SKyberYellow)
+                                }
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                TextField(
+                                    value = budget,
+                                    onValueChange = { budget = it },
+                                    label = { Text("Budget") },
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(20.dp))
+                                        .fillMaxWidth(),
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        focusedIndicatorColor = SKyberYellow,
+                                        unfocusedIndicatorColor = SKyberYellow,
+                                        focusedLabelColor = SKyberYellow,
+                                        unfocusedLabelColor = SKyberYellow
+                                    )
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                TextField(
+                                    value = sustainabilitygoals,
+                                    onValueChange = { sustainabilitygoals = it },
+                                    label = { Text("Sustainability Goals") },
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(20.dp))
+                                        .fillMaxWidth(),
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        focusedIndicatorColor = SKyberYellow,
+                                        unfocusedIndicatorColor = SKyberYellow,
+                                        focusedLabelColor = SKyberYellow,
+                                        unfocusedLabelColor = SKyberYellow
+                                    )
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                Button(
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = SKyberBlue,
                                         contentColor = Color.White
-                                    )
-                                ) {
-                                    Text("Add")
-                                }
+                                    ),
+                                    onClick = {
+                                        // Create Project Post object
+                                        if (projectname.isBlank() || startdate.isBlank() || enddate.isBlank()) {
+                                            showToast(context, "Please fill out required fields")
+                                        } else {
+                                            val databaseRef =
+                                                FirebaseHelper.databaseReference.child("ProjectTransparency")
+                                                    .push()
+                                            val postId = databaseRef.key
+                                            if (postId != null) {
+                                                val newProject = Project(
+                                                    id = postId,
+                                                    projectName = projectname,
+                                                    projectDescription = projectdescription,
+                                                    status = "Ongoing",
+                                                    startDate = startdate,
+                                                    endDate = enddate,
+                                                    budget = budget,
+                                                    projectManager = projectmanager,
+                                                    sustainabilityGoals = sustainabilitygoals,
+                                                    projectMembers = projectmembers,
+                                                    stakeholders = stakeholders
+                                                )
+                                                // Upload the project post and show the toast
+                                                uploadProject(databaseRef, newProject, context)
+                                                navController.navigate(Screens.Projects.screen)
+                                            }
+                                        }
+                                    }) {
+                                    Text("Post Project")
+                                        }
 
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                            stakeholders.forEach { person ->
-                                Text("• $person", fontSize = 14.sp, color = SKyberYellow)
-                            }
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            TextField(
-                                value = budget,
-                                onValueChange = { budget = it },
-                                label = { Text("Budget") },
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(20.dp))
-                                    .fillMaxWidth(),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    focusedIndicatorColor = SKyberYellow,
-                                    unfocusedIndicatorColor = SKyberYellow,
-                                    focusedLabelColor = SKyberYellow,
-                                    unfocusedLabelColor = SKyberYellow
-                                )
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            TextField(
-                                value = sustainabilitygoals,
-                                onValueChange = { sustainabilitygoals = it },
-                                label = { Text("Sustainability Goals") },
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(20.dp))
-                                    .fillMaxWidth(),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    focusedIndicatorColor = SKyberYellow,
-                                    unfocusedIndicatorColor = SKyberYellow,
-                                    focusedLabelColor = SKyberYellow,
-                                    unfocusedLabelColor = SKyberYellow
-                                )
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                        }//End of lazy Column content
-                    }//End of alzy column
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Button(
-                        colors = ButtonDefaults.buttonColors(
-                        containerColor = SKyberBlue,
-                        contentColor = Color.White
-                    ),
-                        onClick = {
-                       // Create Project Post object
-                            if (projectname.isBlank() || startdate.isBlank() || enddate.isBlank()) {
-                                showToast(context, "Please fill out required fields")
-                            }else{
-                                val databaseRef = FirebaseHelper.databaseReference.child("ProjectTransparency").push()
-                                val postId = databaseRef.key
-                                if (postId != null) {
-                                    val newProject = Project(
-                                        id = postId,
-                                        projectName = projectname,
-                                        projectDescription = projectdescription,
-                                        status = "Ongoing",
-                                        startDate = startdate,
-                                        endDate = enddate,
-                                        budget = budget,
-                                        projectManager = projectmanager,
-                                        sustainabilityGoals = sustainabilitygoals,
-                                        projectMembers = projectmembers.toList(),
-                                        stakeholders = stakeholders.toList()
-                                    )
-                                    // Upload the project post and show the toast
-                                    uploadProject(databaseRef,newProject, context)
-                                    navController.navigate(Screens.Projects.screen)
-                                }
-                            }
-                    }) {
-                        Text("Post Project")
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                } //end of main content column
-            }//end of top level column
-        }//end of scaffold
+                            }//End of lazy Column content
+                        }//End of alzy column
+                    } //end of main content column
+                }//end of top level column
+            }//end of scaffold
+        }
     }
 }
 

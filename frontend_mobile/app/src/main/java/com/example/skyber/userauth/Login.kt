@@ -84,13 +84,8 @@ fun LoginScreen(navController: NavHostController, refreshUserProfile: () -> Unit
         label = "floating top left"
     )
 
-    // Gradient for buttons
-    val gradientBrush = Brush.horizontalGradient(
-        colors = listOf(
-            Color(0xFF3CCBF4), // cyan-300
-            Color(0xFF0066FF)  // blue-500
-        )
-    )
+
+
 
     // Google Sign In Handler
     fun firebaseAuthWithGoogle(idToken: String) {

@@ -388,7 +388,9 @@ fun SignupScreen(navController: NavHostController) {
                             visualTransformation = if (showConfirmPassword) VisualTransformation.None else PasswordVisualTransformation(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                             trailingIcon = {
-                                IconButton(onClick = { showConfirmPassword = !showConfirmPassword }) {
+                                IconButton(onClick = {
+                                    showConfirmPassword = !showConfirmPassword
+                                }) {
                                     Icon(
                                         imageVector = if (showConfirmPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                                         contentDescription = "Toggle password visibility",
@@ -426,26 +428,13 @@ fun SignupScreen(navController: NavHostController) {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Date of Birth field - using your existing DatePickerField
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "What's your date of birth?",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.DarkGray,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-
-                        // Using your existing DatePickerField
-                        SimpleDatePickerField(
-                            selectedDate = dob,
-                            onDateSelected = { formattedDate ->
-                                dob = formattedDate
-                            }
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
+                    // Using your existing DatePickerField
+                    SimpleDatePickerField(
+                        selectedDate = dob,
+                        onDateSelected = { formattedDate ->
+                            dob = formattedDate
+                        }
+                    )
 
                     // Phone Number field
                     Column(modifier = Modifier.fillMaxWidth()) {
@@ -500,6 +489,10 @@ fun SignupScreen(navController: NavHostController) {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
                     // Remember me & Forgot Password
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -538,18 +531,28 @@ fun SignupScreen(navController: NavHostController) {
                     Button(
                         onClick = {
                             val auth = FirebaseHelper.auth // Get auth from firebase singleton
-                            val database = FirebaseHelper.databaseReference // Firebase Realtime db reference
+                            val database =
+                                FirebaseHelper.databaseReference // Firebase Realtime db reference
 
                             // Additional validation for password confirmation
                             if (password != confirmPassword) {
-                                Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Passwords do not match",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 return@Button
                             }
 
                             // Basic validation
                             if (firstname.isEmpty() || lastname.isEmpty() || email.isEmpty() ||
-                                password.isEmpty() || dob.isEmpty() || gender.isEmpty()) {
-                                Toast.makeText(context, "Please fill in all fields.", Toast.LENGTH_SHORT).show()
+                                password.isEmpty() || dob.isEmpty() || gender.isEmpty()
+                            ) {
+                                Toast.makeText(
+                                    context,
+                                    "Please fill in all fields.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             } else {
                                 isLoading = true
                                 // 1. create Firebase Auth account
@@ -578,18 +581,35 @@ fun SignupScreen(navController: NavHostController) {
                                                 database.child("users").child(uid).setValue(user)
                                                     .addOnCompleteListener { dbTask ->
                                                         if (dbTask.isSuccessful) {
-                                                            Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT).show()
+                                                            Toast.makeText(
+                                                                context,
+                                                                "Registration Successful",
+                                                                Toast.LENGTH_SHORT
+                                                            ).show()
                                                             navController.navigate(Screens.Login.screen)
                                                         } else {
-                                                            Toast.makeText(context, "Failed to save user data", Toast.LENGTH_SHORT).show()
+                                                            Toast.makeText(
+                                                                context,
+                                                                "Failed to save user data",
+                                                                Toast.LENGTH_SHORT
+                                                            ).show()
                                                         }
                                                     }
                                             } else {
-                                                Toast.makeText(context, "Failed to get user ID", Toast.LENGTH_SHORT).show()
+                                                Toast.makeText(
+                                                    context,
+                                                    "Failed to get user ID",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
                                             }
                                         } else {
-                                            val errorMessage = task.exception?.message ?: "Registration failed."
-                                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                                            val errorMessage =
+                                                task.exception?.message ?: "Registration failed."
+                                            Toast.makeText(
+                                                context,
+                                                errorMessage,
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
                                     }
                             }
@@ -633,48 +653,48 @@ fun SignupScreen(navController: NavHostController) {
 // Keep your existing RadioButtonGenders function
 @Composable
 fun RadioButtonGenders(
-    gender: String,
-    onGenderSelected: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val radioOptions = listOf("Male", "Female", "Others")
-    // Note that Modifier.selectableGroup() is essential to ensure correct accessibility behavior
-    Row(
-        modifier
-            .selectableGroup()
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        gender: String,
+        onGenderSelected: (String) -> Unit,
+        modifier: Modifier = Modifier
     ) {
-        radioOptions.forEach { text ->
-            Row(
-                Modifier
-                    .selectable(
+        val radioOptions = listOf("Male", "Female", "Others")
+        // Note that Modifier.selectableGroup() is essential to ensure correct accessibility behavior
+        Row(
+            modifier
+                .selectableGroup()
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            radioOptions.forEach { text ->
+                Row(
+                    Modifier
+                        .selectable(
+                            selected = (text == gender),
+                            onClick = { onGenderSelected(text) },
+                            role = Role.RadioButton
+                        )
+                        .padding(horizontal = 5.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
                         selected = (text == gender),
-                        onClick = { onGenderSelected(text) },
-                        role = Role.RadioButton
+                        onClick = null,
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = Color(0xFF0066FF),
+                            unselectedColor = Color.Gray,
+                        )
                     )
-                    .padding(horizontal = 5.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                RadioButton(
-                    selected = (text == gender),
-                    onClick = null,
-                    colors = RadioButtonDefaults.colors(
-                        selectedColor = Color(0xFF0066FF),
-                        unselectedColor = Color.Gray,
-                    )
-                )
 
-                Text(
-                    text = text,
-                    color = if (text == gender) Color(0xFF0066FF) else Color.Gray,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(start = 4.dp)
-                )
+                    Text(
+                        text = text,
+                        color = if (text == gender) Color(0xFF0066FF) else Color.Gray,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
             }
         }
     }
-}
 
 /*@Preview(showBackground = true, device = "id:pixel_6")
 @Composable

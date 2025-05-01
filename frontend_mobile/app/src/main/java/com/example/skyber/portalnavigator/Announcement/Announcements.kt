@@ -2,10 +2,18 @@ package com.example.skyber.portalnavigator.Announcement
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,11 +33,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,8 +61,28 @@ import com.example.skyber.ui.theme.*
 @Composable
 fun Announcements(navController: NavHostController) {
     val announcements = remember { mutableStateListOf<Announcement>() }
+    // Animations
+    val infiniteTransition = rememberInfiniteTransition(label = "floating animation")
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale animation"
+    )
 
-    LaunchedEffect(Unit) {
+    val topLeftPosition by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 10f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "floating top left"
+    )
+        /*LaunchedEffect(Unit) {
         FirebaseHelper.databaseReference.child("Announcements")
             .get().addOnSuccessListener { snapshot ->
                 announcements.clear()
@@ -65,88 +96,137 @@ fun Announcements(navController: NavHostController) {
             .addOnFailureListener {
                 Log.e("AnnouncementFetch", "Failed to load projects", it)
             }
-    }
+    }*/
 
-    Scaffold() {  innerPadding ->
-        Column(
+    Scaffold() { innerPadding ->
+        Scaffold(
             modifier = Modifier
-                .background(SKyberDarkBlue)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            HeaderBar(
-                trailingContent = {
-                    NotificationHandler()
-                }
-            )
-
-            PortalNav(
-                trailingContent = {
-                    PortalNavHandler(navController = navController)
-                    Text("Announcements", fontSize = 24.sp, color = SKyberBlue, fontWeight = FontWeight.Bold)
-                }
-            )
-
-            Column(
+                .fillMaxSize()
+        ) { innerPadding ->
+            Box(
                 modifier = Modifier
-                    .padding(top = 32.dp)
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(0.dp)
-                    .clip(RoundedCornerShape(topStart = 14.dp, topEnd = 14.dp))
-                    .background(White),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                LazyColumn(
+                    .fillMaxSize()
+                    .background(SKyberDarkBlueGradient)
+            ) {
+                // Particle system as the background
+                ParticleSystem(
+                    modifier = Modifier.fillMaxSize(),
+                    particleColor = Color.White,
+                    particleCount = 80,
+                    backgroundColor = Color(0xFF0D47A1)
+                )
+                Text(
+                    text = "💠",
+                    fontSize = 26.sp,
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                    contentPadding = PaddingValues(12.dp)
+                        .padding(start = topLeftPosition.dp + 10.dp, top = 20.dp)
+                        .graphicsLayer(alpha = 0.5f)
+                )
+
+                /*Text(
+                    text = "✨",
+                    fontSize = 24.sp,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 30.dp, bottom = 20.dp)
+                        .graphicsLayer(alpha = 0.5f)
+                )*/
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    items(announcements.reversed()) { announcement ->
-                        AnnouncementCard(
-                            backgroundColor = NewspaperContainer,
-                            fontColor = NewspaperFont,
-                            announcement = announcement,
-                            onClick = {
-                                navController.currentBackStackEntry?.savedStateHandle?.set("announcement", announcement)
-                                navController.navigate(Screens.DetailsAnnouncement.screen)
-                            }
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                }
-
-                Button(
-                    onClick = {
-                        navController.navigate(Screens.PostAnnouncement.screen)
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = SKyberBlue),
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .width(250.dp)
-                ){
-                    Text(text = "Post Announcement")
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Icon(
-                        imageVector = Icons.Filled.AddCircle,
-                        contentDescription = "add announcement"
+                    HeaderBar(
+                        trailingContent = {
+                            NotificationHandler()
+                        }
                     )
+
+                    PortalNav(
+                        trailingContent = {
+                            PortalNavHandler(navController = navController)
+                            Text(
+                                "Announcements",
+                                fontSize = 24.sp,
+                                color = White,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    )
+
+                    if (announcements.isEmpty()) {
+                        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            Text(
+                                "No Announcements Right Now",
+                                color = SKyberRed,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 24.sp
+                            )
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth(),
+                            contentPadding = PaddingValues(12.dp)
+                        ) {
+                            items(announcements.reversed()) { announcement ->
+                                AnnouncementCard(
+                                    backgroundColor = SoftCardContainerBlue,
+                                    fontColor = SoftCardFontBlue,
+                                    announcement = announcement,
+                                    onClick = {
+                                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                                            "announcement",
+                                            announcement
+                                        )
+                                        navController.navigate(Screens.DetailsAnnouncement.screen)
+                                    }
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                        }
+                    }
+                    Button(
+                        onClick = {
+                            navController.navigate(Screens.PostAnnouncement.screen)
+                        },
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(60.dp),
+                        shape = RoundedCornerShape(28.dp),
+                        contentPadding = PaddingValues(0.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(gradientBrush),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Post Announcement",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            )
+                        }
+                    }
+
                 }
-
             }
-        }
 
+        }
     }
 }
 
 
-
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun PortalPreview() {
     val navController = rememberNavController()
     Announcements(navController = navController)
-}
+}*/

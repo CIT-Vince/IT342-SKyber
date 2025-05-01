@@ -1,5 +1,7 @@
 package com.example.skyber.ui.theme
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,6 +24,7 @@ import java.time.format.DateTimeFormatter
 /**
  * A simplified date picker field that only uses Jetpack Compose components.
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SimpleDatePickerField(

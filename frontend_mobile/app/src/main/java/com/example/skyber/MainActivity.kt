@@ -62,6 +62,7 @@ import com.example.skyber.skprofilescreens.PostSKcandidates
 import com.example.skyber.ui.theme.NavBarColor
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlue
+import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.SkyberTheme
 import com.example.skyber.userauth.LoginScreen
@@ -149,7 +150,7 @@ class MainActivity : ComponentActivity() {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(SKyberDarkBlue),
+                            .background(SKyberDarkBlueGradient),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(color = SKyberYellow)

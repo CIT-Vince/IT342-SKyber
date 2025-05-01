@@ -15,7 +15,7 @@ data class Project(
     val endDate: String = "",
     val budget: String = "",
     val projectManager: String = "",
-    val projectMembers: List<String> = emptyList(),
-    val stakeholders: List<String> = emptyList(),
+    val projectMembers: String = "",
+    val stakeholders: String = "",
     val sustainabilityGoals: String = "",
 ): Parcelable

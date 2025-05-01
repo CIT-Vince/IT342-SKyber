@@ -42,8 +42,7 @@ fun PortalNav(trailingContent: @Composable (() -> Unit)? = null){
             .fillMaxWidth()
             .height(60.dp)
             .padding(12.dp)
-            .clip(RoundedCornerShape(30.dp))
-            .background(White),
+            .clip(RoundedCornerShape(30.dp)),
         contentAlignment = Alignment.Center
     ){
 
@@ -60,7 +59,7 @@ fun PortalNavPreview() {
 }
 */
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun PortalNavModalPreview() {
     val mockRoutes = listOf("Announcements", "Projects", "Jobs", "Scholarships")
@@ -74,7 +73,7 @@ fun PortalNavModalPreview() {
             println("Navigating to: $route")
         }
     )
-}
+}*/
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -152,7 +151,7 @@ fun PortalNavHandler(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(Color.White)
+            .background(Color.Transparent)
             .clickable { showModal = true }
             .padding(16.dp)
     ) {
