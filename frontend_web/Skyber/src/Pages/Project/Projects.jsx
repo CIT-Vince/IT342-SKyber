@@ -18,7 +18,8 @@ import {
   Modal,
   Button,
   Tooltip,
-  Avatar
+  Avatar,
+  HoverCard
 } from '@mantine/core';
 import { 
   IconSearch, 
@@ -34,7 +35,6 @@ import sample2 from '../../assets/proj/sample2.png';
 import sample3 from '../../assets/proj/sample3.png';
 import { showNotification } from '@mantine/notifications';
 
-// Renamed from announcements to projects for clarity
 const projects = [
   {
     id: 1,
@@ -116,7 +116,7 @@ const Projects = () => {
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null); 
 
-  // Filter projects based on search and status
+  // Filters
   const filteredProjects = projectData.filter(project => {
     const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          project.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -125,13 +125,11 @@ const Projects = () => {
     return matchesSearch && matchesStatus;
   });
 
-  // Handle card click to open modal
   const handleCardClick = (project) => {
     setSelectedProject(project);
     open();
   };
 
-  // Get status color for badges and progress bars
   const getStatusColor = (status) => {
     switch(status) {
       case 'Complete': return 'green';
@@ -140,12 +138,32 @@ const Projects = () => {
       default: return 'gray';
     }
   };
+
+    const formatBudget = (budgetValue) => {
+      // Handle null, undefined or empty values
+      if (!budgetValue) return "₱0";
+      
+      // If already has peso sign, just return it
+      if (typeof budgetValue === 'string' && budgetValue.includes('₱')) {
+        return budgetValue;
+      }
+      
+      // Remove any non-numeric characters
+      const numericValue = budgetValue.toString().replace(/[^\d.-]/g, '');
+      
+      try {
+        const formattedValue = Number(numericValue).toLocaleString('en-PH');
+        return `₱${formattedValue}`;
+      } catch (error) {
+        return `₱${budgetValue}`;
+      }
+    };
+
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         setLoading(true);
         
-        // API URL constant (move to config file in production)
         const API_URL = 'http://localhost:8080/api/projects/all';
         console.log("Fetching projects from:", API_URL);
         
@@ -160,9 +178,7 @@ const Projects = () => {
         const data = await response.json();
         console.log("Retrieved projects data:", data);
         
-        // Check if data exists and is not empty
         if (data && data.length > 0) {
-          // Transform data
           const transformedData = data.map(item => ({
             id: item.id || Math.random().toString(),
             title: item.projectName || "Untitled Project",
@@ -172,8 +188,8 @@ const Projects = () => {
             image: item.projectImage ? `data:image/jpeg;base64,${item.projectImage}` : sample1,
             description: item.description || "No description provided.",
             progress: calculateProgress(item.status),
-            volunteers: 15, // Default value if not provided by API
-            budget: item.budget || "₱0",
+            volunteers: 15, 
+            budget: formatBudget(item.budget), 
             manager: {
               name: item.projectManager || "Not Assigned",
               image: "https://i.pravatar.cc/150?img=32"
@@ -186,11 +202,6 @@ const Projects = () => {
           setProjectData(transformedData);
           setError(null);
           
-          showNotification({
-            title: 'Projects Loaded',
-            message: `Successfully loaded ${transformedData.length} projects`,
-            color: 'green'
-          });
         } else {
           console.warn("Server returned empty projects data");
           throw new Error("No projects found in server response");
@@ -199,7 +210,6 @@ const Projects = () => {
         console.error("Error fetching projects:", error);
         setError(error.message);
         
-        // Use fallback data
         setProjectData(projects);
         
         showNotification({
@@ -212,7 +222,6 @@ const Projects = () => {
       }
     };
     
-    // Helper functions for data transformation
     const calculateProgress = (status) => {
       switch(status) {
         case 'Complete': return 100;
@@ -224,10 +233,8 @@ const Projects = () => {
     const parseTeamMembers = (teamMembersString) => {
       if (!teamMembersString) return [];
       
-      // Split by comma if it's a string
       const names = teamMembersString.split(',').map(name => name.trim());
       
-      // Generate team members with avatars
       return names.map((name, index) => ({
         name: name,
         image: `https://i.pravatar.cc/150?img=${30 + index}`
@@ -241,6 +248,8 @@ const Projects = () => {
     
     fetchProjects();
   }, []);
+
+
   return (
     <>
       {/* Header with gradient background */}
@@ -251,7 +260,7 @@ const Projects = () => {
         }}
       >
         <Navbar />
-        <header className="text-left py-10 pl-10">
+        <header className="text-left py-10 pl-10 pt-30">
           <Title className="text-5xl font-bold text-white">
             Projects
           </Title>
@@ -282,9 +291,10 @@ const Projects = () => {
                 <Tabs value={activeStatus} onChange={setActiveStatus} radius="xl" variant="pills">
                   <Tabs.List grow>
                     <Tabs.Tab value="All">All</Tabs.Tab>
-                    <Tabs.Tab value="Complete">Complete</Tabs.Tab>
-                    <Tabs.Tab value="Pending">Pending</Tabs.Tab>
-                    <Tabs.Tab value="Closed">Closed</Tabs.Tab>
+                    <Tabs.Tab value="Ongoing">Ongoing</Tabs.Tab>
+                    <Tabs.Tab value="Planning">Planning</Tabs.Tab>
+                    <Tabs.Tab value="Completed">Completed</Tabs.Tab>
+                    <Tabs.Tab value="Delayed">Delayed</Tabs.Tab>
                   </Tabs.List>
                 </Tabs>
               </Grid.Col>
@@ -312,8 +322,10 @@ const Projects = () => {
                         <Badge 
                           variant="gradient" 
                           gradient={{ 
-                            from: project.status === 'Complete' ? 'green' : 
-                                  project.status === 'Pending' ? 'blue' : 'red', 
+                            from: project.status === 'Ongoing' ? 'blue' : 
+                                  project.status === 'Planning' ? 'blue' :
+                                  project.status === 'Completed' ? 'blue':
+                                  project.status === 'Delayed' ? 'blue' : 'red', 
                             to: 'cyan' 
                           }}
                           className="absolute top-3 left-3"
@@ -454,7 +466,15 @@ const Projects = () => {
                   <Text weight={500}>{selectedProject.budget}</Text>
                 </div>
                 <div className="flex items-center">
-                  <Badge size="lg" color="teal" className="mr-2">Sustainability Goal:</Badge>
+                  <HoverCard width={280} shadow="md" withArrow openDelay={200} closeDelay={300}>
+                    <HoverCard.Target>
+                      <Badge size="lg" color="teal" className="mr-2 cursor-help">Sustainability Goal</Badge>
+                    </HoverCard.Target>
+                    <HoverCard.Dropdown>
+                      <Text size="sm" fw={500}>Sustainability Goal</Text>
+                      <Text size="xs" c="dimmed">The UN Sustainable Development Goal this project contributes to.</Text>
+                    </HoverCard.Dropdown>
+                  </HoverCard>
                   <Text>{selectedProject.sustainabilityGoal}</Text>
                 </div>
               </div>

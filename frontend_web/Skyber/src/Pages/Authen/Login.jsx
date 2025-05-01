@@ -177,8 +177,10 @@ const Login = () => {
         <div className="max-w-md w-full space-y-6 bg-white/80 rounded-3xl shadow-2xl p-8 z-10 ">
           {/* Logo */}
           <div className="flex items-center gap-2 mb-2">
+            <Link to="/" className="flex items-center gap-2">
             <img src={skyber} alt="Skyber" className="w-10 h-10 drop-shadow" />
             <span className="text-xl font-bold text-[#0033CC] tracking-wide">SKYBER</span>
+            </Link>
           </div>
 
           {/* Heading */}
