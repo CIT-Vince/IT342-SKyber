@@ -47,7 +47,7 @@ public class AnnouncementService {
             
             // Store the key as id in the map and object
             announcementMap.put("id", key); 
-            announcement.setId(Long.valueOf(key.hashCode())); // Use hashCode for numeric ID
+            announcement.setId(key); // Use hashCode for numeric ID
             
             // Save to Firebase
             announcementRef.setValueAsync(announcementMap);
@@ -96,7 +96,7 @@ public class AnnouncementService {
                                 
                                 // Manual mapping for more reliable deserialization
                                 Announcement announcement = new Announcement();
-                                announcement.setId(Long.valueOf(key.hashCode())); // Use hashCode for numeric ID
+                                announcement.setId(key); // Use hashCode for numeric ID
                                 
                                 if (dataSnapshot.hasChild("title")) {
                                     announcement.setTitle(dataSnapshot.child("title").getValue(String.class));
@@ -199,7 +199,7 @@ public class AnnouncementService {
                                 
                                 // Manual mapping as in getAllAnnouncements
                                 Announcement announcement = new Announcement();
-                                announcement.setId(Long.valueOf(key.hashCode()));
+                                announcement.setId(key);
                                 
                                 if (dataSnapshot.hasChild("title")) {
                                     announcement.setTitle(dataSnapshot.child("title").getValue(String.class));
@@ -290,7 +290,7 @@ public class AnnouncementService {
                                 
                                 // Manual mapping as in other methods
                                 Announcement announcement = new Announcement();
-                                announcement.setId(Long.valueOf(key.hashCode()));
+                                announcement.setId(key);
                                 
                                 // Same mapping as previous methods...
                                 if (dataSnapshot.hasChild("title")) {
@@ -384,7 +384,7 @@ public class AnnouncementService {
                         
                         // Manual mapping as in other methods
                         Announcement ann = new Announcement();
-                        ann.setId(Long.valueOf(key.hashCode()));
+                        ann.setId(key);
                         
                         if (snapshot.hasChild("title")) {
                             ann.setTitle(snapshot.child("title").getValue(String.class));
@@ -477,7 +477,7 @@ public class AnnouncementService {
             announcementRef.updateChildrenAsync(announcementMap);
             
             // Set the ID in the returned object for consistency
-            announcementDetails.setId(Long.valueOf(id.hashCode()));
+            announcementDetails.setId(id);
             
             logger.info("Announcement updated successfully");
             return announcementDetails;
