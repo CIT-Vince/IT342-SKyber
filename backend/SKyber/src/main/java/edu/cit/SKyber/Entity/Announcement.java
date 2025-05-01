@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 public class Announcement implements Serializable {
     
-    private Long id;
+    private String id;
     private String title;
     private String content;
     private String barangay;

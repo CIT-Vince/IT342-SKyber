@@ -1,0 +1,3 @@
+runtime: java17  # Java version, change it to java11 or java8 if needed
+instance_class: F1  # Use F1 for the free tier (small instance)
+env: standard  # Use the standard environment

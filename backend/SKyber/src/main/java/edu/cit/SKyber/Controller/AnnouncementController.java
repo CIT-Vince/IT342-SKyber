@@ -11,15 +11,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/announcements")
-@CrossOrigin(origins = "*")
 public class AnnouncementController {
     
     private static final Logger logger = Logger.getLogger(AnnouncementController.class.getName());
+    private Map<String, String> idToOriginalIdMap = new HashMap<>();
     
     @Autowired
     private AnnouncementService announcementService;
@@ -128,4 +130,29 @@ public class AnnouncementController {
                                       HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    // In AnnouncementController.java - add a new endpoint
+
+@GetMapping("/getAnnouncementByHashId/{hashId}")
+public ResponseEntity<?> getAnnouncementByHashId(@PathVariable String hashId) {
+    try {
+        // Convert hashId to Long for comparison
+        Long numericId = Long.valueOf(hashId);
+        
+        // Get all announcements
+        List<Announcement> announcements = announcementService.getAllAnnouncements();
+        
+        // Find the one with matching hash ID
+        for (Announcement ann : announcements) {
+            if (ann.getId().equals(numericId)) {
+                return ResponseEntity.ok(ann);
+            }
+        }
+        
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body("No announcement found with hash ID: " + hashId);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body("Error retrieving announcement: " + e.getMessage());
+    }
+}
 }

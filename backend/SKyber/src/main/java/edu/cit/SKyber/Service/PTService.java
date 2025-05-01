@@ -192,10 +192,24 @@ public class PTService {
                                 
                                 if (dataSnapshot.hasChild("budget")) {
                                     try {
-                                        String budgetStr = dataSnapshot.child("budget").getValue(String.class);
-                                        project.setBudget(String.valueOf(Double.parseDouble(budgetStr)));
+                                        String rawBudgetValue = dataSnapshot.child("budget").getValue(String.class);
+                                        logger.info("Raw budget value from Firebase: '" + rawBudgetValue + "' type: " + 
+                                                   (rawBudgetValue != null ? rawBudgetValue.getClass().getName() : "null"));
+                                        
+                                        // Don't parse - just use the raw value
+                                        project.setBudget(rawBudgetValue);
+                                        
+                                        // If you still want to normalize it:
+                                        try {
+                                            Double budgetNum = Double.parseDouble(rawBudgetValue);
+                                            project.setBudget(String.valueOf(budgetNum));
+                                        } catch (Exception e) {
+                                            // If parsing fails, still use the original string
+                                            logger.warning("Budget parsing as number failed, using original: " + rawBudgetValue);
+                                        }
                                     } catch (Exception e) {
-                                        project.setBudget(String.valueOf(0.0));
+                                        logger.warning("Error processing budget: " + e.getMessage());
+                                        project.setBudget("0.0");
                                     }
                                 }
                                 
@@ -240,7 +254,7 @@ public class PTService {
                                 
                                 if (dataSnapshot.hasChild("stakeholders")) {
                                     try {
-                                        Object value = snapshot.child("stakeholders").getValue();
+                                        Object value = dataSnapshot.child("stakeholders").getValue();
                                         if (value instanceof ArrayList) {
                                             ArrayList<String> list = (ArrayList<String>) value;
                                             project.setStakeholders(String.join(", ", list));
@@ -350,8 +364,26 @@ public class PTService {
                         }
                         
                         if (snapshot.hasChild("budget")) {
-                            Double budgetValue = snapshot.child("budget").getValue(Double.class);
-                            p.setBudget(budgetValue != null ? budgetValue.toString() : null);
+                            try {
+                                String rawBudgetValue = snapshot.child("budget").getValue(String.class);
+                                logger.info("getProjectById - Raw budget value from Firebase: '" + rawBudgetValue + "'");
+                                
+                                // Don't parse - just use the raw value initially
+                                p.setBudget(rawBudgetValue);
+                                
+                                // Only normalize if it's a valid number
+                                try {
+                                    Double budgetNum = Double.parseDouble(rawBudgetValue);
+                                    p.setBudget(String.valueOf(budgetNum));
+                                } catch (Exception e) {
+                                    // If parsing fails, still use the original string
+                                    logger.warning("Budget parsing as number failed, using original: " + rawBudgetValue);
+                                }
+                            } catch (Exception e) {
+                                logger.warning("Error processing budget: " + e.getMessage());
+                                // Use a more visible placeholder to help with debugging
+                                p.setBudget("ERROR_PROCESSING_BUDGET");
+                            }
                         }
                         
                         // Convert string dates back to LocalDate
