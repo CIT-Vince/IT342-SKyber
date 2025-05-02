@@ -25,6 +25,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 const Home = lazy(() => import('./Pages/Home'));
 const Announcements = lazy(() => import('./Pages/Announcement/Announcements'));
+const AdminDashboard = lazy(() => import('./Pages/Announcement/AdminDashboard'));
+
 
 function App() {
   const location = useLocation();
@@ -66,6 +68,7 @@ function App() {
             <Route path="/login" element={<Login />} />
 
           {/* Private Routes Nako */}
+
             {/* Projects  */}
             <Route path="/projects" element={<ProtectedRoute><Projects /></ProtectedRoute>} />
             <Route path="/projectDetail" element={<ProtectedRoute><ProjectDetails /></ProtectedRoute>} />
@@ -79,6 +82,8 @@ function App() {
 
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} /> 
 
+            {/* Admin */}
+            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
 
         </Routes>
       </div>

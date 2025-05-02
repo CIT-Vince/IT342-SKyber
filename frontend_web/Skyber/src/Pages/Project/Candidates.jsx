@@ -35,7 +35,7 @@ const CandidatesList = () => {
       try {
         setLoading(true);
         
-        const API_URL = 'http://localhost:8080/api/candidates/getAllCandidates';
+        const API_URL = '/api/candidates/getAllCandidates';
         console.log("Fetching candidates from:", API_URL);
         
         const response = await fetch(API_URL);
@@ -142,7 +142,7 @@ const CandidatesList = () => {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-pink-50">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-pink-50 ">
           <Paper shadow="md" p="xl" className="max-w-md text-center">
             <Title order={2} className="mb-4 text-red-500">Error Loading Candidates</Title>
             <Text className="mb-6">{error}</Text>
@@ -165,7 +165,7 @@ const CandidatesList = () => {
         }}
       >
         <Navbar />
-        <header className="text-left py-10 pl-10">
+        <header className="text-left py-10 pl-10 pt-30!">
           <Title className="text-5xl font-bold text-white">
             Candidates
           </Title>

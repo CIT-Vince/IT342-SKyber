@@ -38,7 +38,7 @@ const SkProfile = () => {
         setLoading(true);
         
         // API endpoint
-        const API_URL = 'http://localhost:8080/api/profiles/getAllProfiles';
+        const API_URL = '/api/profiles/getAllProfiles';
         console.log("Fetching SK officials from:", API_URL);
         
         const response = await fetch(API_URL);
@@ -135,7 +135,7 @@ const SkProfile = () => {
     <>
       {/* Header with gradient background */}
       <div
-        className="w-full h-auto"
+        className="w-full h-auto pt-30!"
         style={{
           background: 'linear-gradient(180deg, #0134AA 0%, #001544 100%)',
         }}

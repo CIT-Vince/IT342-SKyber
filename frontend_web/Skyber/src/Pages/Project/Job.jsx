@@ -31,7 +31,7 @@ const JobListings = () => {
         setLoading(true);
         
         // API endpoint
-        const API_URL = 'http://localhost:8080/api/jobs/getAllJobs';
+        const API_URL = '/api/jobs/getAllJobs';
         console.log("Fetching job listings from:", API_URL);
         
         const response = await fetch(API_URL);
@@ -107,7 +107,7 @@ const JobListings = () => {
   return (
     <>
       <div
-        className="w-full h-auto"
+        className="w-full h-auto pt-30!"
         style={{
           background: 'linear-gradient(180deg, #0134AA 0%, #001544 100%)',
         }}
