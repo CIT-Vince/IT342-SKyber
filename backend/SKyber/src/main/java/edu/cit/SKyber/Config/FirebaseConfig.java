@@ -19,18 +19,25 @@ public class FirebaseConfig {
     @Value("${app.firebase.database-url}")
     private String firebaseDatabaseUrl;
 
+    @Value("${app.firebase.config-path}")
+    private String firebaseKeyPath;
+
     @Bean
     public FirebaseApp firebaseApp() throws IOException {
-        // Load the Firebase service account credentials from the classpath
-        InputStream serviceAccount = new ClassPathResource("firebase-service-account.json").getInputStream();
+        InputStream serviceAccount;
 
-        // Build Firebase options with credentials and database URL
+        // Load the Firebase key from the classpath
+        if (firebaseKeyPath.startsWith("classpath:")) {
+            serviceAccount = new ClassPathResource(firebaseKeyPath.replace("classpath:", "")).getInputStream();
+        } else {
+            throw new IllegalArgumentException("Invalid firebaseKeyPath: " + firebaseKeyPath);
+        }
+
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                 .setDatabaseUrl(firebaseDatabaseUrl)
                 .build();
 
-        // Initialize Firebase app only if it hasn't been initialized yet
         if (FirebaseApp.getApps().isEmpty()) {
             return FirebaseApp.initializeApp(options);
         }
@@ -38,15 +45,13 @@ public class FirebaseConfig {
         return FirebaseApp.getInstance();
     }
 
-    // Register FirebaseAuth as a Spring bean
     @Bean
     public FirebaseAuth firebaseAuth() throws IOException {
-        return FirebaseAuth.getInstance(firebaseApp());  // Get FirebaseAuth instance
+        return FirebaseAuth.getInstance(firebaseApp());
     }
 
-    // Register FirebaseDatabase as a Spring bean
     @Bean
     public FirebaseDatabase firebaseDatabase() throws IOException {
-        return FirebaseDatabase.getInstance(firebaseApp()); // Get FirebaseDatabase instance
+        return FirebaseDatabase.getInstance(firebaseApp());
     }
 }
