@@ -16,7 +16,7 @@ Key Features:
 
 ✅ Candidate Profiles – A dedicated section where SK members officially running for the next term can list their name, background, experience, and platforms.
 
-✅ Real-time Election Updates – Announce results as soon as they are available after the elections.
+✅ SK Profiles – Provides a centralized page to view the current SK officials, including their names, positions (Chairperson, Secretary, Treasurer, etc.), photos, contact info, and personal advocacies. This promotes visibility and accountability.
 
 Links:
 
