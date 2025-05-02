@@ -141,6 +141,10 @@ const [projectForm, setProjectForm] = useState({
   sustainabilityGoals: '',
   imageFile: null
 });
+const API_BASE_URL = import.meta.env.MODE === 'production' 
+  ? 'https://skyber.onrender.com' 
+  : '';
+
 
   // Filters
   const filteredProjects = projectData.filter(project => {
@@ -211,7 +215,7 @@ const [projectForm, setProjectForm] = useState({
       try {
         setLoading(true);
         
-        const API_URL = '/api/projects/all';
+        const API_URL = '${API_BASE_URL}/api/projects/all';
         console.log("Fetching projects from:", API_URL);
         
         const response = await fetch(API_URL);
@@ -446,7 +450,7 @@ const handleCreateSubmit = async (e) => {
       projectManager: projectForm.projectManager || 'Not Assigned'
     });
     
-    const response = await fetch('/api/projects/createWithImage', {
+    const response = await fetch('${API_BASE_URL}/api/projects/createWithImage', {
       method: 'POST',
       body: formDataObj
     });
@@ -483,7 +487,7 @@ const handleEditSubmit = async (e) => {
       sustainabilityGoals: projectForm.sustainabilityGoals
     };
     
-    const response = await fetch(`/api/projects/${selectedProject.id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/projects/${selectedProject.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -535,7 +539,7 @@ const handleConfirmDelete = async () => {
   try {
     setLoading(true);
     
-    const response = await fetch(`/api/projects/${selectedProject.id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/projects/${selectedProject.id}`, {
       method: 'DELETE'
     });
     
@@ -568,7 +572,7 @@ const fetchProjects = async () => {
   try {
     setLoading(true);
     
-    const API_URL = '/api/projects/all';
+    const API_URL = '${API_BASE_URL}/api/projects/all';
     console.log("Fetching projects from:", API_URL);
     
     const response = await fetch(API_URL);
