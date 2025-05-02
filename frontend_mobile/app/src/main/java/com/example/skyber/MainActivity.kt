@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.credentials.GetCredentialRequest
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -57,6 +58,7 @@ import com.example.skyber.portalnavigator.ProjectTransparency.Projects
 import com.example.skyber.portalnavigator.Scholarships.DetailsScholarship
 import com.example.skyber.portalnavigator.Scholarships.PostScholarship
 import com.example.skyber.portalnavigator.Scholarships.Scholarships
+import com.example.skyber.screens.CandidateTestScreen
 import com.example.skyber.skprofilescreens.DetailsSKcandidates
 import com.example.skyber.skprofilescreens.PostSKcandidates
 import com.example.skyber.ui.theme.NavBarColor
@@ -70,6 +72,7 @@ import com.example.skyber.userauth.SignupScreen
 import com.example.skyber.userprofilescreens.DetailsVolunteerList
 import com.example.skyber.userprofilescreens.EditProfile
 import com.example.skyber.userprofilescreens.VolunteerList
+import com.example.skyber.viewmodel.CandidateViewModel
 import com.example.skyber.volunteerhubscreens.DetailsVolunteerHub
 import com.example.skyber.volunteerhubscreens.PostVolunteerHub
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
@@ -141,6 +144,7 @@ class MainActivity : ComponentActivity() {
             // Determine the start destination based on user profile availability
             val startDestination = if (userProfile.value != null) {
                 Screens.Home.screen  // or any other screen if the user is logged in
+                //Screens.CandidateTestScreen.screen
             } else {
                 Screens.Login.screen
             }
@@ -198,6 +202,7 @@ class MainActivity : ComponentActivity() {
                             Screens.Scholarship.screen,
                             Screens.PostScholarship.screen,
                             Screens.DetailsScholarship.screen,
+                            Screens.CandidateTestScreen.screen,
                         )
 
 
@@ -253,6 +258,12 @@ class MainActivity : ComponentActivity() {
                             composable(Screens.EditProfile.screen) { EditProfile(navController, userProfile = userProfile, ::refreshUserProfile) }
                             composable(Screens.VolunteerList.screen) {VolunteerList(navController,userProfile = userProfile)}
                             composable(Screens.DetailsVolunteerList.screen) { DetailsVolunteerList(navController)}
+
+                            //Test Screens
+                            composable(Screens.CandidateTestScreen.screen) {
+                                val candidateViewModel: CandidateViewModel = viewModel()
+                                CandidateTestScreen(viewModel = candidateViewModel,navController)
+                            }
                         }
                     }
                 }

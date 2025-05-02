@@ -43,4 +43,7 @@ sealed class Screens(val screen: String){
     data object Login : Screens("Login")
     data object SignUp : Screens("Signup")
 
+    //Test screens
+    data object CandidateTestScreen : Screens("Signup")
+    data object CandidateList : Screens("candidateList")
 }

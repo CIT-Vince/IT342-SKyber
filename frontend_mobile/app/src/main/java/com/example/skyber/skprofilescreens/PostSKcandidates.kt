@@ -284,23 +284,22 @@ fun PostSKcandidates(navController: NavHostController, userProfile: MutableState
                                 onClick = {
                                     // Create SK candidate  object
                                     val ageNumber = age.toIntOrNull()
-                                    if  (firstname.isBlank() || lastname.isBlank() || address.isBlank() || partylist.isBlank() || email.isBlank()){
+                                    if  (firstname.isBlank() || lastname.isBlank() || address.isBlank() || partylist.isBlank()){
                                         showToast(context, "Please fill out required fields")
                                     }else if (ageNumber == null || ageNumber <= 0)  {
                                         showToast(context, "Please enter a valid age")
                                     } else {
-                                        val databaseRef = FirebaseHelper.databaseReference.child("CandidateProfile").push()
+                                        val databaseRef = FirebaseHelper.databaseReference.child("Candidates").push()
                                         val candidateId = databaseRef.key
                                         val newCandidateProfile = CandidateProfile(
                                             id = candidateId,
                                             firstName = firstname,
                                             lastName = lastname,
-                                            //email = email,
                                             age = age,
                                             partyList = partylist,
                                             platform = platform,
                                             address = address,
-                                            //status = status
+                                            candidateImage = null,
                                         )
 
                                         uploadCandidateProfile(newCandidateProfile, context, navController, databaseRef)

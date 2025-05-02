@@ -6,15 +6,13 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @IgnoreExtraProperties
-data class CandidateProfile (
+data class CandidateProfile (//Data class for Upcoming SK candidates
     val id: String? = "",
     val firstName: String? = "",
     val lastName: String? = "",
-    //val status: String? = "",
-    //val email: String? = "",
     val age: String? = "",
     val partyList: String? = "",
     val platform: String? = "",
     val address: String? = "",
-    //Image URL here
+    val candidateImage: String? = null  // This will store Base64 string
 ): Parcelable
