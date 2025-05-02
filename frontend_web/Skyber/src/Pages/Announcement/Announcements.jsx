@@ -5,6 +5,9 @@ import { useDisclosure } from '@mantine/hooks';
 import { 
   Modal, 
   Button, 
+  Select,
+  Textarea,
+  FileInput,
   Paper, 
   Title, 
   Text, 
@@ -18,7 +21,7 @@ import {
   Divider,
   Avatar
 } from '@mantine/core';
-import { IconSearch, IconBell, IconCalendar, IconArrowLeft, IconShare, IconHeart } from '@tabler/icons-react';
+import { IconSearch, IconBell, IconCalendar, IconArrowLeft,IconEdit,IconTrash, IconShare,IconPlus , IconHeart } from '@tabler/icons-react';
 import sample1 from '../../assets/announce/sample1.png';
 import sample2 from '../../assets/announce/sample2.png';
 import sample3 from '../../assets/announce/sample3.png';
@@ -47,6 +50,17 @@ const Announcements = () => {
   const [opened, { open, close }] = useDisclosure(false);
   const params = useParams();
   const location = useLocation();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [editModalOpen, { open: openEditModal, close: closeEditModal }] = useDisclosure(false);
+  const [createModalOpen, { open: openCreateModal, close: closeCreateModal }] = useDisclosure(false);
+  const [deleteModalOpen, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    content: '',
+    category: 'News',
+    barangay: 'All',
+    imageFile: null
+  });
 
   useEffect(() => {
     // Check if we have an ID in the URL (e.g., /announcements/123)
@@ -135,6 +149,31 @@ const Announcements = () => {
     
   };
 
+  useEffect(() => {
+    if (currentUser) {
+      const fetchUserData = async () => {
+        try {
+          const { getDatabase, ref, get } = await import('firebase/database');
+          const db = getDatabase();
+          const userRef = ref(db, `users/${currentUser.uid}`);
+          const snapshot = await get(userRef);
+          
+          if (snapshot.exists()) {
+            const userData = snapshot.val();
+            // Check if user is admin
+            setIsAdmin(userData.role === 'ADMIN');
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      };
+      
+      fetchUserData();
+    } else {
+      setIsAdmin(false);
+    }
+  }, [currentUser]);
+
   // Filters
   const filteredAnnouncements = announceData.filter(announcement => {
     const matchesSearch = announcement.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -145,13 +184,207 @@ const Announcements = () => {
     return matchesSearch && matchesCategory;
   });
 
+  const handleEditClick = (announcement) => {
+    setSelectedAnnouncement(announcement);
+    setFormData({
+      title: announcement.title,
+      content: announcement.description,
+      category: announcement.category,
+      barangay: announcement.barangay || 'All',
+      imageFile: null // Can't fill this from existing data
+    });
+    openEditModal();
+  };
+  
+  const handleDeleteClick = (announcement) => {
+    setSelectedAnnouncement(announcement);
+    openDeleteModal();
+  };
+  
+  const handleCreateSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      
+      const formDataObj = new FormData();
+      formDataObj.append('title', formData.title);
+      formDataObj.append('content', formData.content);
+      formDataObj.append('category', formData.category);
+      formDataObj.append('barangay', formData.barangay);
+      
+      if (formData.imageFile) {
+        formDataObj.append('image', formData.imageFile);
+      }
+      
+      const response = await fetch('/api/announcements/createWithImage', {
+        method: 'POST',
+        body: formDataObj
+      });
+      
+      if (!response.ok) throw new Error('Failed to create announcement');
+      
+      showNotification({
+        title: 'Success',
+        message: 'Announcement created successfully',
+        color: 'green'
+      });
+      
+      closeCreateModal();
+      fetchAnnouncements(); // Re-fetch announcements
+    } catch (error) {
+      console.error('Error creating announcement:', error);
+      showNotification({
+        title: 'Error',
+        message: 'Failed to create announcement',
+        color: 'red'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      
+      // For edit, we use updateAnnouncement endpoint with JSON body
+      const updateData = {
+        title: formData.title,
+        content: formData.content,
+        category: formData.category,
+        barangay: formData.barangay
+      };
+      
+      const response = await fetch(`http://skyber.onrender.com/api/announcements/updateAnnouncement/${selectedAnnouncement.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateData)
+      });
+      
+      if (!response.ok) throw new Error('Failed to update announcement');
+      
+      showNotification({
+        title: 'Success',
+        message: 'Announcement updated successfully',
+        color: 'green'
+      });
+      
+      closeEditModal();
+      fetchAnnouncements(); // Re-fetch announcements
+    } catch (error) {
+      console.error('Error updating announcement:', error);
+      showNotification({
+        title: 'Error',
+        message: 'Failed to update announcement', 
+        color: 'red'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  // Add this function outside of any hooks, near your other handler functions
+const fetchAnnouncements = async () => {
+  try {
+    setLoading(true);
+    
+    const API_URL = 'https://skyber.onrender.com/api/announcements/getAllAnnouncements';
+    console.log("Fetching announcements from:", API_URL);
+    
+    const response = await fetch(API_URL);
+    
+    // Better error handling
+    if (!response.ok) {
+      console.error(`Server responded with ${response.status}: ${response.statusText}`);
+      throw new Error(`Server responded with ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log("Retrieved announcements data:", data);
+    
+    // Check if data exists and is not empty
+    if (data && data.length > 0) {
+      const transformedData = data.map(item => ({
+        id: item.id,
+        title: item.title || "Untitled Announcement",
+        category: item.category || 'Community',
+        date: item.postedAt ? new Date(item.postedAt).toLocaleDateString() : new Date().toLocaleDateString(),
+        image: item.imageData ? `data:image/jpeg;base64,${item.imageData}` : sample1,
+        description: item.content || "No description provided.",
+        likes: 0,
+        isLiked: false
+      }));
+      
+      setAnnounceData(transformedData);
+    } else {
+      console.warn("Server returned empty announcement data");
+      throw new Error("No announcements found in server response");
+    }
+  } catch (error) {
+    console.error("Error fetching announcements:", error);
+    // Fall back to mock data
+    const mockData = [
+      {
+        id: "mock1",
+        title: "Community Meeting",
+        category: "Community",
+        date: new Date().toLocaleDateString(),
+        image: sample1,
+        description: "Join us for our monthly community meeting to discuss upcoming projects and initiatives. Everyone is welcome to attend and share their ideas.",
+        likes: 15,
+        isLiked: false
+      },
+    ];
+    
+    setAnnounceData(mockData);
+    
+    showNotification({
+      title: 'Using Demo Data',
+      message: 'Could not connect to server. Showing demo announcements.',
+      color: 'yellow',
+      position: 'top-right'
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+  const handleConfirmDelete = async () => {
+    try {
+      setLoading(true);
+      
+      const response = await fetch(`/api/announcements/deleteAnnouncement/${selectedAnnouncement.id}`, {
+        method: 'DELETE'
+      });
+      
+      if (!response.ok) throw new Error('Failed to delete announcement');
+      
+      showNotification({
+        title: 'Success',
+        message: 'Announcement deleted successfully',
+        color: 'green'
+      });
+      
+      closeDeleteModal();
+      fetchAnnouncements(); // Re-fetch announcements
+    } catch (error) {
+      console.error('Error deleting announcement:', error);
+      showNotification({
+        title: 'Error',
+        message: 'Failed to delete announcement',
+        color: 'red'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
 // firebase nato
 useEffect(() => {
   const fetchAnnouncements = async () => {
     try {
       setLoading(true);
       
-      const API_URL = 'http://localhost:8080/api/announcements/getAllAnnouncements';
+      const API_URL = 'https://skyber.onrender.com/api/announcements/getAllAnnouncements';
       console.log("Fetching announcements from:", API_URL);
       
       const response = await fetch(API_URL);
@@ -303,9 +536,24 @@ const copyToClipboard = (text) => {
                     <Tabs.Tab value="Event">Event</Tabs.Tab>
                     <Tabs.Tab value="Notice">Notice</Tabs.Tab>
                     <Tabs.Tab value="Emergency">Emergency</Tabs.Tab>
+                    
                   </Tabs.List>
                 </Tabs>
               </Grid.Col>
+              <Grid.Col span={12} className="mt-4">
+              {isAdmin && (
+  <div className="mb-4 flex justify-end">
+    <Button 
+      leftSection={<IconPlus size={16} />}
+      onClick={openCreateModal}
+      variant="gradient" 
+      gradient={{ from: 'blue', to: 'cyan' }}
+    >
+      Create Announcement
+    </Button>
+  </div>
+)}
+                </Grid.Col>
             </Grid>
           </Paper>
 
@@ -366,6 +614,28 @@ const copyToClipboard = (text) => {
                         <ActionIcon variant="subtle">
                           <IconShare size={16} />
                         </ActionIcon>
+                        {isAdmin && (
+                            <>
+                              <ActionIcon 
+                                color="yellow" 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEditClick(item);
+                                }}
+                              >
+                                <IconEdit size={16} />
+                              </ActionIcon>
+                              <ActionIcon 
+                                color="red" 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteClick(item);
+                                }}
+                              >
+                                <IconTrash size={16} />
+                              </ActionIcon>
+                            </>
+                          )}
                       </Group>
                     </Card.Section>
                   </Card>
@@ -558,6 +828,92 @@ const copyToClipboard = (text) => {
           </div>
         )}
       </Modal>
+      {/* Create Modal */}
+<Modal opened={createModalOpen} onClose={closeCreateModal} title="Create Announcement" size="lg">
+  <form onSubmit={handleCreateSubmit}>
+    <TextInput
+      label="Title"
+      required
+      placeholder="Announcement title"
+      value={formData.title}
+      onChange={(e) => setFormData({...formData, title: e.target.value})}
+      className="mb-3"
+    />
+    
+    <Select
+      label="Category"
+      data={[
+        { value: 'News', label: 'News' },
+        { value: 'Event', label: 'Event' },
+        { value: 'Notice', label: 'Notice' },
+        { value: 'Emergency', label: 'Emergency' },
+      ]}
+      value={formData.category}
+      onChange={(value) => setFormData({...formData, category: value})}
+      className="mb-3"
+      required
+    />
+    
+    <Select
+      label="Barangay"
+      data={[
+        { value: 'All', label: 'All Barangays' },
+        { value: 'Barangay 1', label: 'Barangay 1' },
+        { value: 'Barangay 2', label: 'Barangay 2' },
+        { value: 'Barangay 3', label: 'Barangay 3' },
+      ]}
+      value={formData.barangay}
+      onChange={(value) => setFormData({...formData, barangay: value})}
+      className="mb-3"
+      required
+    />
+    
+    <Textarea
+      label="Content"
+      placeholder="Announcement content"
+      required
+      minRows={4}
+      value={formData.content}
+      onChange={(e) => setFormData({...formData, content: e.target.value})}
+      className="mb-3"
+    />
+    
+    <FileInput
+      label="Image"
+      placeholder="Upload announcement image"
+      accept="image/*"
+      onChange={(file) => setFormData({...formData, imageFile: file})}
+      className="mb-4"
+    />
+    
+    <Group position="right" mt="md">
+      <Button variant="outline" onClick={closeCreateModal}>Cancel</Button>
+      <Button type="submit" color="blue">Create</Button>
+    </Group>
+  </form>
+</Modal>
+
+{/* Edit Modal */}
+<Modal opened={editModalOpen} onClose={closeEditModal} title="Edit Announcement" size="lg">
+  <form onSubmit={handleEditSubmit}>
+    {/* Same fields as Create Modal */}
+    <Group position="right" mt="md">
+      <Button variant="outline" onClick={closeEditModal}>Cancel</Button>
+      <Button type="submit" color="yellow">Update</Button>
+    </Group>
+  </form>
+</Modal>
+
+{/* Delete Confirmation Modal */}
+<Modal opened={deleteModalOpen} onClose={closeDeleteModal} title="Delete Announcement" size="sm">
+  <Text>Are you sure you want to delete this announcement?</Text>
+  <Text size="sm" color="dimmed" className="mt-2">This action cannot be undone.</Text>
+  
+  <Group position="right" mt="xl">
+    <Button variant="outline" onClick={closeDeleteModal}>Cancel</Button>
+    <Button color="red" onClick={handleConfirmDelete}>Delete</Button>
+  </Group>
+</Modal>
     </>
   );
 

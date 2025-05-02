@@ -19,7 +19,10 @@ import {
   Button,
   Tooltip,
   Avatar,
-  HoverCard
+  HoverCard,
+  Select ,
+  Textarea ,
+  FileInput 
 } from '@mantine/core';
 import { 
   IconSearch, 
@@ -28,12 +31,17 @@ import {
   IconArrowRight, 
   IconClock, 
   IconArrowLeft,
-  IconUsers
+  IconUsers,
+  IconPlus ,
+  IconEdit ,
+  IconTrash ,
+  IconEye 
 } from '@tabler/icons-react';
 import sample1 from '../../assets/proj/sample1.png';
 import sample2 from '../../assets/proj/sample2.png';
 import sample3 from '../../assets/proj/sample3.png';
 import { showNotification } from '@mantine/notifications';
+import { useAuth } from '../../contexts/AuthContext';
 
 const projects = [
   {
@@ -115,6 +123,24 @@ const Projects = () => {
   const [opened, { open, close }] = useDisclosure(false);
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null); 
+  const { currentUser } = useAuth();
+const [isAdmin, setIsAdmin] = useState(false);
+const [createModalOpen, { open: openCreateModal, close: closeCreateModal }] = useDisclosure(false);
+const [editModalOpen, { open: openEditModal, close: closeEditModal }] = useDisclosure(false);
+const [deleteModalOpen, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
+const [projectForm, setProjectForm] = useState({
+  projectName: '',
+  description: '',
+  budget: '',
+  startDate: '',
+  endDate: '',
+  status: 'Planning',
+  projectManager: '',
+  teamMembers: '',
+  stakeholders: '',
+  sustainabilityGoals: '',
+  imageFile: null
+});
 
   // Filters
   const filteredProjects = projectData.filter(project => {
@@ -158,13 +184,34 @@ const Projects = () => {
         return `₱${budgetValue}`;
       }
     };
+    useEffect(() => {
+      if (currentUser) {
+        const checkUserRole = async () => {
+          try {
+            const { getDatabase, ref, get } = await import('firebase/database');
+            const db = getDatabase();
+            const userRef = ref(db, `users/${currentUser.uid}`);
+            const snapshot = await get(userRef);
+            
+            if (snapshot.exists()) {
+              const userData = snapshot.val();
+              setIsAdmin(userData.role === 'ADMIN');
+            }
+          } catch (error) {
+            console.error('Error checking user role:', error);
+          }
+        };
+        
+        checkUserRole();
+      }
+    }, [currentUser]);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         setLoading(true);
         
-        const API_URL = 'http://localhost:8080/api/projects/all';
+        const API_URL = '/api/projects/all';
         console.log("Fetching projects from:", API_URL);
         
         const response = await fetch(API_URL);
@@ -249,7 +296,365 @@ const Projects = () => {
     fetchProjects();
   }, []);
 
+// Add these handler functions
+const handleEditClick = (project) => {
+  setSelectedProject(project);
+  
+  // Format dates for the form
+  const startDate = project.startDate && project.startDate !== 'N/A' 
+    ? project.startDate 
+    : '';
+  
+  const endDate = project.endDate && project.endDate !== 'N/A'
+    ? project.endDate
+    : '';
+  
+  // Remove peso sign and commas from budget
+  const rawBudget = project.budget 
+    ? project.budget.replace('₱', '').replace(/,/g, '') 
+    : '';
+  
+  setProjectForm({
+    projectName: project.title,
+    description: project.description,
+    budget: rawBudget,
+    startDate: startDate,
+    endDate: endDate,
+    status: project.status,
+    projectManager: project.manager?.name || '',
+    teamMembers: project.teamMembers.map(member => member.name).join(', '),
+    stakeholders: project.stakeholders.join(', '),
+    sustainabilityGoals: project.sustainabilityGoal,
+    imageFile: null
+  });
+  
+  openEditModal();
+};
 
+const handleDeleteClick = (project) => {
+  setSelectedProject(project);
+  openDeleteModal();
+};
+
+const resetForm = () => {
+  setProjectForm({
+    projectName: '',
+    description: '',
+    budget: '',
+    startDate: '',
+    endDate: '',
+    status: 'Planning',
+    projectManager: '',
+    teamMembers: '',
+    stakeholders: '',
+    sustainabilityGoals: '',
+    imageFile: null
+  });
+};
+
+const handleCreateClick = () => {
+  resetForm();
+  openCreateModal();
+};
+
+const handleCreateSubmit = async (e) => {
+  e.preventDefault();
+  
+  // Validate required fields
+  if (!projectForm.projectName || !projectForm.description) {
+    showNotification({
+      title: 'Validation Error',
+      message: 'Project name and description are required',
+      color: 'red'
+    });
+    return;
+  }
+  
+  // Validate budget is a number
+  const budgetValue = parseFloat(projectForm.budget);
+  if (isNaN(budgetValue)) {
+    showNotification({
+      title: 'Validation Error',
+      message: 'Budget must be a valid number',
+      color: 'red'
+    });
+    return;
+  }
+  
+  // Validate dates
+  if (!projectForm.startDate || !projectForm.endDate) {
+    showNotification({
+      title: 'Validation Error',
+      message: 'Start date and end date are required',
+      color: 'red'
+    });
+    return;
+  }
+  
+  try {
+    setLoading(true);
+    
+    // Format dates to ISO format (YYYY-MM-DD)
+    const formatDate = (dateStr) => {
+      // If already in ISO format, return as is
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+      
+      // If in MM/DD/YYYY format, convert to ISO
+      const parts = dateStr.split('/');
+      if (parts.length === 3) {
+        return `${parts[2]}-${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}`;
+      }
+      
+      // Default to today if parsing fails
+      const today = new Date();
+      return today.toISOString().split('T')[0];
+    };
+    
+    const formDataObj = new FormData();
+    formDataObj.append('projectName', projectForm.projectName);
+    formDataObj.append('description', projectForm.description);
+    formDataObj.append('budget', budgetValue); // Send as number
+    formDataObj.append('startDate', formatDate(projectForm.startDate));
+    formDataObj.append('endDate', formatDate(projectForm.endDate));
+    formDataObj.append('status', projectForm.status || 'Planning');
+    formDataObj.append('projectManager', projectForm.projectManager || 'Not Assigned');
+    
+    // Optional fields
+    if (projectForm.teamMembers) {
+      formDataObj.append('teamMembers', projectForm.teamMembers);
+    }
+    
+    if (projectForm.stakeholders) {
+      formDataObj.append('stakeholders', projectForm.stakeholders);
+    }
+    
+    if (projectForm.sustainabilityGoals) {
+      formDataObj.append('sustainabilityGoals', projectForm.sustainabilityGoals);
+    }
+    
+    if (projectForm.imageFile) {
+      formDataObj.append('image', projectForm.imageFile);
+    }
+    
+    console.log("Sending project data to API:", {
+      projectName: projectForm.projectName,
+      description: projectForm.description,
+      budget: budgetValue,
+      startDate: formatDate(projectForm.startDate),
+      endDate: formatDate(projectForm.endDate),
+      status: projectForm.status || 'Planning',
+      projectManager: projectForm.projectManager || 'Not Assigned'
+    });
+    
+    const response = await fetch('/api/projects/createWithImage', {
+      method: 'POST',
+      body: formDataObj
+    });
+    
+  } catch (error) {
+    console.error('Error creating project:', error);
+    showNotification({
+      title: 'Error',
+      message: 'Failed to create project: ' + error.message,
+      color: 'red'
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
+const handleEditSubmit = async (e) => {
+  e.preventDefault();
+  
+  try {
+    setLoading(true);
+    
+    // For edit without image, use PUT with JSON
+    const updateData = {
+      projectName: projectForm.projectName,
+      description: projectForm.description,
+      budget: projectForm.budget,
+      startDate: projectForm.startDate,
+      endDate: projectForm.endDate,
+      status: projectForm.status,
+      projectManager: projectForm.projectManager,
+      teamMembers: projectForm.teamMembers,
+      stakeholders: projectForm.stakeholders,
+      sustainabilityGoals: projectForm.sustainabilityGoals
+    };
+    
+    const response = await fetch(`/api/projects/${selectedProject.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updateData)
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Server responded with ${response.status}`);
+    }
+    
+    // If there's a new image, upload it separately
+    if (projectForm.imageFile) {
+      const imageFormData = new FormData();
+      imageFormData.append('image', projectForm.imageFile);
+      
+      const imageResponse = await fetch(`/api/projects/${selectedProject.id}/updateImage`, {
+        method: 'POST',
+        body: imageFormData
+      });
+      
+      if (!imageResponse.ok) {
+        throw new Error(`Image upload failed: ${imageResponse.status}`);
+      }
+    }
+    
+    showNotification({
+      title: 'Success',
+      message: 'Project updated successfully',
+      color: 'green'
+    });
+    
+    closeEditModal();
+    fetchProjects(); // Make sure to define this outside useEffect
+    
+  } catch (error) {
+    console.error('Error updating project:', error);
+    showNotification({
+      title: 'Error',
+      message: 'Failed to update project: ' + error.message,
+      color: 'red'
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
+const handleConfirmDelete = async () => {
+  try {
+    setLoading(true);
+    
+    const response = await fetch(`/api/projects/${selectedProject.id}`, {
+      method: 'DELETE'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Server responded with ${response.status}`);
+    }
+    
+    showNotification({
+      title: 'Success',
+      message: 'Project deleted successfully',
+      color: 'green'
+    });
+    
+    closeDeleteModal();
+    fetchProjects(); // Make sure to define this outside useEffect
+    
+  } catch (error) {
+    console.error('Error deleting project:', error);
+    showNotification({
+      title: 'Error',
+      message: 'Failed to delete project: ' + error.message,
+      color: 'red'
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+// Extract this function from useEffect so it can be called from other functions
+const fetchProjects = async () => {
+  try {
+    setLoading(true);
+    
+    const API_URL = '/api/projects/all';
+    console.log("Fetching projects from:", API_URL);
+    
+    const response = await fetch(API_URL);
+    
+    // Better error handling
+    if (!response.ok) {
+      console.error(`Server responded with ${response.status}: ${response.statusText}`);
+      throw new Error(`Server responded with ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log("Retrieved projects data:", data);
+    
+    if (data && data.length > 0) {
+      const transformedData = data.map(item => ({
+        id: item.id || Math.random().toString(),
+        title: item.projectName || "Untitled Project",
+        status: item.status || "Pending",
+        startDate: item.startDate || "N/A",
+        endDate: item.endDate || "N/A",
+        image: item.projectImage ? `data:image/jpeg;base64,${item.projectImage}` : sample1,
+        description: item.description || "No description provided.",
+        progress: calculateProgress(item.status),
+        volunteers: 15, 
+        budget: formatBudget(item.budget), 
+        manager: {
+          name: item.projectManager || "Not Assigned",
+          image: "https://i.pravatar.cc/150?img=32"
+        },
+        teamMembers: parseTeamMembers(item.teamMembers),
+        stakeholders: parseStakeholders(item.stakeholders),
+        sustainabilityGoal: item.sustainabilityGoals || "None specified"
+      }));
+      
+      setProjectData(transformedData);
+      setError(null);
+      
+    } else {
+      console.warn("Server returned empty projects data");
+      throw new Error("No projects found in server response");
+    }
+  } catch (error) {
+    console.error("Error fetching projects:", error);
+    setError(error.message);
+    
+    setProjectData(projects);
+    
+    showNotification({
+      title: 'Using Sample Data',
+      message: 'Could not load projects from server. Showing sample data.',
+      color: 'yellow'
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
+// These helper functions stay in this scope
+const calculateProgress = (status) => {
+  switch(status) {
+    case 'Complete': return 100;
+    case 'Closed': return 0;
+    default: return Math.floor(Math.random() * 60) + 20; // 20-80% for ongoing projects
+  }
+};
+
+const parseTeamMembers = (teamMembersString) => {
+  if (!teamMembersString) return [];
+  
+  const names = teamMembersString.split(',').map(name => name.trim());
+  
+  return names.map((name, index) => ({
+    name: name,
+    image: `https://i.pravatar.cc/150?img=${30 + index}`
+  }));
+};
+
+const parseStakeholders = (stakeholdersString) => {
+  if (!stakeholdersString) return [];
+  return stakeholdersString.split(',').map(s => s.trim());
+};
+
+// Then in your useEffect, just call it
+useEffect(() => {
+  fetchProjects();
+}, []);
   return (
     <>
       {/* Header with gradient background */}
@@ -299,6 +704,19 @@ const Projects = () => {
                 </Tabs>
               </Grid.Col>
             </Grid>
+            {/* Add this admin button */}
+                {isAdmin && (
+                  <Button
+                    leftSection={<IconPlus size={16} />}
+                    variant="gradient"
+                    gradient={{ from: 'blue', to: 'cyan' }}
+                    onClick={openCreateModal}
+                    className="mt-4"
+                    radius="md"
+                  >
+                    Create New Project
+                  </Button>
+                )}
           </Paper>
 
           {/* Projects Cards */}
@@ -378,6 +796,44 @@ const Projects = () => {
                           <IconArrowRight size={14} className="text-blue-500" />
                         </Group>
                       </Group>
+                      <Group spacing="xs">
+      {isAdmin ? (
+        <>
+          <ActionIcon 
+            color="yellow" 
+            onClick={(e) => {
+              e.stopPropagation();
+              handleEditClick(project);
+            }}
+            variant="light"
+          >
+            <IconEdit size={16} />
+          </ActionIcon>
+          <ActionIcon 
+            color="red" 
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDeleteClick(project);
+            }}
+            variant="light"
+          >
+            <IconTrash size={16} />
+          </ActionIcon>
+          <ActionIcon 
+            color="blue" 
+            onClick={() => handleCardClick(project)}
+            variant="light"
+          >
+            <IconEye size={16} />
+          </ActionIcon>
+        </>
+      ) : (
+        <>
+          <Text size="xs" color="blue">View Details</Text>
+          <IconArrowRight size={14} className="text-blue-500" />
+        </>
+      )}
+    </Group>
                     </Card.Section>
                   </Card>
                 </Grid.Col>
@@ -608,6 +1064,158 @@ const Projects = () => {
           </div>
         )}
       </Modal>
+      {/* Create Project Modal */}
+<Modal
+  opened={createModalOpen}
+  onClose={closeCreateModal}
+  title="Create New Project"
+  size="lg"
+>
+  <form onSubmit={handleCreateSubmit}>
+    <TextInput
+      label="Project Name"
+      placeholder="Enter project name"
+      required
+      value={projectForm.projectName}
+      onChange={(e) => setProjectForm({...projectForm, projectName: e.target.value})}
+      className="mb-3"
+    />
+    
+    <Grid>
+      <Grid.Col span={6}>
+        <TextInput
+          label="Project Manager"
+          placeholder="Manager name"
+          value={projectForm.projectManager}
+          onChange={(e) => setProjectForm({...projectForm, projectManager: e.target.value})}
+          className="mb-3"
+        />
+      </Grid.Col>
+      <Grid.Col span={6}>
+        <Select
+          label="Status"
+          data={[
+            { value: 'Planning', label: 'Planning' },
+            { value: 'Ongoing', label: 'Ongoing' },
+            { value: 'Completed', label: 'Completed' },
+            { value: 'Delayed', label: 'Delayed' },
+          ]}
+          value={projectForm.status}
+          onChange={(value) => setProjectForm({...projectForm, status: value})}
+          className="mb-3"
+        />
+      </Grid.Col>
+    </Grid>
+    
+    <Grid>
+      <Grid.Col span={6}>
+        <TextInput
+          label="Start Date (MM/DD/YYYY)"
+          placeholder="MM/DD/YYYY"
+          value={projectForm.startDate}
+          onChange={(e) => setProjectForm({...projectForm, startDate: e.target.value})}
+          className="mb-3"
+        />
+      </Grid.Col>
+      <Grid.Col span={6}>
+        <TextInput
+          label="End Date (MM/DD/YYYY)"
+          placeholder="MM/DD/YYYY"
+          value={projectForm.endDate}
+          onChange={(e) => setProjectForm({...projectForm, endDate: e.target.value})}
+          className="mb-3"
+        />
+      </Grid.Col>
+    </Grid>
+    
+    <TextInput
+      label="Budget"
+      placeholder="Budget amount"
+      value={projectForm.budget}
+      onChange={(e) => setProjectForm({...projectForm, budget: e.target.value})}
+      className="mb-3"
+    />
+    
+    <Textarea
+      label="Description"
+      placeholder="Project description"
+      required
+      minRows={3}
+      value={projectForm.description}
+      onChange={(e) => setProjectForm({...projectForm, description: e.target.value})}
+      className="mb-3"
+    />
+    
+    <TextInput
+      label="Team Members"
+      placeholder="Comma-separated list of team members"
+      value={projectForm.teamMembers}
+      onChange={(e) => setProjectForm({...projectForm, teamMembers: e.target.value})}
+      className="mb-3"
+    />
+    
+    <TextInput
+      label="Stakeholders"
+      placeholder="Comma-separated list of stakeholders"
+      value={projectForm.stakeholders}
+      onChange={(e) => setProjectForm({...projectForm, stakeholders: e.target.value})}
+      className="mb-3"
+    />
+    
+    <TextInput
+      label="Sustainability Goals"
+      placeholder="Sustainability goals for this project"
+      value={projectForm.sustainabilityGoals}
+      onChange={(e) => setProjectForm({...projectForm, sustainabilityGoals: e.target.value})}
+      className="mb-3"
+    />
+    
+    <FileInput
+      label="Project Image"
+      placeholder="Upload an image"
+      accept="image/*"
+      onChange={(file) => setProjectForm({...projectForm, imageFile: file})}
+      className="mb-4"
+    />
+    
+    <Group position="right" mt="md">
+      <Button variant="outline" onClick={closeCreateModal}>Cancel</Button>
+      <Button type="submit" color="blue">Create Project</Button>
+    </Group>
+  </form>
+</Modal>
+
+{/* Edit Project Modal (similar to Create) */}
+<Modal
+  opened={editModalOpen}
+  onClose={closeEditModal}
+  title="Edit Project"
+  size="lg"
+>
+  <form onSubmit={handleEditSubmit}>
+    {/* Same fields as Create with different submit handler */}
+    <Group position="right" mt="md">
+      <Button variant="outline" onClick={closeEditModal}>Cancel</Button>
+      <Button type="submit" color="yellow">Update Project</Button>
+    </Group>
+  </form>
+</Modal>
+
+{/* Delete Confirmation Modal */}
+<Modal
+  opened={deleteModalOpen}
+  onClose={closeDeleteModal}
+  title="Delete Project"
+  size="sm"
+>
+  <Text>Are you sure you want to delete "{selectedProject?.title}"?</Text>
+  <Text size="sm" color="dimmed" className="mt-2">This action cannot be undone.</Text>
+  
+  <Group position="right" mt="xl">
+    <Button variant="outline" onClick={closeDeleteModal}>Cancel</Button>
+    <Button color="red" onClick={handleConfirmDelete}>Delete</Button>
+  </Group>
+</Modal>
     </>
   );
 };

@@ -46,7 +46,7 @@ const VolunteerHub = () => {
         setLoading(true);
         
         // The actual API endpoint
-        const API_URL = 'http://localhost:8080/api/volunteers/getAllVolunteers';
+        const API_URL = '/api/volunteers/getAllVolunteers';
         console.log("Fetching volunteer opportunities from:", API_URL);
         
         const response = await fetch(API_URL);
@@ -181,7 +181,7 @@ const VolunteerHub = () => {
     <>
       {/* Header with gradient background */}
       <div
-        className="w-full h-auto"
+        className="w-full h-auto pt-30!"
         style={{
           background: 'linear-gradient(180deg, #0134AA 0%, #001544 100%)',
         }}
