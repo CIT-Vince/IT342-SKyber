@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import { useDisclosure } from '@mantine/hooks';
 import { 
@@ -11,13 +11,14 @@ import {
   Group,
   Tabs,
   TextInput,
-  ActionIcon,
   Divider,
   Progress,
   Modal,
   Button,
-  Avatar
+  Avatar,
+  LoadingOverlay
 } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { 
   IconSearch, 
   IconCalendar, 
@@ -30,76 +31,78 @@ import {
   IconHeart
 } from '@tabler/icons-react';
 
-// Enhanced opportunities data
-const mockOpportunities = [
-  {
-    id: 1,
-    title: "Tree Planting Day",
-    description: "Help us plant 500 trees in our barangay to combat climate change and create a greener environment for future generations! Join our community effort to make our surroundings more beautiful and environmentally sustainable. 🌱",
-    category: "Environment",
-    location: "Barangay Park",
-    eventdate: "2025-05-10",
-    contactperson: "Ate Maria",
-    contactemail: "maria@skyber.com",
-    status: "active",
-    requirements: "Bring gloves and water bottle. Comfortable clothing and shoes recommended.",
-    volunteers: 12,
-    maxVolunteers: 30,
-    image: "https://images.unsplash.com/photo-1552084117-56a987666449?ixlib=rb-4.0.3&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400"
-  },
-  {
-    id: 2,
-    title: "Feeding Program",
-    description: "Assist in preparing and distributing nutritious meals for children in our community. This program aims to combat malnutrition and ensure that every child has access to healthy food.",
-    category: "Community Service",
-    location: "Barangay Hall",
-    eventdate: "2025-05-20",
-    contactperson: "Kuya Juan",
-    contactemail: "juan@skyber.com",
-    status: "ended",
-    requirements: "Food handler certificate preferred. Must be comfortable working with children.",
-    volunteers: 15,
-    maxVolunteers: 15,
-    image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400"
-  },
-  {
-    id: 3,
-    title: "Coastal Clean-up Drive",
-    description: "Join us in cleaning our beautiful beaches and protecting marine life from harmful plastic waste and pollution. Let's work together to preserve our natural resources!",
-    category: "Environment",
-    location: "Barangay Beach Front",
-    eventdate: "2025-06-05",
-    contactperson: "Kuya Pedro",
-    contactemail: "pedro@skyber.com",
-    status: "active",
-    requirements: "Bring reusable gloves, water bottle, and sun protection.",
-    volunteers: 8,
-    maxVolunteers: 25,
-    image: "https://images.unsplash.com/photo-1567095761054-7a02e69e5c43?ixlib=rb-4.0.3&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400"
-  },
-  {
-    id: 4,
-    title: "Elderly Care Visit",
-    description: "Spend time with elderly residents at the local care home. Activities include reading, playing board games, and simply offering companionship to brighten their day.",
-    category: "Healthcare",
-    location: "Golden Years Care Home",
-    eventdate: "2025-06-12",
-    contactperson: "Ate Rosa",
-    contactemail: "rosa@skyber.com",
-    status: "active",
-    requirements: "Patient and compassionate individuals. Basic knowledge of Filipino dialects helpful.",
-    volunteers: 5,
-    maxVolunteers: 10,
-    image: "https://images.unsplash.com/photo-1516307365426-bea591f05011?ixlib=rb-4.0.3&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400"
-  }
-];
-
 const VolunteerHub = () => {
-  const [opportunities, setOpportunities] = useState(mockOpportunities);
+  const [opportunities, setOpportunities] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeStatus, setActiveStatus] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
   const [opened, { open, close }] = useDisclosure(false);
+
+  // Fetch volunteer opportunities from backend
+  useEffect(() => {
+    const fetchOpportunities = async () => {
+      try {
+        setLoading(true);
+        
+        // The actual API endpoint
+        const API_URL = 'http://localhost:8080/api/volunteers/getAllVolunteers';
+        console.log("Fetching volunteer opportunities from:", API_URL);
+        
+        const response = await fetch(API_URL);
+        
+        if (!response.ok) {
+          console.error(`Server responded with ${response.status}: ${response.statusText}`);
+          throw new Error(`Server responded with ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log("Retrieved volunteer opportunities:", data);
+        
+        // Transform data from backend format to frontend format
+        if (data && data.length > 0) {
+          const transformedData = data.map(item => ({
+            id: item.id || Math.random().toString(),
+            title: item.title || "Untitled Opportunity",
+            description: item.description || "No description provided",
+            category: item.category || "Other",
+            location: item.location || "Location not specified",
+            eventdate: item.eventDate || new Date().toISOString(),
+            contactperson: item.contactPerson || "Volunteer Coordinator",
+            contactemail: item.contactEmail || "contact@skyber.org",
+            status: item.status ? item.status.toLowerCase() : "active",
+            requirements: item.requirements || "No specific requirements.",
+            volunteers: Math.floor(Math.random() * 10) + 1, // Random number for demo
+            maxVolunteers: Math.floor(Math.random() * 20) + 10, // Random number for demo
+            image: item.volunteerImage ? `data:image/jpeg;base64,${item.volunteerImage}` : 
+              `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000)}?ixlib=rb-4.0.3&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400`
+          }));
+          
+          setOpportunities(transformedData);
+          
+          notifications.show({
+            title: 'Volunteer Opportunities Loaded',
+            message: `Successfully loaded ${transformedData.length} opportunities`,
+            color: 'green',
+          });
+        } else {
+          console.warn("No volunteer opportunities found");
+        }
+      } catch (error) {
+        console.error("Failed to fetch volunteer opportunities:", error);
+        
+        notifications.show({
+          title: 'Error Loading Opportunities',
+          message: 'Please try again later or contact support',
+          color: 'red',
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchOpportunities();
+  }, []);
 
   // Filter opportunities based on search and status
   const filteredOpportunities = opportunities.filter(op => {
@@ -114,7 +117,7 @@ const VolunteerHub = () => {
 
   // Handle volunteer sign-up
   const handleSignUp = (opportunity) => {
-    // Update local state to reflect sign-up
+    // This would normally call an API to register the user
     const updatedOpportunities = opportunities.map(op => 
       op.id === opportunity.id 
         ? { ...op, volunteers: op.volunteers + 1 } 
@@ -126,6 +129,12 @@ const VolunteerHub = () => {
     if (selectedOpportunity && selectedOpportunity.id === opportunity.id) {
       setSelectedOpportunity({ ...selectedOpportunity, volunteers: selectedOpportunity.volunteers + 1 });
     }
+    
+    notifications.show({
+      title: 'Thank you for volunteering!',
+      message: `You have signed up for: ${opportunity.title}`,
+      color: 'green',
+    });
   };
 
   // Calculate progress percentage
@@ -141,13 +150,32 @@ const VolunteerHub = () => {
 
   // Get category color
   const getCategoryColor = (category) => {
-    switch(category) {
-      case 'Environment': return { from: 'green', to: 'cyan' };
-      case 'Community Service': return { from: 'blue', to: 'violet' };
-      case 'Healthcare': return { from: 'pink', to: 'red' };
+    if (!category) return { from: 'blue', to: 'cyan' };
+    
+    switch(category.toLowerCase()) {
+      case 'environment': return { from: 'green', to: 'cyan' };
+      case 'community service': return { from: 'blue', to: 'violet' };
+      case 'healthcare': 
+      case 'health': return { from: 'pink', to: 'red' };
+      case 'education': return { from: 'yellow', to: 'orange' };
       default: return { from: 'blue', to: 'cyan' };
     }
   };
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-pink-50">
+          <div className="text-center">
+            <LoadingOverlay visible={true} overlayBlur={2} />
+            <Title order={3}>Loading Volunteer Opportunities</Title>
+            <Text color="dimmed">Please wait while we fetch the opportunities...</Text>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -191,7 +219,8 @@ const VolunteerHub = () => {
                   <Tabs.List grow>
                     <Tabs.Tab value="all">All</Tabs.Tab>
                     <Tabs.Tab value="active">Active</Tabs.Tab>
-                    <Tabs.Tab value="ended">Ended</Tabs.Tab>
+                    <Tabs.Tab value="ended">Upcoming</Tabs.Tab>
+                    <Tabs.Tab value="completed">Completed</Tabs.Tab>
                   </Tabs.List>
                 </Tabs>
               </Grid.Col>
@@ -215,6 +244,9 @@ const VolunteerHub = () => {
                           src={opportunity.image} 
                           alt={opportunity.title} 
                           className="w-full h-48 object-cover" 
+                          onError={(e) => {
+                            e.target.src = "https://via.placeholder.com/400x200?text=Volunteer+Opportunity";
+                          }}
                         />
                         <Badge 
                           variant="gradient" 
@@ -230,7 +262,7 @@ const VolunteerHub = () => {
                           className="absolute top-3 right-3"
                           radius="md"
                         >
-                          {opportunity.status === 'active' ? 'Active' : 'Ended'}
+                          {opportunity.status === 'active' ? 'Active' : 'Upcoming' }
                         </Badge>
                       </div>
                     </Card.Section>
@@ -302,93 +334,82 @@ const VolunteerHub = () => {
       <Modal
         opened={opened && !!selectedOpportunity}
         onClose={close}
-        fullScreen
+        size="4x1"
         centered
-        withCloseButton={false}
+        withCloseButton={true}
         styles={{
           body: { padding: 0 },
           content: { background: 'linear-gradient(to bottom, #f0f4ff, #fff1f9)' }
         }}
       >
         {selectedOpportunity && (
-          <div className="min-h-screen flex flex-col">
-            {/* Header with Back Button */}
-            <div className="sticky top-0 z-50 bg-gradient-to-r from-blue-600 to-indigo-800 text-white p-4 flex items-center">
-              <Button 
-                variant="subtle" 
-                color="white" 
-                leftSection={<IconArrowLeft />}
-                onClick={close}
-              >
-                Back
-              </Button>
-              <Title order={3} className="mx-auto pr-10">Volunteer Opportunity</Title>
-            </div>
-
-            {/* Main Image with Blurred Background */}
-            <div className="relative h-[400px]">
+          <div className="flex flex-col p-0">
+            {/* Main Image */}
+            <div className="relative h-[200px]">
               <div
                 className="absolute inset-0 z-0 overflow-hidden"
                 style={{
                   backgroundImage: `url(${selectedOpportunity.image})`,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
-                  filter: 'blur(20px) brightness(0.6)',
-                  transform: 'scale(1.1)',
+                  filter: 'blur(5px) brightness(0.7)',
                 }}
               ></div>
               <div className="relative z-10 flex justify-center items-center h-full">
                 <img
                   src={selectedOpportunity.image}
                   alt={selectedOpportunity.title}
-                  className="rounded-lg shadow-lg max-h-[350px] object-cover"
+                  className="max-h-[180px] object-cover shadow-lg"
+                  onError={(e) => {
+                    e.target.src = "https://via.placeholder.com/400x200?text=Volunteer+Opportunity";
+                  }}
                 />
               </div>
             </div>
             
             {/* Opportunity Info Content */}
-            <Paper radius="lg" className="mx-4 -mt-10 relative z-20 p-6 shadow-lg">
+            <div className="p-4">
               <div className="flex justify-between items-center mb-3">
                 <Badge 
                   variant="gradient" 
                   gradient={getCategoryColor(selectedOpportunity.category)}
-                  size="lg"
+                  size="md"
                   radius="md"
                 >
                   {selectedOpportunity.category}
                 </Badge>
                 <Badge 
                   color={selectedOpportunity.status === 'active' ? 'green' : 'gray'}
-                  size="lg"
+                  size="md"
                   radius="md"
                 >
-                  {selectedOpportunity.status === 'active' ? 'Active' : 'Ended'}
+                  {selectedOpportunity.status === 'active' ? 'Active' : 'Upcoming'}
                 </Badge>
               </div>
               
-              <Title order={2} className="mb-4">{selectedOpportunity.title}</Title>
+              <Title order={3} className="mb-2">{selectedOpportunity.title}</Title>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="grid grid-cols-1 gap-2 mb-3">
                 <div className="flex items-center">
-                  <IconCalendar size={18} className="text-blue-500 mr-2" />
-                  <Text weight={500}>{new Date(selectedOpportunity.eventdate).toLocaleDateString()}</Text>
+                  <IconCalendar size={16} className="text-blue-500 mr-2" />
+                  <Text size="sm">{new Date(selectedOpportunity.eventdate).toLocaleDateString()}</Text>
                 </div>
                 <div className="flex items-center">
-                  <IconLocation size={18} className="text-blue-500 mr-2" />
-                  <Text>{selectedOpportunity.location}</Text>
+                  <IconLocation size={16} className="text-blue-500 mr-2" />
+                  <Text size="sm">{selectedOpportunity.location}</Text>
                 </div>
               </div>
               
-              <Divider className="my-4" />
+              <Divider className="my-3" />
               
-              <Text className="text-lg leading-relaxed mb-6">
+              <Text className="text-sm mb-3">
                 {selectedOpportunity.description}
               </Text>
               
-              <div className="mb-6">
+              <div className="mb-3">
                 <Group position="apart" mb="xs">
-                  <Text size="md" weight={500}>Volunteer Slots</Text>
-                  <Text size="sm" color="dimmed">{selectedOpportunity.volunteers}/{selectedOpportunity.maxVolunteers}</Text>
+                  <Text size="sm" weight={500}>Volunteer Slots</Text>
+                  <Text size="xs" color="dimmed">{selectedOpportunity.volunteers}/{selectedOpportunity.maxVolunteers}</Text>
                 </Group>
                 <Progress 
                   value={getProgressPercentage(selectedOpportunity.volunteers, selectedOpportunity.maxVolunteers)} 
@@ -398,87 +419,76 @@ const VolunteerHub = () => {
                 />
               </div>
 
-              <Paper withBorder radius="md" className="p-4 bg-blue-50 mb-6">
-                <Title order={4} className="mb-2 flex items-center">
-                  <IconList size={18} className="mr-2 text-blue-500" />
-                  Requirements
-                </Title>
-                <Text>{selectedOpportunity.requirements}</Text>
-              </Paper>
+              {selectedOpportunity.requirements && (
+                <Paper withBorder radius="md" className="p-3 bg-blue-50 mb-3">
+                  <Title order={5} className="mb-1 flex items-center">
+                    <IconList size={16} className="mr-2 text-blue-500" />
+                    Requirements
+                  </Title>
+                  <Text size="sm">{selectedOpportunity.requirements}</Text>
+                </Paper>
+              )}
               
               {selectedOpportunity.status === 'active' && selectedOpportunity.volunteers < selectedOpportunity.maxVolunteers && (
                 <Button
                   fullWidth
-                  size="lg"
+                  size="md"
                   radius="xl"
                   variant="gradient"
                   gradient={{ from: 'pink', to: 'violet' }}
-                  leftSection={<IconHeart size={20} />}
+                  leftSection={<IconHeart size={18} />}
                   onClick={() => handleSignUp(selectedOpportunity)}
-                  className="mb-4"
+                  className="mb-3"
                 >
                   Sign Me Up!
                 </Button>
               )}
               
-              {selectedOpportunity.status === 'ended' && (
-                <Paper withBorder radius="md" className="p-4 bg-gray-50 mb-6 text-center">
-                  <Text color="dimmed">This volunteer opportunity has ended.</Text>
+              {selectedOpportunity.status === 'upcoming' && (
+                <Paper withBorder radius="md" className="p-3 bg-gray-50 mb-3 text-center">
+                  <Text size="sm" color="dimmed">This opportunity is coming soon.</Text>
                 </Paper>
               )}
               
               {selectedOpportunity.volunteers >= selectedOpportunity.maxVolunteers && (
-                <Paper withBorder radius="md" className="p-4 bg-yellow-50 mb-6 text-center">
-                  <Text color="orange">All volunteer slots have been filled.</Text>
+                <Paper withBorder radius="md" className="p-3 bg-yellow-50 mb-3 text-center">
+                  <Text size="sm" color="orange">All volunteer slots have been filled.</Text>
                 </Paper>
               )}
-            </Paper>
-            
-            {/* Contact Information */}
-            <Paper radius="lg" className="mx-4 mt-6 p-6 shadow-md">
-              <Title order={3} className="mb-4">Contact Information</Title>
-              <Divider className="mb-4" />
               
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex items-center">
-                  <Avatar 
-                    radius="xl"
-                    size="lg"
-                    src={`https://api.dicebear.com/7.x/personas/svg?seed=${selectedOpportunity.contactperson}`}
-                    className="mr-3"
-                  />
-                  <div>
-                    <Text weight={500}>{selectedOpportunity.contactperson}</Text>
-                    <Text size="sm" color="dimmed">Organizer</Text>
-                  </div>
-                </div>
-                
-                <div className="flex-grow md:ml-6 md:border-l md:pl-6">
-                  <Group>
-                    <Button
-                      variant="light"
-                      radius="xl"
-                      leftSection={<IconMail size={16} />}
-                      component="a"
-                      href={`mailto:${selectedOpportunity.contactemail}`}
-                    >
-                      {selectedOpportunity.contactemail}
-                    </Button>
-                  </Group>
+              <Divider className="my-3" />
+              
+              <div className="flex items-center gap-3">
+                <Avatar 
+                  radius="xl"
+                  size="md"
+                  src={`https://api.dicebear.com/7.x/personas/svg?seed=${selectedOpportunity.contactperson}`}
+                />
+                <div>
+                  <Text size="sm" weight={500}>{selectedOpportunity.contactperson}</Text>
+                  <Button
+                    variant="subtle"
+                    compact
+                    size="xs"
+                    leftSection={<IconMail size={14} />}
+                    component="a"
+                    href={`mailto:${selectedOpportunity.contactemail}`}
+                  >
+                    {selectedOpportunity.contactemail}
+                  </Button>
                 </div>
               </div>
-              
-              {/* Bottom Close Button */}
+
               <Button 
                 fullWidth 
-                variant="default" 
-                className="mt-6" 
+                variant="light" 
+                className="mt-3" 
                 radius="xl"
                 onClick={close}
               >
-                Close Details
+                Close
               </Button>
-            </Paper>
+            </div>
           </div>
         )}
       </Modal>

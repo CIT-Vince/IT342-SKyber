@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Paper, 
   Title, 
@@ -9,88 +9,84 @@ import {
   Tabs,
   Card,
   Badge,
-  ActionIcon,
-  Anchor,
   Group,
-  Divider,
-  Select
+  Select,
+  LoadingOverlay
 } from '@mantine/core';
-import { IconSearch, IconMapPin, IconExternalLink,  IconBuilding, IconClock } from '@tabler/icons-react';
+import { IconSearch, IconMapPin, IconExternalLink, IconBuilding, IconClock } from '@tabler/icons-react';
 import Navbar from '../../components/Navbar';
+import { notifications } from '@mantine/notifications';
 
 const JobListings = () => {
-  // Sample job listings data (●'◡'●)
-  const [jobs, setJobs] = useState([
-    {
-      id: 1,
-      jobtitle: "Frontend Developer",
-      companyName: "SKyber Tech Solutions",
-      location: "Manila, Philippines",
-      description: "We are looking for a creative Frontend Developer with experience in React and modern UI frameworks to build beautiful interfaces for our clients.",
-      address: "BGC, Taguig City, Metro Manila",
-      applicationLink: "https://skyber.org/careers/frontend-dev",
-      employmentType: "full-time",
-      salary: "₱50,000 - ₱70,000 monthly",
-      postedDate: "3 days ago",
-      saved: false
-    },
-    {
-      id: 2,
-      jobtitle: "UX/UI Designer",
-      companyName: "Creative Minds Inc.",
-      location: "Cebu City, Philippines",
-      description: "Join our design team to create user-friendly interfaces and improve the overall user experience of our products and services.",
-      address: "IT Park, Lahug, Cebu City",
-      applicationLink: "https://creativeminds.ph/careers",
-      employmentType: "full-time",
-      salary: "₱45,000 - ₱60,000 monthly",
-      postedDate: "1 week ago",
-      saved: true
-    },
-    {
-      id: 3,
-      jobtitle: "Data Entry Specialist",
-      companyName: "GlobalTech Services",
-      location: "Davao City, Philippines",
-      description: "Looking for detail-oriented individuals for data entry and management. Perfect opportunity for students and part-timers.",
-      address: "Matina, Davao City",
-      applicationLink: "https://globaltech.com/jobs/data-entry",
-      employmentType: "part-time",
-      salary: "₱18,000 - ₱25,000 monthly",
-      postedDate: "2 days ago",
-      saved: false
-    },
-    {
-      id: 4,
-      jobtitle: "Software Engineering Intern",
-      companyName: "Innovate Solutions",
-      location: "Makati, Philippines",
-      description: "Gain hands-on experience in software development while working with senior engineers on real-world projects.",
-      address: "Ayala Avenue, Makati City",
-      applicationLink: "https://innovatesolutions.ph/internships",
-      employmentType: "part-time",
-      salary: "₱15,000 monthly",
-      postedDate: "5 days ago",
-      saved: false
-    },
-    {
-      id: 5,
-      jobtitle: "Full Stack Developer",
-      companyName: "Tech Wizards Co.",
-      location: "Remote",
-      description: "Experienced Full Stack Developer needed to build and maintain web applications. Work from anywhere with flexible hours.",
-      address: "Remote (Philippines-based)",
-      applicationLink: "https://techwizards.com/careers",
-      employmentType: "full-time",
-      salary: "₱70,000 - ₱90,000 monthly",
-      postedDate: "Just now",
-      saved: false
-    }
-  ]);
-
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [locationFilter, setLocationFilter] = useState('all');
+
+  // Fetch jobs from API
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        setLoading(true);
+        
+        // API endpoint
+        const API_URL = 'http://localhost:8080/api/jobs/getAllJobs';
+        console.log("Fetching job listings from:", API_URL);
+        
+        const response = await fetch(API_URL);
+        
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log("Retrieved job listings:", data);
+        
+        // Transform data to match our component's expected structure
+        if (data && data.length > 0) {
+          const transformedJobs = data.map(job => ({
+            id: job.id || Math.random().toString(),
+            jobtitle: job.jobTitle || "Untitled Position",
+            companyName: job.companyName || "Company Name",
+            location: job.address || "Location not specified",
+            description: job.description || "No description provided",
+            address: job.address || "Address not specified",
+            applicationLink: job.applicationlink || "#",
+            employmentType: (job.employementType || "full-time").toLowerCase(),
+            salary: job.salary || "Competitive salary",
+            postedDate: "Recently posted",
+            saved: false
+          }));
+          
+          setJobs(transformedJobs);
+          
+          notifications.show({
+            title: 'Jobs Loaded',
+            message: `Successfully loaded ${transformedJobs.length} job listings`,
+            color: 'green',
+          });
+        } else {
+          console.warn("No job listings found");
+          // Keep the sample data if no API data
+        }
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+        
+        notifications.show({
+          title: 'Error Loading Jobs',
+          message: 'Using sample data instead',
+          color: 'red',
+        });
+        
+        // Sample data is already loaded in the initial state
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchJobs();
+  }, []);
 
   // List of unique locations for the filter dropdown
   const locations = ['all', ...new Set(jobs.map(job => job.location))];
@@ -107,8 +103,6 @@ const JobListings = () => {
     
     return matchesSearch && matchesEmployment && matchesLocation;
   });
-
-  
 
   return (
     <>
@@ -130,6 +124,15 @@ const JobListings = () => {
       </div>
 
       <div className="min-h-screen pt-5 pb-10 px-4 relative bg-gradient-to-br from-blue-50 to-pink-50">
+        {loading ? (
+          <div className="flex items-center justify-center h-64">
+            <LoadingOverlay visible={true} overlayBlur={2} />
+            <div className="text-center">
+              <Title order={3}>Loading Job Opportunities</Title>
+              <Text color="dimmed">Please wait while we fetch available positions...</Text>
+            </div>
+          </div>
+        ) : (
         <div className="max-w-7xl mx-auto">
           
           {/* Search and filter section (⌒‿⌒) */}
@@ -217,13 +220,12 @@ const JobListings = () => {
                         </Group>
                       </div>
                       
-                      <div className="flex flex-row md:flex-col justify-between md:border-l md:border-gray-200 p-4  pt-10">
-                        
-                        
+                      <div className="flex flex-row md:flex-col justify-between md:border-l md:border-gray-200 p-4 pt-10">
                         <Button
                           component="a"
                           href={job.applicationLink}
-                          target="_blank" 
+                          target="_blank"
+                          rel="noopener noreferrer" 
                           variant="gradient"
                           gradient={{ from: 'blue', to: 'cyan' }}
                           radius="xl"
@@ -245,6 +247,7 @@ const JobListings = () => {
             </Paper>
           )}
         </div>
+        )}
       </div>
     </>
   );

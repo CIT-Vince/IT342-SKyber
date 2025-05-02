@@ -33,12 +33,12 @@ function App() {
   return (
       <div className="min-h-screen relative">
       {/* Show loading screen when loading is true */}
-      {loading && (
+      {/* {loading && (
         <LoadingScreen 
           logoSrc={logoSrc} 
           message={loadingMessage}
         />
-      )}
+      )} */}
 
         {/* Persistent components */}
         <ParticlesComponent />
@@ -58,6 +58,7 @@ function App() {
             {/* Announcements*/}
             <Route path="/announcements" element={<Announcements />} />
             <Route path="/announcementspage" element={<AnnouncementPractice />} />
+            <Route path="/announcements/:id" element={<Announcements />} />
             
             {/* Account */}
             <Route path="/register" element={<Register />} />

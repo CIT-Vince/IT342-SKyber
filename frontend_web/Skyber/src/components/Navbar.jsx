@@ -10,11 +10,23 @@ import defaultAvatar from '../assets/default-avatar.jpg'; // Add a default avata
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { currentUser } = useAuth(); // Get current user from context
+  const { currentUser } = useAuth(); 
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
-  
-  // Fetch user data when currentUser changes
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 10;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [scrolled]);
+
   useEffect(() => {
     if (currentUser) {
       // Option 1: Get data from Firebase Realtime Database
@@ -66,7 +78,12 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar w-full flex flex-col md:flex-row items-center justify-between px-8 py-4 bg-transparent gap-4 relative">
+    <nav
+  className={`navbar w-full flex flex-col md:flex-row items-center justify-between px-8 py-4 fixed top-0 left-0 z-50! transition-all duration-300 ${
+    scrolled ? 'bg-[#0134AA] shadow-lg' : 'bg-transparent'
+  }`}
+  style={{ position: 'fixed', top: 0 }}
+>
       <div className="flex items-center space-x-2 text-xl font-bold text-white">
         <img src={skyberLogo} alt="Skyber Logo" className="h-8 w-auto" />
         <span>SKYBER</span>
