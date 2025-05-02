@@ -215,7 +215,7 @@ const API_BASE_URL = import.meta.env.MODE === 'production'
       try {
         setLoading(true);
         
-        const API_URL = '${API_BASE_URL}/api/projects/all';
+        const API_URL = `${API_BASE_URL}/api/projects/all`;
         console.log("Fetching projects from:", API_URL);
         
         const response = await fetch(API_URL);
@@ -572,7 +572,7 @@ const fetchProjects = async () => {
   try {
     setLoading(true);
     
-    const API_URL = '${API_BASE_URL}/api/projects/all';
+    const API_URL = `${API_BASE_URL}/api/projects/all`;
     console.log("Fetching projects from:", API_URL);
     
     const response = await fetch(API_URL);
