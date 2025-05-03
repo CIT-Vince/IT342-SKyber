@@ -1,6 +1,6 @@
 [
   {
-    "origin": ["http://localhost:8080"],
+    "origin": ["http://localhost:8080", "https://skyber-coral.vercel.app", "http://skyber.onrender.com"],
     "responseHeader": ["Content-Type"],
     "method": ["GET", "POST", "PUT", "DELETE"],
     "maxAgeSeconds": 3600
