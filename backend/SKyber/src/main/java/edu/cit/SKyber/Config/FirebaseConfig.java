@@ -26,8 +26,12 @@ public class FirebaseConfig {
     public FirebaseApp firebaseApp() throws IOException {
         InputStream serviceAccount;
 
-        // Load the Firebase key from the classpath
-        if (firebaseKeyPath.startsWith("classpath:")) {
+        // Prefer environment variable if present (for Render)
+        String firebaseConfig = System.getenv("FIREBASE_CONFIG");
+        if (firebaseConfig != null && !firebaseConfig.isEmpty()) {
+            serviceAccount = new java.io.ByteArrayInputStream(firebaseConfig.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        } else if (firebaseKeyPath.startsWith("classpath:")) {
+            // Fallback to classpath for local development
             serviceAccount = new ClassPathResource(firebaseKeyPath.replace("classpath:", "")).getInputStream();
         } else {
             throw new IllegalArgumentException("Invalid firebaseKeyPath: " + firebaseKeyPath);
@@ -44,7 +48,6 @@ public class FirebaseConfig {
 
         return FirebaseApp.getInstance();
     }
-
     @Bean
     public FirebaseAuth firebaseAuth() throws IOException {
         return FirebaseAuth.getInstance(firebaseApp());
