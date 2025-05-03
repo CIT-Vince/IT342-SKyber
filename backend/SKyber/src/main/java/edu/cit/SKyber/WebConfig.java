@@ -11,19 +11,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins(
-                    "http://localhost:8080",
-                    "https://skyber-coral.vercel.app",
-                    "http://skyber.onrender.com"
-                )
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true)
-                .maxAge(3600);
-    }
+    // @Override
+    // public void addCorsMappings(CorsRegistry registry) {
+    //     registry.addMapping("/**")
+    //             .allowedOrigins(
+    //                 "http://localhost:8080",
+    //                 "https://skyber-coral.vercel.app",
+    //                 "http://skyber.onrender.com"
+    //             )
+    //             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+    //             .allowedHeaders("*")
+    //             .allowCredentials(true)
+    //             .maxAge(3600);
+    // }
     
     // @Bean
     // public CorsFilter corsFilter() {
