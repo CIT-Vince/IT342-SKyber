@@ -141,9 +141,7 @@ const [projectForm, setProjectForm] = useState({
   sustainabilityGoals: '',
   imageFile: null
 });
-const API_BASE_URL = import.meta.env.MODE === 'production' 
-  ? 'https://skyber.onrender.com' 
-  : '';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
   // Filters
