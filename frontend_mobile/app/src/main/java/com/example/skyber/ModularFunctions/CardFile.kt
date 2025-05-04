@@ -66,7 +66,7 @@ fun AnnouncementCard(backgroundColor: Color = White,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 color = fontColor,
-                maxLines = 2,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(4.dp))
@@ -503,11 +503,11 @@ fun ScholarshipCard(
     scholarship: Scholarship,
     onClick: () -> Unit
 ) {
-    val category = scholarship.type.lowercase()
+    val category = scholarship.type.uppercase()
     val (statusColor, textColor) = when (category) {
-        "all" -> BoxGreen to BoxTextGreen
-        "private" -> SoftCardContainerMaroon to SoftCardFontGold
-        "public" -> SoftCardContainerBlue to SoftCardFontBlue
+        "All" -> BoxGreen to BoxTextGreen
+        "PRIVATE" -> SoftCardContainerMaroon to SoftCardFontGold
+        "PUBLIC" -> SoftCardContainerBlue to SoftCardFontBlue
         else -> Color.LightGray to Color.DarkGray
     }
 
@@ -518,7 +518,7 @@ fun ScholarshipCard(
         border = BorderStroke(1.dp, SKyberDarkBlue),
         modifier = Modifier
             .clickable { onClick() }
-            .padding(8.dp) // Adjusted padding for better alignment
+            .padding(8.dp)
             .fillMaxWidth()
             .wrapContentHeight()
     ) {
@@ -526,47 +526,39 @@ fun ScholarshipCard(
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp) // Consistent spacing between elements
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween // Aligns elements evenly
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = scholarship.title,
-                    fontSize = 24.sp, // Slightly smaller font for better balance
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = fontColor,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp)) // Reduced corner radius for the status box
+                        .clip(RoundedCornerShape(16.dp))
                         .background(statusColor)
-                        .padding(horizontal = 12.dp, vertical = 4.dp) // Adjusted padding for better proportions
+                        .padding(horizontal = 12.dp, vertical = 4.dp)
                         .defaultMinSize(40.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = scholarship.type,
-                        fontSize = 16.sp, // Smaller font for better hierarchy
+                        text = scholarship.type.uppercase(),
+                        fontSize = 16.sp,
                         color = textColor,
                         fontWeight = FontWeight.Medium,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
             }
-
-            /*Text(
-                text = scholarship.institution,
-                fontSize = 20.sp, // Consistent font size
-                fontWeight = FontWeight.Medium,
-                color = fontColor,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )*/
         }
     }
 }

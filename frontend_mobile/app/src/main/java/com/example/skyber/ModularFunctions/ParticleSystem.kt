@@ -1,4 +1,4 @@
-package com.example.skyber.ui.theme
+package com.example.skyber.ModularFunctions
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
@@ -27,7 +27,7 @@ data class Particle(
 fun ParticleSystem(
     modifier: Modifier = Modifier,
     particleColor: Color = Color.White,
-    particleCount: Int = 80,
+    particleCount: Int = 40,
     maxRadius: Float = 3f,
     minRadius: Float = 1f,
     maxSpeed: Float = 1f,

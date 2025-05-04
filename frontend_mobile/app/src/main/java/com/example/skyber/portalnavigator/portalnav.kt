@@ -130,9 +130,9 @@ fun PortalNavHandler(
     fetchRoutes: () -> List<String> = {
         listOf(
             Screens.Announcement.screen,
-            Screens.Projects.screen,
             Screens.Job.screen,
-            Screens.Scholarship.screen
+            Screens.Scholarship.screen,
+            Screens.Projects.screen,
         )
     }
 ) {

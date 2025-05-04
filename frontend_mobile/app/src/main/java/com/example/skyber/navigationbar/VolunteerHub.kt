@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,15 +23,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,12 +41,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.skyber.FirebaseHelper
+import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ModularFunctions.VolunteerCard
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.VolunteerPost
@@ -112,9 +106,10 @@ fun VolunteerHub(navController: NavHostController) {
                 isLoading = false
             }
 
-        kotlinx.coroutines.delay(5000)
+        kotlinx.coroutines.delay(3000)
         isLoading = false
     }
+
     if (isLoading) {
         Box(
             modifier = Modifier
@@ -138,7 +133,7 @@ fun VolunteerHub(navController: NavHostController) {
                 ParticleSystem(
                     modifier = Modifier.fillMaxSize(),
                     particleColor = Color.White,
-                    particleCount = 80,
+                    particleCount = 50,
                     backgroundColor = Color(0xFF0D47A1)
                 )
                 Text(

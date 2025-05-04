@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -52,7 +51,7 @@ import com.example.skyber.dataclass.User
 import com.example.skyber.dataclass.getCurrentDateTime
 import com.example.skyber.headerbar.HeaderBar
 import com.example.skyber.headerbar.NotificationHandler
-import com.example.skyber.ui.theme.ParticleSystem
+import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.gradientBrush
@@ -93,7 +92,9 @@ fun PostAnnouncement(navController: NavHostController, userProfile: MutableState
     if (user == null) {
         // Show a loading spinner while waiting for user data
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(SKyberDarkBlueGradient),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(color = SKyberYellow)
@@ -124,15 +125,6 @@ fun PostAnnouncement(navController: NavHostController, userProfile: MutableState
                         .padding(start = topLeftPosition.dp + 10.dp, top = 20.dp)
                         .graphicsLayer(alpha = 0.5f)
                 )
-
-                /*Text(
-                    text = "✨",
-                    fontSize = 24.sp,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(end = 30.dp, bottom = 20.dp)
-                        .graphicsLayer(alpha = 0.5f)
-                )*/
 
                 Column(
                     modifier = Modifier

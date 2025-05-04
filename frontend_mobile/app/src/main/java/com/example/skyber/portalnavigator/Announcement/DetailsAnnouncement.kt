@@ -14,13 +14,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -30,39 +28,32 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.skyber.FirebaseHelper
-import com.example.skyber.Screens
+import com.example.skyber.ModularFunctions.CustomOutlinedTextField
 import com.example.skyber.dataclass.Announcement
 import com.example.skyber.headerbar.HeaderBar
 import com.example.skyber.headerbar.NotificationHandler
-import com.example.skyber.ui.theme.ParticleSystem
+import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ui.theme.SKyberBlue
-import com.example.skyber.ui.theme.SKyberDarkBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberRed
 import com.example.skyber.ui.theme.SKyberYellow
-import com.example.skyber.ui.theme.White
 import com.example.skyber.ui.theme.gradientBrush
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -112,7 +103,9 @@ fun DetailsAnnouncement(navController: NavHostController){
     if (announcement == null) {
         // Show a loading spinner while waiting for user data
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(SKyberDarkBlueGradient),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(color = SKyberYellow)
@@ -141,15 +134,6 @@ fun DetailsAnnouncement(navController: NavHostController){
                         .padding(start = topLeftPosition.dp + 10.dp, top = 20.dp)
                         .graphicsLayer(alpha = 0.3f) // Adjust opacity
                 )
-
-                /*Text(
-                    text = "✨",
-                    fontSize = 24.sp,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(end = 30.dp, bottom = 20.dp)
-                        .graphicsLayer(alpha = 0.3f) // Adjust opacity
-                )*/
 
                 Column(
                     modifier = Modifier
@@ -183,58 +167,34 @@ fun DetailsAnnouncement(navController: NavHostController){
                                 horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
                                 item {
-                                    OutlinedTextField(
+                                    CustomOutlinedTextField(
                                         value = newTitle,
                                         onValueChange = { newTitle = it },
-                                        label = { Text("Title") },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        shape = RoundedCornerShape(8.dp),
-                                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                                            focusedBorderColor = Color(0xFF0066FF),
-                                            unfocusedBorderColor = Color(0xFFD1D5DB)
-                                        )
+                                        label = "Title"
                                     )
 
                                     Spacer(modifier = Modifier.height(16.dp))
 
-                                    OutlinedTextField(
+                                    CustomOutlinedTextField(
                                         value = newBarangay,
                                         onValueChange = { newBarangay = it },
-                                        label = { Text("Barangay") },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        shape = RoundedCornerShape(8.dp),
-                                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                                            focusedBorderColor = Color(0xFF0066FF),
-                                            unfocusedBorderColor = Color(0xFFD1D5DB)
-                                        )
+                                        label = "Barangay"
                                     )
 
                                     Spacer(modifier = Modifier.height(16.dp))
 
-                                    OutlinedTextField(
+                                    CustomOutlinedTextField(
                                         value = newCategory,
                                         onValueChange = { newCategory = it },
-                                        label = { Text("Category") },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        shape = RoundedCornerShape(8.dp),
-                                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                                            focusedBorderColor = Color(0xFF0066FF),
-                                            unfocusedBorderColor = Color(0xFFD1D5DB)
-                                        )
+                                        label = "Category"
                                     )
 
                                     Spacer(modifier = Modifier.height(12.dp))
 
-                                    OutlinedTextField(
+                                    CustomOutlinedTextField(
                                         value = newContent,
                                         onValueChange = { newContent = it },
-                                        label = { Text("Content") },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        shape = RoundedCornerShape(8.dp),
-                                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                                            focusedBorderColor = Color(0xFF0066FF),
-                                            unfocusedBorderColor = Color(0xFFD1D5DB)
-                                        )
+                                        label = "Content"
                                     )
 
                                     Spacer(modifier = Modifier.height(12.dp))
@@ -346,58 +306,55 @@ fun DetailsAnnouncement(navController: NavHostController){
                                                 .align(Alignment.TopStart),
                                             horizontalAlignment = Alignment.CenterHorizontally
                                         ) {
+                                            // Title
                                             Text(
                                                 text = announcement.title,
                                                 fontWeight = FontWeight.Bold,
-                                                fontSize = 28.sp,
+                                                fontSize = 27.sp,
                                                 color = SKyberBlue
                                             )
 
                                             Spacer(modifier = Modifier.height(12.dp))
 
-                                            Text(
-                                                text = "Posted on ${announcement.postedAt}",
-                                                fontSize = 14.sp,
-                                                color = SKyberBlue
-                                            )
+                                            // Metadata
+                                            listOf(
+                                                "Posted on ${announcement.postedAt}" to 18.sp,
+                                                "Barangay ${announcement.barangay}" to 18.sp,
+                                                announcement.category to 18.sp
+                                            ).forEach { (text, fontSize) ->
+                                                Text(
+                                                    text = text,
+                                                    fontSize = fontSize,
+                                                    color = SKyberBlue
+                                                )
+                                                Spacer(modifier = Modifier.height(10.dp))
+                                            }
 
-                                            Spacer(modifier = Modifier.height(10.dp))
+                                            Spacer(modifier = Modifier.height(14.dp))
 
-                                            Text(
-                                                text = "Barangay ${announcement.barangay}",
-                                                fontSize = 14.sp,
-                                                color = SKyberBlue
-                                            )
-
-                                            Spacer(modifier = Modifier.height(10.dp))
-
-                                            Text(
-                                                text = "${announcement.category}",
-                                                fontSize = 14.sp,
-                                                color = SKyberBlue
-                                            )
-
-                                            Spacer(modifier = Modifier.height(24.dp))
-
+                                            // Section Header
                                             Text(
                                                 text = "Announcement",
-                                                fontSize = 18.sp,
+                                                fontSize = 20.sp,
                                                 fontWeight = FontWeight.SemiBold,
                                                 color = SKyberBlue
                                             )
 
                                             Spacer(modifier = Modifier.height(8.dp))
 
+                                            // Content
                                             Box(
-                                                modifier = Modifier.heightIn(min = 200.dp) //Caveman custom height setter
+                                                modifier = Modifier.heightIn(min = 230.dp)
                                             ) {
                                                 Text(
                                                     text = announcement.content,
-                                                    fontSize = 16.sp,
+                                                    fontSize = 18.sp,
                                                     lineHeight = 22.sp,
                                                     color = SKyberBlue
                                                 )
                                             }
+
+                                            Spacer(modifier = Modifier.height(24.dp))
 
                                             // Buttons at the bottom
                                             Button(//Switch to edit mode screen
@@ -418,7 +375,7 @@ fun DetailsAnnouncement(navController: NavHostController){
                                                     contentAlignment = Alignment.Center
                                                 ) {
                                                     Text(
-                                                        text = "Edit",
+                                                        text = "Update",
                                                         fontSize = 16.sp,
                                                         fontWeight = FontWeight.SemiBold,
                                                         color = Color.White
@@ -467,10 +424,4 @@ fun DetailsAnnouncement(navController: NavHostController){
         }
     }
 }
-/*
-@Preview(showBackground = true)
-@Composable
-fun Preview() {
-    val navController = rememberNavController()
-    DetailsAnnouncement(navController = navController)
-}*/
+

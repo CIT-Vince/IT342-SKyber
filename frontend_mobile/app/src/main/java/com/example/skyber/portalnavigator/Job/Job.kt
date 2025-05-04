@@ -15,21 +15,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,15 +53,11 @@ import com.example.skyber.headerbar.HeaderBar
 import com.example.skyber.headerbar.NotificationHandler
 import com.example.skyber.portalnavigator.PortalNav
 import com.example.skyber.portalnavigator.PortalNavHandler
-import com.example.skyber.ui.theme.BoxTextGreen
-import com.example.skyber.ui.theme.ParticleSystem
-import com.example.skyber.ui.theme.SKyberBlue
-import com.example.skyber.ui.theme.SKyberDarkBlue
+import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberRed
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.SoftCardContainerBlue
-import com.example.skyber.ui.theme.SoftCardContainerLavender
 import com.example.skyber.ui.theme.SoftCardFontBlue
 import com.example.skyber.ui.theme.White
 import com.example.skyber.ui.theme.gradientBrush
@@ -72,7 +65,7 @@ import com.example.skyber.ui.theme.gradientBrush
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Job(navController: NavHostController) {
-    var selectedTab by remember { mutableStateOf("Full-Time") }
+    var selectedTab by remember { mutableStateOf("All") }
     val allJobListings = remember { mutableStateListOf<JobListing>() }
     var isLoading by remember { mutableStateOf(true) }//Add this later to all lists
 
@@ -98,16 +91,16 @@ fun Job(navController: NavHostController) {
         label = "floating top left"
     )
 
-    // Filter for event status on selected tab
-    val filteredJobListings = when (selectedTab) {
-        "Part-Time" -> allJobListings.filter { it.employmentType == "Part-Time" }
-        "Full-Time" -> allJobListings.filter { it.employmentType == "Full-Time" }
-        else -> allJobListings
+    // Dynamically filtering for job listings based on selectedTab (make a for each to generate all emplpoyment types taud2
+    val filteredJobListings = if (selectedTab == "All") {
+        allJobListings
+    } else {
+        allJobListings.filter { it.employmentType?.trim()?.equals(selectedTab, ignoreCase = true) == true }
     }
 
     LaunchedEffect(Unit) {
         isLoading = true
-        FirebaseHelper.databaseReference.child("JobListing")
+        FirebaseHelper.databaseReference.child("JobListings")
             .get().addOnSuccessListener { snapshot ->
                 allJobListings.clear()
                 snapshot.children.forEach { child ->
@@ -127,7 +120,9 @@ fun Job(navController: NavHostController) {
 
     if (isLoading) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(SKyberDarkBlueGradient),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(color = SKyberYellow)
@@ -157,15 +152,6 @@ fun Job(navController: NavHostController) {
                         .graphicsLayer(alpha = 0.5f)
                 )
 
-                /*Text(
-                    text = "✨",
-                    fontSize = 24.sp,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(end = 30.dp, bottom = 20.dp)
-                        .graphicsLayer(alpha = 0.5f)
-                )*/
-
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -191,65 +177,73 @@ fun Job(navController: NavHostController) {
                         }
                     )
 
-                    Row(
+                    LazyRow(
                         modifier = Modifier
                             .width(300.dp)
                             .clip(RoundedCornerShape(22.dp))
                             .padding(top = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            "Part-Time",
-                            fontSize = 24.sp,
-                            color = if (selectedTab == "Part-Time") White else Color.Gray,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.clickable { selectedTab = "Part-Time" }
-                        )
-                        Text(
-                            "Full-Time",
-                            fontSize = 24.sp,
-                            color = if (selectedTab == "Full-Time") White else Color.Gray,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.clickable { selectedTab = "Full-Time" }
-                        )
+                        val categories = listOf("All", "Full-Time", "Part-Time", "Contract", "Internship", "Freelance")
+                        items(categories) { category ->
+                            Text(
+                                text = category,
+                                fontSize = 24.sp,
+                                color = if (selectedTab == category) White else Color.Gray,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.clickable { selectedTab = category }
+                            )
+                        }
                     }
 
 
-                    if (filteredJobListings.isEmpty()) {
-                        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                            Text(
-                                "No Job Listings Available",
-                                color = SKyberRed,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 24.sp
-                            )
+                    when {
+                        isLoading -> {
+                            Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator(color = SKyberYellow)
+                            }
                         }
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth(),
-                            contentPadding = PaddingValues(12.dp)
-                        ) {
-                            items(filteredJobListings.reversed()) { joblisting ->
-                                JobListingCard(
-                                    backgroundColor = SoftCardContainerBlue,
-                                    fontColor = SoftCardFontBlue,
-                                    joblisting = joblisting,
-                                    onClick = {
-                                        navController.currentBackStackEntry?.savedStateHandle?.set(
-                                            "joblisting",
-                                            joblisting
-                                        )
-                                        navController.navigate(Screens.DetailsJob.screen)
-                                    }
+
+                        filteredJobListings.isEmpty() -> {
+                            Box(
+                                modifier = Modifier.weight(1f),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    "No Job Listings Available",
+                                    color = SKyberRed,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 24.sp
                                 )
-                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                        }
+
+                        else -> {
+                            LazyColumn(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxWidth(),
+                                contentPadding = PaddingValues(12.dp)
+                            ) {
+                                items(filteredJobListings.reversed()) { joblisting ->
+                                    JobListingCard(
+                                        backgroundColor = SoftCardContainerBlue,
+                                        fontColor = SoftCardFontBlue,
+                                        joblisting = joblisting,
+                                        onClick = {
+                                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                "joblisting",
+                                                joblisting
+                                            )
+                                            navController.navigate(Screens.DetailsJob.screen)
+                                        }
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                }
                             }
                         }
                     }
-
 
                     Button(
                         onClick = {
@@ -276,7 +270,6 @@ fun Job(navController: NavHostController) {
                             )
                         }
                     }
-
                 }
             }
         }

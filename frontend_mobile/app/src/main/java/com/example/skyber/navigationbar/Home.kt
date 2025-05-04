@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -52,10 +51,8 @@ import com.example.skyber.dataclass.CandidateProfile
 import com.example.skyber.dataclass.User
 import com.example.skyber.headerbar.HeaderBar
 import com.example.skyber.headerbar.NotificationHandler
-import com.example.skyber.ui.theme.NewspaperContainer
-import com.example.skyber.ui.theme.ParticleSystem
+import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ui.theme.White
-import com.example.skyber.ui.theme.SKyberDarkBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.SoftCardContainerBlue
@@ -105,7 +102,7 @@ fun Home(navController: NavHostController, userProfile: MutableState<User?>, ref
             val candidatesFetch = async {
                 Log.d("DataFetch", "Fetching candidates")
 
-                FirebaseHelper.databaseReference.child("CandidateProfile").get().await()
+                FirebaseHelper.databaseReference.child("Candidates").get().await()
                     .children.mapNotNull { it.getValue(CandidateProfile::class.java) }
             }
 
@@ -149,7 +146,7 @@ fun Home(navController: NavHostController, userProfile: MutableState<User?>, ref
                 ParticleSystem(
                     modifier = Modifier.fillMaxSize(),
                     particleColor = Color.White,
-                    particleCount = 80,
+                    particleCount = 50,
                     backgroundColor = Color(0xFF0D47A1)
                 )
                 Text(
@@ -260,19 +257,19 @@ fun Home(navController: NavHostController, userProfile: MutableState<User?>, ref
                                 }
                             }
                         } else {
-                            items(allAnnouncements.reversed()) { announcement ->
+                            val latestAnnouncement = allAnnouncements.last() // Get the latest announcement
+                            item {
                                 AnnouncementCard(
                                     backgroundColor = SoftCardContainerBlue,
                                     fontColor = SoftCardFontBlue,
-                                    announcement = announcement,
+                                    announcement = latestAnnouncement,
                                     onClick = {
                                         navController.currentBackStackEntry?.savedStateHandle?.set(
-                                            "announcement", announcement
+                                            "announcement", latestAnnouncement
                                         )
                                         navController.navigate(Screens.DetailsAnnouncement.screen)
                                     }
                                 )
-                                Spacer(modifier = Modifier.height(8.dp))
                             }
                         }
 
@@ -300,25 +297,25 @@ fun Home(navController: NavHostController, userProfile: MutableState<User?>, ref
                                 }
                             }
                         } else {
-                            items(allCandidates.reversed()) { candidate ->
+                            val latestCandidate = allCandidates.last() // Get the latest candidate
+                            item {
                                 CandidateCard(
-                                    candidateProfile = candidate,
+                                    candidateProfile = latestCandidate,
                                     backgroundColor = SoftCardContainerBlue,
                                     fontColor = SoftCardFontBlue,
                                     onClick = {
                                         navController.currentBackStackEntry?.savedStateHandle?.set(
-                                            "CandidateProfile", candidate
+                                            "CandidateProfile", latestCandidate
                                         )
                                         navController.navigate(Screens.DetailsSKcandidates.screen)
                                     }
                                 )
-                                Spacer(modifier = Modifier.height(8.dp))
                             }
                         }
                     }
                 }
             }
-        }//End of scaffold
+        }
     }
 }
 

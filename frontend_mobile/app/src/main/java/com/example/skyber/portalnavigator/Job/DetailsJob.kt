@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,7 +30,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -51,29 +48,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.skyber.FirebaseHelper
-import com.example.skyber.dataclass.Announcement
+import com.example.skyber.ModularFunctions.CustomOutlinedTextField
 import com.example.skyber.dataclass.JobListing
 import com.example.skyber.headerbar.HeaderBar
 import com.example.skyber.headerbar.NotificationHandler
 import com.example.skyber.ui.theme.BoxGreen
 import com.example.skyber.ui.theme.BoxTextGreen
-import com.example.skyber.ui.theme.ParticleSystem
+import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ui.theme.SKyberBlue
-import com.example.skyber.ui.theme.SKyberDarkBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberRed
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.SoftCardContainerBlue
 import com.example.skyber.ui.theme.SoftCardFontBlue
-import com.example.skyber.ui.theme.White
 import com.example.skyber.ui.theme.gradientBrush
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun DetailsJob(navController: NavHostController) {
-    val joblisting =
-        navController.previousBackStackEntry?.savedStateHandle?.get<JobListing>("joblisting")
+    val joblisting = navController.previousBackStackEntry?.savedStateHandle?.get<JobListing>("joblisting")
     var newJobtitle by remember { mutableStateOf("") }
     var newCompanyname by remember { mutableStateOf("") }
     var newDescription by remember { mutableStateOf("") }
@@ -116,10 +110,11 @@ fun DetailsJob(navController: NavHostController) {
         }
     }
 
-    if (joblisting == null) {
-        // Show a loading spinner while waiting for user data
+    if (joblisting == null) {// Show a loading spinner while waiting for user data
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(SKyberDarkBlueGradient),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(color = SKyberYellow)
@@ -152,19 +147,10 @@ fun DetailsJob(navController: NavHostController) {
                         .graphicsLayer(alpha = 0.3f) // Adjust opacity
                 )
 
-                /*Text(
-                    text = "✨",
-                    fontSize = 24.sp,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(end = 30.dp, bottom = 20.dp)
-                        .graphicsLayer(alpha = 0.3f) // Adjust opacity
-                )*/
-
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
+                        .fillMaxSize(),
+                        //.padding(innerPadding),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -179,12 +165,11 @@ fun DetailsJob(navController: NavHostController) {
                             .fillMaxWidth()
                             .padding(horizontal = 24.dp)
                             .padding(top = 40.dp, bottom = 40.dp)
-                            //.align(Alignment.Center)
                             .background(Color.White, RoundedCornerShape(24.dp))
                             .padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (isEditMode) {//Edit mode self explainatory
+                        if (isEditMode) {//Edit mode self explanatory
                             LazyColumn(
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -194,44 +179,26 @@ fun DetailsJob(navController: NavHostController) {
                             ) {
                                 item {
                                     //Text Fields here
-                                    OutlinedTextField(
+                                    CustomOutlinedTextField(
                                         value = newJobtitle,
                                         onValueChange = { newJobtitle = it },
-                                        label = { Text("Job Title") },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        shape = RoundedCornerShape(8.dp),
-                                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                                            focusedBorderColor = Color(0xFF0066FF),
-                                            unfocusedBorderColor = Color(0xFFD1D5DB)
-                                        )
+                                        label = "Job Title",
                                     )
 
                                     Spacer(modifier = Modifier.height(12.dp))
 
-                                    OutlinedTextField(
+                                    CustomOutlinedTextField(
                                         value = newCompanyname,
                                         onValueChange = { newCompanyname = it },
-                                        label = { Text("Company Name") },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        shape = RoundedCornerShape(8.dp),
-                                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                                            focusedBorderColor = Color(0xFF0066FF),
-                                            unfocusedBorderColor = Color(0xFFD1D5DB)
-                                        )
+                                        label = "Company Name",
                                     )
 
                                     Spacer(modifier = Modifier.height(12.dp))
 
-                                    OutlinedTextField(
+                                    CustomOutlinedTextField(
                                         value = newApplicationLink,
                                         onValueChange = { newApplicationLink = it },
-                                        label = { Text("Apply Here") },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        shape = RoundedCornerShape(8.dp),
-                                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                                            focusedBorderColor = Color(0xFF0066FF),
-                                            unfocusedBorderColor = Color(0xFFD1D5DB)
-                                        )
+                                        label = "Apply Here",
                                     )
 
                                     Spacer(modifier = Modifier.height(12.dp))
@@ -245,30 +212,18 @@ fun DetailsJob(navController: NavHostController) {
                                     Spacer(modifier = Modifier.height(12.dp))
 
 
-                                    OutlinedTextField(
+                                    CustomOutlinedTextField(
                                         value = newDescription,
                                         onValueChange = { newDescription = it },
-                                        label = { Text("Job Description") },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        shape = RoundedCornerShape(8.dp),
-                                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                                            focusedBorderColor = Color(0xFF0066FF),
-                                            unfocusedBorderColor = Color(0xFFD1D5DB)
-                                        )
+                                        label = "Job Description",
                                     )
 
                                     Spacer(modifier = Modifier.height(12.dp))
 
-                                    OutlinedTextField(
+                                    CustomOutlinedTextField(
                                         value = newAddress,
                                         onValueChange = { newAddress = it },
-                                        label = { Text("Address") },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        shape = RoundedCornerShape(8.dp),
-                                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                                            focusedBorderColor = Color(0xFF0066FF),
-                                            unfocusedBorderColor = Color(0xFFD1D5DB)
-                                        )
+                                        label = "Address",
                                     )
 
                                     Spacer(modifier = Modifier.height(12.dp))
@@ -327,7 +282,8 @@ fun DetailsJob(navController: NavHostController) {
                                             )
                                         }
                                     }
-                                    Spacer(modifier = Modifier.height(12.dp))
+
+                                    Spacer(modifier = Modifier.height(18.dp))
 
                                     Text(
                                         text = "Delete",
@@ -475,6 +431,8 @@ fun DetailsJob(navController: NavHostController) {
                                                     )
                                                 }
                                             }
+
+                                            Spacer(modifier = Modifier.height(12.dp))
 
                                             Text(
                                                 text = "Delete",

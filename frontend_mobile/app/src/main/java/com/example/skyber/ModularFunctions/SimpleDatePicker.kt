@@ -1,4 +1,4 @@
-package com.example.skyber.ui.theme
+package com.example.skyber.ModularFunctions
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 /**
  * A simplified date picker field that only uses Jetpack Compose components.

@@ -32,7 +32,6 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -42,7 +41,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -57,7 +55,7 @@ import com.example.skyber.dataclass.User
 import com.example.skyber.headerbar.HeaderBar
 import com.example.skyber.headerbar.NotificationHandler
 import com.example.skyber.portalnavigator.ProjectTransparency.showToast
-import com.example.skyber.ui.theme.ParticleSystem
+import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberYellow
@@ -69,7 +67,6 @@ import com.google.firebase.database.DatabaseReference
 @Composable
 fun PostJob(navController: NavHostController, userProfile: MutableState<User?>){
     val user = userProfile.value//passed logged in user
-    //var eventId by remember {mutableStateOf("")}
     var jobtitle by remember { mutableStateOf("") }
     var companyname by remember {mutableStateOf("")}
     var description by remember { mutableStateOf("") }
@@ -102,8 +99,7 @@ fun PostJob(navController: NavHostController, userProfile: MutableState<User?>){
 
     val context = LocalContext.current
 
-        if (user == null){
-            // Show a loading spinner while waiting for user data
+        if (user == null){// Show a loading spinner while waiting for user data
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -136,15 +132,6 @@ fun PostJob(navController: NavHostController, userProfile: MutableState<User?>){
                             .padding(start = topLeftPosition.dp + 10.dp, top = 20.dp)
                             .graphicsLayer(alpha = 0.5f)
                     )
-
-                    /*Text(
-                        text = "✨",
-                        fontSize = 24.sp,
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(end = 30.dp, bottom = 20.dp)
-                            .graphicsLayer(alpha = 0.5f)
-                    )*/
 
                     Column(
                         modifier = Modifier
@@ -320,7 +307,7 @@ fun uploadJobListing(ref: DatabaseReference, jobListing: JobListing, context: Co
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryDropdown(selectedCategory: String, onCategorySelected: (String) -> Unit) {
-    val categories = listOf("Full-Time", "Part-Time")
+    val categories = listOf("Full-Time", "Part-Time","Contract", "Internship", "Freelance")
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(

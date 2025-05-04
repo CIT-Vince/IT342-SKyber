@@ -77,12 +77,53 @@ import com.example.skyber.volunteerhubscreens.DetailsVolunteerHub
 import com.example.skyber.volunteerhubscreens.PostVolunteerHub
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.firebase.FirebaseApp
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Check and request permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
+                    100 // Request code
+                )
+            }
+        } else {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    100 // Request code
+                )
+            }
+        }
+
         FirebaseApp.initializeApp(this)
+
+        fun onRequestPermissionsResult(
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
+        ) {
+            super.onRequestPermissionsResult(requestCode, permissions as Array<String>, grantResults)
+            if (requestCode == 100) {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission granted
+                } else {
+                    // Permission denied
+                }
+            }
+        }
+
         // Instantiate a Google sign-in request
         val googleIdOption = GetGoogleIdOption.Builder()
             // Your server's client ID, not your Android client ID.
@@ -95,6 +136,7 @@ class MainActivity : ComponentActivity() {
         val request = GetCredentialRequest.Builder()
             .addCredentialOption(googleIdOption)
             .build()
+
 
         enableEdgeToEdge()
         setContent {

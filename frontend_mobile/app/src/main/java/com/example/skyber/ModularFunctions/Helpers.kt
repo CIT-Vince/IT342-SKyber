@@ -45,6 +45,7 @@ import java.util.Locale
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -184,42 +185,28 @@ fun PortalTile(
     }
 }
 
-/*
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerField(modifier: Modifier = Modifier) {
-    var selectedDate by remember { mutableStateOf<Long?>(null) }
-    var showModal by remember { mutableStateOf(false) }
-
+fun CustomOutlinedTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    modifier: Modifier = Modifier.fillMaxWidth(),
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default, // Defaults to normal text input
+    maxLines: Int = 1,
+) {
     OutlinedTextField(
-        value = selectedDate?.let { convertMillisToDate(it) } ?: "",
-        onValueChange = { },
-        label = { Text("DOB") },
-        placeholder = { Text("MM/DD/YYYY") },
-        trailingIcon = {
-            Icon(Icons.Default.DateRange, contentDescription = "Select date")
-        },
-        modifier = modifier
-            .fillMaxWidth()
-            .height(30.dp)
-            .pointerInput(selectedDate) {
-                awaitEachGesture {
-                    // Modifier.clickable doesn't work for text fields, so we use Modifier.pointerInput
-                    // in the Initial pass to observe events before the text field consumes them
-                    // in the Main pass.
-                    awaitFirstDown(pass = PointerEventPass.Initial)
-                    val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
-                    if (upEvent != null) {
-                        showModal = true
-                    }
-                }
-            }
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        modifier = modifier,
+        shape = RoundedCornerShape(8.dp),
+        keyboardOptions = keyboardOptions, // Uses default if not provided
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(0xFF0066FF),
+            unfocusedBorderColor = Color(0xFFD1D5DB)
+        ),
+        maxLines = maxLines,
     )
-
-    if (showModal) {
-        DatePickerModal(
-            onDateSelected = { selectedDate = it },
-            onDismiss = { showModal = false }
-        )
-    }
 }
-*/
+

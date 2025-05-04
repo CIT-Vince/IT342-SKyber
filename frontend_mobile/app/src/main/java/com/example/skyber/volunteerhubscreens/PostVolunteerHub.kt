@@ -54,7 +54,7 @@ import com.example.skyber.dataclass.VolunteerPost
 import com.example.skyber.headerbar.HeaderBar
 import com.example.skyber.headerbar.NotificationHandler
 import com.example.skyber.portalnavigator.ProjectTransparency.showToast
-import com.example.skyber.ui.theme.ParticleSystem
+import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.gradientBrush
