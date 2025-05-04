@@ -14,10 +14,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
@@ -40,6 +38,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.skyber.FirebaseHelper
+import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.R
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.User
@@ -84,13 +83,8 @@ fun LoginScreen(navController: NavHostController, refreshUserProfile: () -> Unit
         label = "floating top left"
     )
 
-    // Gradient for buttons
-    val gradientBrush = Brush.horizontalGradient(
-        colors = listOf(
-            Color(0xFF3CCBF4), // cyan-300
-            Color(0xFF0066FF)  // blue-500
-        )
-    )
+
+
 
     // Google Sign In Handler
     fun firebaseAuthWithGoogle(idToken: String) {

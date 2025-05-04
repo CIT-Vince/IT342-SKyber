@@ -54,3 +54,11 @@ val NewspaperFont= Color(0xFF3E3E3E)     // newspaper black
 
 val SoftCardContainerMaroon = Color(0xFF7E1215)
 val SoftCardFontGold = Color(0xFFECB23B)
+
+// Gradient for buttons
+val gradientBrush = Brush.horizontalGradient(
+    colors = listOf(
+        Color(0xFF3CCBF4), // cyan-300
+        Color(0xFF0066FF)  // blue-500
+    )
+)

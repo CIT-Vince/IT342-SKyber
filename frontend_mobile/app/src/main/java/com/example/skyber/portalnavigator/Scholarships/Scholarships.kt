@@ -2,6 +2,11 @@ package com.example.skyber.portalnavigator.Scholarships
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,11 +43,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.skyber.FirebaseHelper
+import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ModularFunctions.ScholarshipCard
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.Scholarship
@@ -54,20 +61,42 @@ import com.example.skyber.ui.theme.*
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Scholarships(navController: NavHostController){
+fun Scholarships(navController: NavHostController) {
     val allScholarships = remember { mutableStateListOf<Scholarship>() }
     var isLoading by remember { mutableStateOf(true) }//Add this later to all lists
     var selectedTab by remember { mutableStateOf("All") }
 
+    // Animations
+    val infiniteTransition = rememberInfiniteTransition(label = "floating animation")
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale animation"
+    )
+
+    val topLeftPosition by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 10f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "floating top left"
+    )
+
     val filteredScholarship = when (selectedTab) {
-        "Private" -> allScholarships.filter {  it.type.equals("Private", ignoreCase = true)}
-        "Public" -> allScholarships.filter {  it.type.equals("Private", ignoreCase = true) }
+        "Private" -> allScholarships.filter { it.type.equals("Private", ignoreCase = true) }
+        "Public" -> allScholarships.filter { it.type.equals("Public", ignoreCase = true) }
         else -> allScholarships
     }
 
     LaunchedEffect(Unit) {
         isLoading = true
-        FirebaseHelper.databaseReference.child("Scholarship")
+        FirebaseHelper.databaseReference.child("Scholarships")
             .get().addOnSuccessListener { snapshot ->
                 allScholarships.clear()
                 snapshot.children.forEach { child ->
@@ -83,141 +112,171 @@ fun Scholarships(navController: NavHostController){
                 Log.e("ScholarshipsFetch", "Failed to load scholarships list", it)
                 isLoading = false
             }
+        kotlinx.coroutines.delay(5000)
+        isLoading = false
     }
 
     if (isLoading) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(SKyberDarkBlueGradient),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(color = SKyberYellow)
         }
     } else {
-        Scaffold() { innerPadding ->
-            Column(
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+        ) { innerPadding ->
+            Box(
                 modifier = Modifier
-                    .background(SKyberDarkBlue)
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize()
+                    .background(SKyberDarkBlueGradient)
             ) {
-                HeaderBar(
-                    trailingContent = {
-                        NotificationHandler()
-                    }
+                // Particle system as the background
+                ParticleSystem(
+                    modifier = Modifier.fillMaxSize(),
+                    particleColor = Color.White,
+                    particleCount = 80,
+                    backgroundColor = Color(0xFF0D47A1)
                 )
-
-                PortalNav(
-                    trailingContent = {
-                        PortalNavHandler(navController = navController)
-                        Text(
-                            "Scholarships",
-                            fontSize = 24.sp,
-                            color = SKyberBlue,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                Text(
+                    text = "💠",
+                    fontSize = 26.sp,
+                    modifier = Modifier
+                        .padding(start = topLeftPosition.dp + 10.dp, top = 20.dp)
+                        .graphicsLayer(alpha = 0.5f)
                 )
 
                 Column(
                     modifier = Modifier
-                        .padding(top = 32.dp)
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                        .padding(0.dp)
-                        .clip(RoundedCornerShape(topStart = 14.dp, topEnd = 14.dp))
-                        .background(White),
-                    verticalArrangement = Arrangement.Center,
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .width(300.dp)
-                            .clip(RoundedCornerShape(22.dp))
-                            .padding(top = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "All",
-                            fontSize = 24.sp,
-                            color = if (selectedTab == "All") SKyberBlue else Color.Gray,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.clickable { selectedTab = "All" }
-                        )
-                        Text(
-                            "Public",
-                            fontSize = 24.sp,
-                            color = if (selectedTab == "Public") SKyberBlue else Color.Gray,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.clickable { selectedTab = "Public" }
-                        )
-                        Text(
-                            "Private",
-                            fontSize = 24.sp,
-                            color = if (selectedTab == "Private") SKyberBlue else Color.Gray,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.clickable { selectedTab = "Private" }
-                        )
-                    }
-
-                    when {
-                        isLoading -> {
-                            Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                                CircularProgressIndicator(color = SKyberYellow)
-                            }
+                    HeaderBar(
+                        trailingContent = {
+                            NotificationHandler()
                         }
+                    )
 
-                        filteredScholarship.isEmpty() -> {
-                            Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                                Text(
-                                    "No Scholarships available",
-                                    color = SKyberRed,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 24.sp
-                                )
-                            }
+                    PortalNav(
+                        trailingContent = {
+                            PortalNavHandler(navController = navController)
+                            Text(
+                                "Scholarships",
+                                fontSize = 24.sp,
+                                color = White,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
+                    )
 
-                        else -> {
-                            LazyColumn(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxWidth(),
-                                contentPadding = PaddingValues(12.dp)
-                            ) {
-                                items(filteredScholarship.reversed()) { scholarship ->
-                                    ScholarshipCard(
-                                        backgroundColor = SoftCardContainerPast,
-                                        fontColor = SoftCardFontPast,
-                                        scholarship = scholarship,
-                                        onClick = {
-                                            navController.currentBackStackEntry?.savedStateHandle?.set("scholarship",scholarship)
-                                            navController.navigate(Screens.DetailsScholarship.screen)
-                                        }
+                        Row(
+                            modifier = Modifier
+                                .width(300.dp)
+                                .clip(RoundedCornerShape(22.dp))
+                                .padding(top = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                "All",
+                                fontSize = 24.sp,
+                                color = if (selectedTab == "All") White else Color.Gray,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.clickable { selectedTab = "All" }
+                            )
+                            Text(
+                                "Public",
+                                fontSize = 24.sp,
+                                color = if (selectedTab == "Public") White else Color.Gray,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.clickable { selectedTab = "Public" }
+                            )
+                            Text(
+                                "Private",
+                                fontSize = 24.sp,
+                                color = if (selectedTab == "Private") White else Color.Gray,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.clickable { selectedTab = "Private" }
+                            )
+                        }
+                        
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                        when {
+                            isLoading -> {
+                                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                                    CircularProgressIndicator(color = SKyberYellow)
+                                }
+                            }
+
+                            filteredScholarship.isEmpty() -> {
+                                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                                    Text(
+                                        "No Scholarships available",
+                                        color = SKyberRed,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 24.sp
                                     )
-                                    Spacer(modifier = Modifier.height(8.dp))
+                                }
+                            }
+
+                            else -> {
+                                LazyColumn(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxWidth(),
+                                    contentPadding = PaddingValues(12.dp)
+                                ) {
+                                    items(filteredScholarship.reversed()) { scholarship ->
+                                        ScholarshipCard(
+                                            backgroundColor = SoftCardContainerPast,
+                                            fontColor = SoftCardFontPast,
+                                            scholarship = scholarship,
+                                            onClick = {
+                                                navController.currentBackStackEntry?.savedStateHandle?.set(
+                                                    "scholarship",
+                                                    scholarship
+                                                )
+                                                navController.navigate(Screens.DetailsScholarship.screen)
+                                            }
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    Button(
-                        onClick = {
-                            navController.navigate(Screens.PostScholarship.screen)
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = SKyberBlue),
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .width(250.dp)
-                    ) {
-                        Text(text = "Post Scholarship")
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Icon(
-                            imageVector = Icons.Filled.AddCircle,
-                            contentDescription = "add scholarship"
-                        )
-                    }
+                        Button(
+                            onClick = {
+                                navController.navigate(Screens.PostScholarship.screen)
+                            },
+                            modifier = Modifier
+                                .width(180.dp)
+                                .height(60.dp),
+                            shape = RoundedCornerShape(28.dp),
+                            contentPadding = PaddingValues(0.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(gradientBrush),
+                                contentAlignment = Alignment.Center
+                            ){
+                                Text(
+                                    text = "Post Scholarships",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color.White
+                                )
+                            }
+                        }
                 }
             }
         }

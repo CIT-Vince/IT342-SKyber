@@ -17,5 +17,6 @@ data class VolunteerPost(
     val contactPerson: String = "",
     val contactEmail: String = "",//email
     val status: String = "", //Status should only be Ongoing and Completed
-    val requirements: String =""
+    val requirements: String ="",
+    //val VolunteeredUsers: List<User>? = null
 ) : Parcelable

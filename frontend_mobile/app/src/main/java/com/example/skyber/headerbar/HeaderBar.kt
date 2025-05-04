@@ -44,7 +44,7 @@ fun HeaderBar(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 2.dp)
-            .height(80.dp),
+            .height(70.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -54,11 +54,9 @@ fun HeaderBar(
             modifier = Modifier
                 .height(100.dp)
                 .width(130.dp)
-                .padding(9.dp),
+                .padding(4.dp),
             contentScale = ContentScale.Fit
         )
-
-        Spacer(modifier = Modifier.weight(1f))
 
         trailingContent?.invoke()
 
@@ -66,7 +64,7 @@ fun HeaderBar(
     }
 
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun HeaderBarPreview() {
     HeaderBar(
@@ -81,7 +79,7 @@ fun HeaderBarPreview() {
             )
         }
     )
-}
+}*/
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

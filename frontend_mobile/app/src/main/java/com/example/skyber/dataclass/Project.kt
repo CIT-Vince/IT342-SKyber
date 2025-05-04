@@ -9,13 +9,13 @@ import kotlinx.parcelize.Parcelize
 data class Project(
     val id: String = "",
     val projectName: String = "",
-    val projectDescription: String = "",
+    val description: String = "",
     val status: String = "",
     val startDate: String = "",
     val endDate: String = "",
     val budget: String = "",
     val projectManager: String = "",
-    val projectMembers: List<String> = emptyList(),
-    val stakeholders: List<String> = emptyList(),
+    val teamMembers: String = "",
+    val stakeholders: String = "",
     val sustainabilityGoals: String = "",
 ): Parcelable

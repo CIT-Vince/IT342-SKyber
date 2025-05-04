@@ -66,7 +66,7 @@ fun AnnouncementCard(backgroundColor: Color = White,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 color = fontColor,
-                maxLines = 2,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(4.dp))
@@ -139,7 +139,7 @@ fun CandidateCard(
             )
 
             Text(
-                text = "${candidateProfile.partyList}",
+                text = "${candidateProfile.partylist}",
                 fontSize = 20.sp, // Consistent font size
                 color = SoftCardFontGreen,
                 fontWeight = FontWeight.Medium, // Adjusted weight for better readability
@@ -147,14 +147,6 @@ fun CandidateCard(
                 overflow = TextOverflow.Ellipsis
             )
 
-            Text(
-                text = "${candidateProfile.address}",
-                fontSize = 18.sp, // Slightly smaller font for better hierarchy
-                color = SoftCardFontGreen,
-                fontWeight = FontWeight.Medium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
         }
     }
 }
@@ -503,11 +495,11 @@ fun ScholarshipCard(
     scholarship: Scholarship,
     onClick: () -> Unit
 ) {
-    val category = scholarship.type.lowercase()
+    val category = scholarship.type.uppercase()
     val (statusColor, textColor) = when (category) {
-        "all" -> BoxGreen to BoxTextGreen
-        "private" -> SoftCardContainerMaroon to SoftCardFontGold
-        "public" -> SoftCardContainerBlue to SoftCardFontBlue
+        "All" -> BoxGreen to BoxTextGreen
+        "PRIVATE" -> SoftCardContainerMaroon to SoftCardFontGold
+        "PUBLIC" -> SoftCardContainerBlue to SoftCardFontBlue
         else -> Color.LightGray to Color.DarkGray
     }
 
@@ -516,6 +508,66 @@ fun ScholarshipCard(
         shape = RoundedCornerShape(24.dp), // Reduced corner radius for a modern look
         elevation = CardDefaults.cardElevation(6.dp),
         border = BorderStroke(1.dp, SKyberDarkBlue),
+        modifier = Modifier
+            .clickable { onClick() }
+            .padding(8.dp)
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = scholarship.title,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = fontColor,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(statusColor)
+                        .padding(horizontal = 12.dp, vertical = 4.dp)
+                        .defaultMinSize(40.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = scholarship.type.uppercase(),
+                        fontSize = 16.sp,
+                        color = textColor,
+                        fontWeight = FontWeight.Medium,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun MemberCard(
+    backgroundColor: Color = White,
+    fontColor: Color = Black,
+    skProfile: SKProfile,
+    onClick: () -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        elevation = CardDefaults.cardElevation(6.dp),
+        border = BorderStroke(1.dp, SKyberDarkBlue),
+        shape = RoundedCornerShape(24.dp), // Reduced corner radius for a modern look
         modifier = Modifier
             .clickable { onClick() }
             .padding(8.dp) // Adjusted padding for better alignment
@@ -528,99 +580,23 @@ fun ScholarshipCard(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp) // Consistent spacing between elements
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween // Aligns elements evenly
-            ) {
-                Text(
-                    text = scholarship.title,
-                    fontSize = 24.sp, // Slightly smaller font for better balance
-                    fontWeight = FontWeight.Bold,
-                    color = fontColor,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp)) // Reduced corner radius for the status box
-                        .background(statusColor)
-                        .padding(horizontal = 12.dp, vertical = 4.dp) // Adjusted padding for better proportions
-                        .defaultMinSize(40.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = scholarship.type,
-                        fontSize = 16.sp, // Smaller font for better hierarchy
-                        color = textColor,
-                        fontWeight = FontWeight.Medium,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
-
-            /*Text(
-                text = scholarship.institution,
-                fontSize = 20.sp, // Consistent font size
-                fontWeight = FontWeight.Medium,
+            Text(
+                text = "${skProfile.firstName} ${skProfile.lastName}",
+                fontSize = 24.sp, // Slightly smaller font for better balance
+                fontWeight = FontWeight.Bold,
                 color = fontColor,
-                maxLines = 2,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis
-            )*/
+            )
+
+            Text(
+                text = "${skProfile.position}",
+                fontSize = 20.sp, // Consistent font size
+                color = SoftCardFontGreen,
+                fontWeight = FontWeight.Medium, // Adjusted weight for better readability
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
-
-/*@Preview(showBackground = true)
-@Composable
-fun Preview() {
-     ScholarshipCard(
-        backgroundColor = SoftCardContainerPast,
-        fontColor = SoftCardFontPast,
-        scholarship = Scholarship(
-            title = "College Professor",
-            institution = "CIT-U",
-            category =  "Public",
-        ),
-        onClick = {} // Simple empty lambda for preview
-    )
-}
-*/
-/*
-@Preview(showBackground = true)
-@Composable
-fun Preview() {
-    ProjectTransparencyCard(
-        backgroundColor = SoftCardContainerBrown,
-        fontColor = SoftCardFontBrown,
-        project = Project(
-            projectName = "Road Repair",
-            status = "Ongoing",
-            projectManager = "Jv Bayona",
-            budget = "8000",
-            startDate = "21/04/2025",
-            endDate = "29/04/2025"
-        ),
-        onClick = {} // Simple empty lambda for preview
-    )
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun VolunteerCardPreview() {
-    VolunteerCard(
-        backgroundColor = SoftCardContainer,
-        fontColor = SoftCardFont,
-        volunteerPost = VolunteerPost(
-            title = "Tree Planting",
-            contactperson = "Ethan",
-            contact = "0921938",
-            status = "Ongoing",
-            location = "Cebu",
-            eventdate = "04/21/2025"
-        ),
-        onClick = {} // Simple empty lambda for preview
-    )
-}
-*/

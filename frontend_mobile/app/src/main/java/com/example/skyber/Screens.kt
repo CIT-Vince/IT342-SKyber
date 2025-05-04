@@ -30,6 +30,9 @@ sealed class Screens(val screen: String){
     data object PostSKcandidates: Screens("Post SKCandidates")//SK candidates nested screens
     data object DetailsSKcandidates: Screens("Details SKCandidates")
 
+    data object PostSKmembers: Screens("Post SKmembers")//SK members nested screens
+    data object DetailsSKmembers: Screens("Details SKmembers")
+
     data object Announcement: Screens("Announcement")//Announcement and Nested Screens in Announcement
     data object PostAnnouncement: Screens("Post Announcement")
     data object DetailsAnnouncement: Screens("Details Announcement")
@@ -43,4 +46,7 @@ sealed class Screens(val screen: String){
     data object Login : Screens("Login")
     data object SignUp : Screens("Signup")
 
+    //Test screens
+    data object CandidateTestScreen : Screens("Signup")
+    data object CandidateList : Screens("candidateList")
 }

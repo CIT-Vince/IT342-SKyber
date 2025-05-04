@@ -2,16 +2,22 @@ package com.example.skyber.portalnavigator.Scholarships
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -22,6 +28,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -36,12 +43,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.skyber.FirebaseHelper
+import com.example.skyber.ModularFunctions.CustomOutlinedTextField
+import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.Scholarship
 import com.example.skyber.dataclass.User
@@ -50,14 +62,16 @@ import com.example.skyber.headerbar.NotificationHandler
 import com.example.skyber.portalnavigator.ProjectTransparency.showToast
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlue
+import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.White
+import com.example.skyber.ui.theme.gradientBrush
 import com.google.firebase.database.DatabaseReference
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun PostScholarship(navController: NavHostController, userProfile: MutableState<User?>){
+fun PostScholarship(navController: NavHostController, userProfile: MutableState<User?>) {
     val user = userProfile.value//passed logged in user
 
     var title by remember { mutableStateOf("") }
@@ -68,8 +82,29 @@ fun PostScholarship(navController: NavHostController, userProfile: MutableState<
 
     val context = LocalContext.current
 
-    if (user == null) {
-        // Show a loading spinner while waiting for user data
+    // Animations
+    val infiniteTransition = rememberInfiniteTransition(label = "floating animation")
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale animation"
+    )
+
+    val topLeftPosition by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 10f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "floating top left"
+    )
+
+    if (user == null) {// Show a loading spinner while waiting for user data
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -77,52 +112,58 @@ fun PostScholarship(navController: NavHostController, userProfile: MutableState<
             CircularProgressIndicator(color = SKyberYellow)
         }
         return
-    }else {
-        Scaffold(){ innerPadding->
-            Column(
+    } else {
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+        ) { innerPadding ->
+            Box(
                 modifier = Modifier
-                    .background(SKyberDarkBlue)
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                HeaderBar(
-                    trailingContent = {
-                        NotificationHandler()
-                    }
+                    .fillMaxSize()
+                    .background(SKyberDarkBlueGradient)
+            ) {
+                // Particle system as the background
+                ParticleSystem(
+                    modifier = Modifier.fillMaxSize(),
+                    particleColor = Color.White,
+                    particleCount = 80,
+                    backgroundColor = Color(0xFF0D47A1)
+                )
+
+                Text(
+                    text = "💠",
+                    fontSize = 26.sp,
+                    modifier = Modifier
+                        .padding(start = topLeftPosition.dp + 10.dp, top = 20.dp)
+                        .graphicsLayer(alpha = 0.5f)
                 )
 
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                        .padding(0.dp)
-                        .clip(RoundedCornerShape(topStart = 14.dp, topEnd = 14.dp))
-                        .background(White),
-                    verticalArrangement = Arrangement.Center,
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
-                ){
+                ) {
+                    HeaderBar(
+                        trailingContent = {
+                            NotificationHandler()
+                        }
+                    )
+
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
                             .weight(1f)
-                            .padding(14.dp)
+                            .padding(14.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        item{
+                        item {
                             //Text Fields here
-                            TextField(
+                            CustomOutlinedTextField(
                                 value = title,
                                 onValueChange = { title = it },
-                                label = { Text("Title") },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(20.dp)),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    focusedIndicatorColor = SKyberYellow,
-                                    unfocusedIndicatorColor = SKyberYellow,
-                                    focusedLabelColor = SKyberYellow,
-                                    unfocusedLabelColor = SKyberYellow
-                                )
+                                label = "Title",
                             )
 
                             Spacer(modifier = Modifier.height(12.dp))
@@ -135,58 +176,27 @@ fun PostScholarship(navController: NavHostController, userProfile: MutableState<
 
                             Spacer(modifier = Modifier.height(12.dp))
 
-                            TextField(
+                            CustomOutlinedTextField(
                                 value = contactemail,
                                 onValueChange = { contactemail = it },
-                                label = { Text("Contact Email") },
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(20.dp))
-                                    .fillMaxWidth(),
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    focusedIndicatorColor = SKyberYellow,
-                                    unfocusedIndicatorColor = SKyberYellow,
-                                    focusedLabelColor = SKyberYellow,
-                                    unfocusedLabelColor = SKyberYellow
-                                )
+                                label = "Contact Email",
                             )
 
                             Spacer(modifier = Modifier.height(12.dp))
 
-                            TextField(
+                            CustomOutlinedTextField(
                                 value = applicationlink,
                                 onValueChange = { applicationlink = it },
-                                label = { Text("Apply here") },
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(20.dp))
-                                    .fillMaxWidth(),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    focusedIndicatorColor = SKyberYellow,
-                                    unfocusedIndicatorColor = SKyberYellow,
-                                    focusedLabelColor = SKyberYellow,
-                                    unfocusedLabelColor = SKyberYellow
-                                )
+                                label = "Apply here",
                             )
 
                             Spacer(modifier = Modifier.height(12.dp))
 
-                            TextField(
+                            CustomOutlinedTextField(
                                 value = description,
                                 onValueChange = { description = it },
-                                label = { Text("Description") },
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(20.dp))
-                                    .fillMaxWidth()
-                                    .height(150.dp)
-                                    .padding(0.dp),
-                                maxLines = 10
-                                ,
-                                colors = TextFieldDefaults.textFieldColors(
-                                    focusedIndicatorColor = SKyberYellow,
-                                    unfocusedIndicatorColor = SKyberYellow,
-                                    focusedLabelColor = SKyberYellow,
-                                    unfocusedLabelColor = SKyberYellow
-                                )
+                                label = "Description",
+                                maxLines = 5
                             )
 
                             Spacer(modifier = Modifier.height(12.dp))
@@ -197,18 +207,15 @@ fun PostScholarship(navController: NavHostController, userProfile: MutableState<
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = SKyberBlue,
-                            contentColor = Color.White
-                        ),
                         onClick = {
                             // Create Job Listing  object
-                            if(title.isBlank() || contactemail.isBlank() || applicationlink.isBlank()  || category.isBlank()){
+                            if (title.isBlank() || contactemail.isBlank() || applicationlink.isBlank() || category.isBlank()) {
                                 showToast(context, "Please fill out required fields")
-                            }else{
-                                val databaseRef = FirebaseHelper.databaseReference.child("Scholarship").push()
+                            } else {
+                                val databaseRef =
+                                    FirebaseHelper.databaseReference.child("Scholarship").push()
                                 val postId = databaseRef.key
-                                if(postId != null){
+                                if (postId != null) {
                                     val newScholarship = Scholarship(
                                         title = title,
                                         description = description,
@@ -217,34 +224,56 @@ fun PostScholarship(navController: NavHostController, userProfile: MutableState<
                                         type = category,
                                     )
                                     // Upload the Job listing post
-                                    uploadJScholarship(databaseRef, newScholarship, context)
+                                    uploadScholarship(databaseRef, newScholarship, context)
                                     navController.navigate(Screens.Scholarship.screen)
-                                }else{
+                                } else {
                                     showToast(context, "Failed to create Scholarship")
                                 }
 
                             }
-                        }) {
-                        Text("Post Job Listing")
+                        },
+                        modifier = Modifier
+                            .width(130.dp)
+                            .height(60.dp),
+                        shape = RoundedCornerShape(28.dp),
+                        contentPadding = PaddingValues(0.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                    ){
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(gradientBrush),
+                            contentAlignment = Alignment.Center
+                        ){
+                            Text(
+                                text = "Post Scholarship",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            )
+                        }
                     }
+
                     Spacer(modifier = Modifier.height(16.dp))
                 } //end of main content column
-            }//end of top level column
-        }//end of scaffold
+            }//end of scaffold
+        }
     }
 }
 
-fun uploadJScholarship(ref: DatabaseReference, scholarship: Scholarship, context: Context) {
-    ref.setValue(scholarship).addOnSuccessListener {
-        showToast(context, "Scholarship uploaded successfully")
-    }.addOnFailureListener {
-        showToast(context, "Failed to Post Scholarship")
+    fun uploadScholarship(ref: DatabaseReference, scholarship: Scholarship, context: Context) {
+        ref.setValue(scholarship).addOnSuccessListener {
+            showToast(context, "Scholarship uploaded successfully")
+        }.addOnFailureListener {
+            showToast(context, "Failed to Post Scholarship")
+        }
     }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScholarshipCategoryDropdown(selectedCategory: String, onCategorySelected: (String) -> Unit) {
+fun ScholarshipCategoryDropdown(
+    selectedCategory: String,
+    onCategorySelected: (String) -> Unit
+) {
     val categories = listOf("Private", "Public", "All")
     var expanded by remember { mutableStateOf(false) }
 
@@ -252,8 +281,8 @@ fun ScholarshipCategoryDropdown(selectedCategory: String, onCategorySelected: (S
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
         modifier = Modifier.fillMaxWidth()
-        ) {
-        TextField(
+    ) {
+        OutlinedTextField(
             value = selectedCategory,
             onValueChange = {},
             readOnly = true,
@@ -262,12 +291,10 @@ fun ScholarshipCategoryDropdown(selectedCategory: String, onCategorySelected: (S
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(20.dp)),
-            colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = SKyberYellow,
-                unfocusedIndicatorColor = SKyberYellow,
-                focusedLabelColor = SKyberYellow,
-                unfocusedLabelColor = SKyberYellow
+                .clip(RoundedCornerShape(8.dp)), // Match the shape
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = Color(0xFF0066FF), // Match the focused border color
+                unfocusedBorderColor = Color(0xFFD1D5DB) // Match the unfocused border color
             )
         )
 
@@ -279,18 +306,11 @@ fun ScholarshipCategoryDropdown(selectedCategory: String, onCategorySelected: (S
             categories.forEach { category ->
                 DropdownMenuItem(
                     text = {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 80.dp), //Caveman method for matching dropdown items to the textfield on top
-                            contentAlignment = Alignment.CenterStart
-                        ) {
-                            Text(
-                                text = category,
-                                modifier = Modifier.fillMaxWidth(),
-                                textAlign = TextAlign.Center
-                            )
-                        }
+                        Text(
+                            text = category,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
                     },
                     onClick = {
                         onCategorySelected(category)
