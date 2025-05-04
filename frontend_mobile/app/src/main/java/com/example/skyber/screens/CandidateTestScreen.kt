@@ -294,7 +294,7 @@ private fun CandidateCard(
 
             Text("Age: ${candidate.age ?: "N/A"}")
             Text("Address: ${candidate.address ?: "N/A"}")
-            Text("Party List: ${candidate.partyList ?: "N/A"}")
+            Text("Party List: ${candidate.partylist ?: "N/A"}")
             Text("Platform: ${candidate.platform ?: "N/A"}")
         }
     }

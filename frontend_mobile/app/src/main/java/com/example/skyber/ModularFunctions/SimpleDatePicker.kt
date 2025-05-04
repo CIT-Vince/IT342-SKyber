@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.skyber.ui.theme.White
 import java.time.LocalDate
 
 /**
@@ -248,3 +249,176 @@ fun <A, B, C> Triple<A, B, C>.copy(
     second: B = this.second,
     third: C = this.third
 ): Triple<A, B, C> = Triple(first, second, third)
+
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TransparentSimpleDatePickerField(
+    selectedDate: String = "",
+    onDateSelected: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var showDialog by remember { mutableStateOf(false) }
+
+    // Initialize date picker state with current date if no selection
+    var datePickerState by remember {
+        mutableStateOf(
+            if (selectedDate.isNotEmpty()) {
+                try {
+                    val parts = selectedDate.split("-")
+                    if (parts.size == 3) {
+                        Triple(parts[0].toInt(), parts[1].toInt(), parts[2].toInt())
+                    } else {
+                        val now = LocalDate.now()
+                        Triple(now.year, now.monthValue, now.dayOfMonth)
+                    }
+                } catch (e: Exception) {
+                    val now = LocalDate.now()
+                    Triple(now.year, now.monthValue, now.dayOfMonth)
+                }
+            } else {
+                val now = LocalDate.now()
+                Triple(now.year, now.monthValue, now.dayOfMonth)
+            }
+        )
+    }
+
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = "What's your date of birth?",
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            color = White,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+
+        // Custom date field with rounded corners and calendar icon
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color.Transparent)
+                .clickable { showDialog = true }
+                .padding(horizontal = 16.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Text(
+                text = selectedDate.ifEmpty { "Select date" },
+                color = if (selectedDate.isEmpty()) White else White,
+                fontSize = 16.sp
+            )
+
+            // Calendar icon on the right
+            Icon(
+                imageVector = Icons.Default.CalendarMonth,
+                contentDescription = "Select date",
+                tint = White,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .size(24.dp)
+            )
+        }
+    }
+
+    // Simple date picker dialog
+    if (showDialog) {
+        Dialog(
+            onDismissRequest = { showDialog = false }
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Select Date",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    // Year, Month, Day pickers
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        // Year dropdown
+                        SimpleNumberPicker(
+                            label = "Year",
+                            value = datePickerState.first,
+                            onValueChange = {
+                                datePickerState = datePickerState.copy(first = it)
+                            },
+                            range = (1900..2023).toList(),
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        // Month dropdown
+                        SimpleNumberPicker(
+                            label = "Month",
+                            value = datePickerState.second,
+                            onValueChange = {
+                                datePickerState = datePickerState.copy(second = it)
+                            },
+                            range = (1..12).toList(),
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        // Day dropdown
+                        SimpleNumberPicker(
+                            label = "Day",
+                            value = datePickerState.third,
+                            onValueChange = {
+                                datePickerState = datePickerState.copy(third = it)
+                            },
+                            range = (1..31).toList(),
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // Buttons
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(
+                            onClick = { showDialog = false }
+                        ) {
+                            Text("Cancel")
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Button(
+                            onClick = {
+                                // Format the date as YYYY-MM-DD
+                                val year = datePickerState.first
+                                val month = datePickerState.second.toString().padStart(2, '0')
+                                val day = datePickerState.third.toString().padStart(2, '0')
+                                val formattedDate = "$year-$month-$day"
+
+                                onDateSelected(formattedDate)
+                                showDialog = false
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF0066FF)
+                            )
+                        ) {
+                            Text("OK")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

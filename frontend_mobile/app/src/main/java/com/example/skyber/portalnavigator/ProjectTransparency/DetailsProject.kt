@@ -104,364 +104,335 @@ fun DetailsProject(navController: NavHostController) {
             CircularProgressIndicator(color = SKyberYellow)
         }
         return
-    }
-
-    Scaffold { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(SKyberDarkBlueGradient)
-        ) {
-            Column(
+    } else {
+        Scaffold { innerPadding ->
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .background(SKyberDarkBlueGradient)
             ) {
-                HeaderBar(
-                    trailingContent = {
-                        NotificationHandler()
-                    }
-                )
-
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp)
-                        .padding(top = 40.dp, bottom = 40.dp)
-                        .background(Color.White, RoundedCornerShape(24.dp))
-                        .padding(24.dp),
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (isEditMode) {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            item {
-                                CustomOutlinedTextField(
-                                    value = newProjectName,
-                                    onValueChange = { newProjectName = it },
-                                    label = "Project Name"
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
+                    HeaderBar(
+                        trailingContent = {
+                            NotificationHandler()
+                        }
+                    )
 
-                                CustomOutlinedTextField(
-                                    value = newProjectDescription,
-                                    onValueChange = { newProjectDescription = it },
-                                    label = "Description"
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp)
+                            .padding(top = 40.dp, bottom = 40.dp)
+                            .background(Color.White, RoundedCornerShape(24.dp))
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        if (isEditMode) {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                item {
+                                    CustomOutlinedTextField(
+                                        value = newProjectName,
+                                        onValueChange = { newProjectName = it },
+                                        label = "Project Name"
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
 
-                                CustomOutlinedTextField(
-                                    value = newStatus,
-                                    onValueChange = { newStatus = it },
-                                    label = "Status"
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
+                                    CustomOutlinedTextField(
+                                        value = newProjectDescription,
+                                        onValueChange = { newProjectDescription = it },
+                                        label = "Description"
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
 
-                                CustomOutlinedTextField(
-                                    value = newStartDate,
-                                    onValueChange = { newStartDate = it },
-                                    label = "Start Date"
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
+                                    CustomOutlinedTextField(
+                                        value = newStatus,
+                                        onValueChange = { newStatus = it },
+                                        label = "Status"
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
 
-                                CustomOutlinedTextField(
-                                    value = newEndDate,
-                                    onValueChange = { newEndDate = it },
-                                    label = "End Date"
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
+                                    CustomOutlinedTextField(
+                                        value = newStartDate,
+                                        onValueChange = { newStartDate = it },
+                                        label = "Start Date"
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
 
-                                CustomOutlinedTextField(
-                                    value = newBudget,
-                                    onValueChange = { newBudget = it },
-                                    label = "Budget"
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
+                                    CustomOutlinedTextField(
+                                        value = newEndDate,
+                                        onValueChange = { newEndDate = it },
+                                        label = "End Date"
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
 
-                                CustomOutlinedTextField(
-                                    value = newProjectManager,
-                                    onValueChange = { newProjectManager = it },
-                                    label = "Project Manager"
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
+                                    CustomOutlinedTextField(
+                                        value = newBudget,
+                                        onValueChange = { newBudget = it },
+                                        label = "Budget"
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
 
-                                CustomOutlinedTextField(
-                                    value = newProjectMembers,
-                                    onValueChange = { newProjectMembers = it },
-                                    label = "Project Members"
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
+                                    CustomOutlinedTextField(
+                                        value = newProjectManager,
+                                        onValueChange = { newProjectManager = it },
+                                        label = "Project Manager"
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
 
-                                CustomOutlinedTextField(
-                                    value = newStakeholders,
-                                    onValueChange = { newStakeholders = it },
-                                    label = "Stakeholders"
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
+                                    CustomOutlinedTextField(
+                                        value = newProjectMembers,
+                                        onValueChange = { newProjectMembers = it },
+                                        label = "Project Members"
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
 
-                                CustomOutlinedTextField(
-                                    value = newSustainabilityGoals,
-                                    onValueChange = { newSustainabilityGoals = it },
-                                    label = "Sustainability Goals"
-                                )
-                                Spacer(modifier = Modifier.height(24.dp))
+                                    CustomOutlinedTextField(
+                                        value = newStakeholders,
+                                        onValueChange = { newStakeholders = it },
+                                        label = "Stakeholders"
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
 
-                                Button(
-                                    onClick = {
-                                        val database = FirebaseHelper.databaseReference
-                                        val projectId = project.id
+                                    CustomOutlinedTextField(
+                                        value = newSustainabilityGoals,
+                                        onValueChange = { newSustainabilityGoals = it },
+                                        label = "Sustainability Goals"
+                                    )
+                                    Spacer(modifier = Modifier.height(24.dp))
 
-                                        val updatedProject = Project(
-                                            projectName = newProjectName.ifEmpty { project.projectName },
-                                            description = newProjectDescription.ifEmpty { project.description },
-                                            status = newStatus.ifEmpty { project.status },
-                                            startDate = newStartDate.ifEmpty { project.startDate },
-                                            endDate = newEndDate.ifEmpty { project.endDate },
-                                            budget = newBudget.ifEmpty { project.budget },
-                                            projectManager = newProjectManager.ifEmpty { project.projectManager },
-                                            teamMembers = newProjectMembers.ifEmpty { project.teamMembers },
-                                            stakeholders = newStakeholders.ifEmpty { project.stakeholders },
-                                            sustainabilityGoals = newSustainabilityGoals.ifEmpty { project.sustainabilityGoals }
-                                        )
-                                        // Save updated project to database
-                                        database.child("ProjectTransparency").child(projectId)
-                                            .setValue(updatedProject)
-                                            .addOnSuccessListener {
-                                                Toast.makeText(
-                                                    context,
-                                                    "Project updated successfully",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                                isEditMode = false
-                                            }
-                                            .addOnFailureListener {
-                                                Toast.makeText(
-                                                    context,
-                                                    "Update unsuccessful",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                            }
-                                    },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(60.dp),
-                                    shape = RoundedCornerShape(28.dp),
-                                    contentPadding = PaddingValues(0.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                                ) {
-                                    Box(
+                                    Button(
+                                        onClick = {
+                                            val database = FirebaseHelper.databaseReference
+                                            val projectId = project.id
+
+                                            val updatedProject = Project(
+                                                projectName = newProjectName.ifEmpty { project.projectName },
+                                                description = newProjectDescription.ifEmpty { project.description },
+                                                status = newStatus.ifEmpty { project.status },
+                                                startDate = newStartDate.ifEmpty { project.startDate },
+                                                endDate = newEndDate.ifEmpty { project.endDate },
+                                                budget = newBudget.ifEmpty { project.budget },
+                                                projectManager = newProjectManager.ifEmpty { project.projectManager },
+                                                teamMembers = newProjectMembers.ifEmpty { project.teamMembers },
+                                                stakeholders = newStakeholders.ifEmpty { project.stakeholders },
+                                                sustainabilityGoals = newSustainabilityGoals.ifEmpty { project.sustainabilityGoals }
+                                            )
+                                            // Save updated project to database
+                                            database.child("ProjectTransparency").child(projectId)
+                                                .setValue(updatedProject)
+                                                .addOnSuccessListener {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Project updated successfully",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                    isEditMode = false
+                                                }
+                                                .addOnFailureListener {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Update unsuccessful",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                        },
                                         modifier = Modifier
-                                            .fillMaxSize()
-                                            .background(gradientBrush),
-                                        contentAlignment = Alignment.Center
+                                            .fillMaxWidth()
+                                            .height(60.dp),
+                                        shape = RoundedCornerShape(28.dp),
+                                        contentPadding = PaddingValues(0.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .background(gradientBrush),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = "Edit",
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = Color.White
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(14.dp))
+
+                                    Text(
+                                        text = "Delete",
+                                        fontSize = 14.sp,
+                                        color = SKyberRed,
+                                        fontWeight = FontWeight.Medium,
+                                        modifier = Modifier.clickable {
+                                            val database = FirebaseHelper.databaseReference
+                                            val projectId = project.id
+                                            database.child("ProjectTransparency").child(projectId)
+                                                .removeValue()
+                                                .addOnSuccessListener {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Deleted Successfully",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                    isEditMode = false
+                                                }
+                                                .addOnFailureListener {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Deletion unsuccessful",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                        }
+                                    )
+
+                                }
+                            }
+                        } else {// Display project details
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(14.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                item {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
                                     ) {
                                         Text(
-                                            text = "Edit",
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = Color.White
+                                            text = project.projectName,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 28.sp,
+                                            color = SKyberBlue
                                         )
+                                        Spacer(modifier = Modifier.width(12.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(22.dp))
+                                                .background(if (project.status.lowercase() == "ongoing") BoxGreen else BoxRed)
+                                                .padding(horizontal = 8.dp)
+                                                .width(80.dp)
+                                        ) {
+                                            Text(
+                                                text = project.status,
+                                                fontSize = 18.sp,
+                                                color = if (project.status.lowercase() == "ongoing") BoxTextGreen else SKyberRed,
+                                                fontWeight = FontWeight.SemiBold
+                                            )
+                                        }
                                     }
-                                }
+                                    Spacer(modifier = Modifier.height(16.dp))
 
-                                Spacer(modifier = Modifier.height(14.dp))
-
-                                Text(
-                                    text = "Delete",
-                                    fontSize = 14.sp,
-                                    color = SKyberRed,
-                                    fontWeight = FontWeight.Medium,
-                                    modifier = Modifier.clickable {
-                                        val database = FirebaseHelper.databaseReference
-                                        val projectId = project.id
-                                        database.child("ProjectTransparency").child(projectId)
-                                            .removeValue()
-                                            .addOnSuccessListener {
-                                                Toast.makeText(
-                                                    context,
-                                                    "Deleted Successfully",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                                isEditMode = false
-                                            }
-                                            .addOnFailureListener {
-                                                Toast.makeText(
-                                                    context,
-                                                    "Deletion unsuccessful",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                            }
-                                    }
-                                )
-
-                            }
-                        }
-                    } else {// Display project details
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(14.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            item {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
                                     Text(
-                                        text = project.projectName,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 28.sp,
+                                        "Project Manager: ${project.projectManager}",
+                                        fontSize = 16.sp,
                                         color = SKyberBlue
                                     )
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Box(
-                                        modifier = Modifier
-                                            .clip(RoundedCornerShape(22.dp))
-                                            .background(if (project.status.lowercase() == "ongoing") BoxGreen else BoxRed)
-                                            .padding(horizontal = 8.dp)
-                                            .width(80.dp)
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+
+                                    Text(
+                                        "Budget: ${project.budget}",
+                                        fontSize = 16.sp,
+                                        color = SKyberBlue
+                                    )
+
+                                    Spacer(modifier = Modifier.height(16.dp))
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceEvenly
                                     ) {
-                                        Text(
-                                            text = project.status,
-                                            fontSize = 18.sp,
-                                            color = if (project.status.lowercase() == "ongoing") BoxTextGreen else SKyberRed,
-                                            fontWeight = FontWeight.SemiBold
-                                        )
+                                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                            Text(
+                                                "Start Date",
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = SKyberBlue
+                                            )
+                                            Text(project.startDate, color = SKyberBlue)
+                                        }
+                                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                            Text(
+                                                "End Date",
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = SKyberBlue
+                                            )
+                                            Text(project.endDate, color = SKyberBlue)
+                                        }
                                     }
-                                }
-                                Spacer(modifier = Modifier.height(16.dp))
 
-                                Text(
-                                    "Project Manager: ${project.projectManager}",
-                                    fontSize = 16.sp,
-                                    color = SKyberBlue
-                                )
+                                    Spacer(modifier = Modifier.height(24.dp))
 
-                                Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        "Description",
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 18.sp,
+                                        color = SKyberBlue
+                                    )
 
-                                Text(
-                                    "Budget: ${project.budget}",
-                                    fontSize = 16.sp,
-                                    color = SKyberBlue
-                                )
+                                    Text(project.description, fontSize = 14.sp, color = SKyberBlue)
 
-                                Spacer(modifier = Modifier.height(16.dp))
+                                    Spacer(modifier = Modifier.height(24.dp))
 
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceEvenly
-                                ) {
-                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Text(
-                                            "Start Date",
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = SKyberBlue
-                                        )
-                                        Text(project.startDate, color = SKyberBlue)
-                                    }
-                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Text(
-                                            "End Date",
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = SKyberBlue
-                                        )
-                                        Text(project.endDate, color = SKyberBlue)
-                                    }
-                                }
+                                    Text(
+                                        "Stakeholders",
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 18.sp,
+                                        color = SKyberBlue
+                                    )
 
-                                Spacer(modifier = Modifier.height(24.dp))
+                                    Text(project.stakeholders, fontSize = 14.sp, color = SKyberBlue)
 
-                                Text(
-                                    "Description",
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 18.sp,
-                                    color = SKyberBlue
-                                )
+                                    Spacer(modifier = Modifier.height(16.dp))
 
-                                Text(project.description, fontSize = 14.sp, color = SKyberBlue)
+                                    Text(
+                                        "Project Members",
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 18.sp,
+                                        color = SKyberBlue
+                                    )
 
-                                Spacer(modifier = Modifier.height(24.dp))
+                                    Text(project.teamMembers, fontSize = 14.sp, color = SKyberBlue)
 
-                                Text(
-                                    "Stakeholders",
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 18.sp,
-                                    color = SKyberBlue
-                                )
+                                    Spacer(modifier = Modifier.height(24.dp))
 
-                                Text(project.stakeholders, fontSize = 14.sp, color = SKyberBlue)
-
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                Text(
-                                    "Project Members",
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 18.sp,
-                                    color = SKyberBlue
-                                )
-
-                                Text(project.teamMembers, fontSize = 14.sp, color = SKyberBlue)
-
-                                Spacer(modifier = Modifier.height(24.dp))
-
-                                Button(
-                                    onClick = { isEditMode = true },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(60.dp),
-                                    shape = RoundedCornerShape(28.dp),
-                                    contentPadding = PaddingValues(0.dp),
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                                ) {
-                                    Box(
+                                    Button(
+                                        onClick = { isEditMode = true },
                                         modifier = Modifier
-                                            .fillMaxSize()
-                                            .background(gradientBrush),
-                                        contentAlignment = Alignment.Center
+                                            .fillMaxWidth()
+                                            .height(60.dp),
+                                        shape = RoundedCornerShape(28.dp),
+                                        contentPadding = PaddingValues(0.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                                     ) {
-                                        Text(
-                                            text = "Edit",
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = Color.White
-                                        )
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .background(gradientBrush),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = "Edit",
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = Color.White
+                                            )
+                                        }
                                     }
+
                                 }
-
-                                Spacer(modifier = Modifier.height(18.dp))
-
-                                Text(
-                                    text = "Delete",
-                                    fontSize = 14.sp,
-                                    color = SKyberRed,
-                                    fontWeight = FontWeight.Medium,
-                                    modifier = Modifier.clickable {
-                                        val database = FirebaseHelper.databaseReference
-                                        val projectId = project.id
-                                        database.child("ProjectTransparency").child(projectId)
-                                            .removeValue()
-                                            .addOnSuccessListener {
-                                                Toast.makeText(
-                                                    context,
-                                                    "Deleted Successfully",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                                isEditMode = false
-                                            }
-                                            .addOnFailureListener {
-                                                Toast.makeText(
-                                                    context,
-                                                    "Deletion unsuccessful",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                            }
-                                    }
-                                )
                             }
                         }
                     }

@@ -59,8 +59,8 @@ import com.example.skyber.portalnavigator.Scholarships.DetailsScholarship
 import com.example.skyber.portalnavigator.Scholarships.PostScholarship
 import com.example.skyber.portalnavigator.Scholarships.Scholarships
 import com.example.skyber.screens.CandidateTestScreen
-import com.example.skyber.skprofilescreens.DetailsSKcandidates
-import com.example.skyber.skprofilescreens.PostSKcandidates
+import com.example.skyber.navigationbar.skprofilescreens.DetailsSKcandidates
+import com.example.skyber.navigationbar.skprofilescreens.PostSKcandidates
 import com.example.skyber.ui.theme.NavBarColor
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlue
@@ -69,22 +69,27 @@ import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.SkyberTheme
 import com.example.skyber.userauth.LoginScreen
 import com.example.skyber.userauth.SignupScreen
-import com.example.skyber.userprofilescreens.DetailsVolunteerList
-import com.example.skyber.userprofilescreens.EditProfile
-import com.example.skyber.userprofilescreens.VolunteerList
+import com.example.skyber.navigationbar.userprofilescreens.DetailsVolunteerList
+import com.example.skyber.navigationbar.userprofilescreens.EditProfile
+import com.example.skyber.navigationbar.userprofilescreens.VolunteerList
 import com.example.skyber.viewmodel.CandidateViewModel
-import com.example.skyber.volunteerhubscreens.DetailsVolunteerHub
-import com.example.skyber.volunteerhubscreens.PostVolunteerHub
+import com.example.skyber.navigationbar.volunteerhubscreens.DetailsVolunteerHub
+import com.example.skyber.navigationbar.volunteerhubscreens.PostVolunteerHub
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.firebase.FirebaseApp
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.skyber.navigationbar.skprofilescreens.DetailsSKmembers
+import com.example.skyber.navigationbar.skprofilescreens.PostSKmembers
+import com.example.skyber.ui.theme.White
 
 class MainActivity : ComponentActivity() {
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -245,6 +250,8 @@ class MainActivity : ComponentActivity() {
                             Screens.PostScholarship.screen,
                             Screens.DetailsScholarship.screen,
                             Screens.CandidateTestScreen.screen,
+                            Screens.DetailsSKmembers.screen,
+                            Screens.PostSKmembers.screen
                         )
 
 
@@ -267,8 +274,12 @@ class MainActivity : ComponentActivity() {
                             composable(Screens.SKcandidates.screen) { SKcandidates(navController) }
 
                             //Nested screens for SKcandidates
-                            composable(Screens.PostSKcandidates.screen) {PostSKcandidates(navController,userProfile = userProfile)}
-                            composable(Screens.DetailsSKcandidates.screen) {DetailsSKcandidates(navController)}
+                            composable(Screens.PostSKcandidates.screen) { PostSKcandidates(navController,userProfile = userProfile) }
+                            composable(Screens.DetailsSKcandidates.screen) { DetailsSKcandidates(navController) }
+
+                            //Nested screens for SK members
+                            composable(Screens.PostSKmembers.screen) { PostSKmembers(navController, userProfile = userProfile) }
+                            composable(Screens.DetailsSKmembers.screen) { DetailsSKmembers(navController) }
 
                             //Nested Screens in Portal
                             composable(Screens.Announcement.screen) { Announcements(navController) }
@@ -293,13 +304,13 @@ class MainActivity : ComponentActivity() {
                             composable(Screens.DetailsAnnouncement.screen) { DetailsAnnouncement(navController) }
 
                             //Nested Screens in VolunteerHub
-                            composable(Screens.PostVolunteerHub.screen) {PostVolunteerHub(navController,userProfile = userProfile)}
-                            composable(Screens.DetailsVolunteerHub.screen) {DetailsVolunteerHub(navController)}
+                            composable(Screens.PostVolunteerHub.screen) { PostVolunteerHub(navController,userProfile = userProfile) }
+                            composable(Screens.DetailsVolunteerHub.screen) { DetailsVolunteerHub(navController) }
 
                             //Nested Screens in User Profile
                             composable(Screens.EditProfile.screen) { EditProfile(navController, userProfile = userProfile, ::refreshUserProfile) }
-                            composable(Screens.VolunteerList.screen) {VolunteerList(navController,userProfile = userProfile)}
-                            composable(Screens.DetailsVolunteerList.screen) { DetailsVolunteerList(navController)}
+                            composable(Screens.VolunteerList.screen) { VolunteerList(navController,userProfile = userProfile) }
+                            composable(Screens.DetailsVolunteerList.screen) { DetailsVolunteerList(navController) }
 
                             //Test Screens
                             composable(Screens.CandidateTestScreen.screen) {
@@ -331,7 +342,7 @@ class MainActivity : ComponentActivity() {
         val selected = remember { mutableStateOf(Icons.Default.Home) }
 
         BottomAppBar(
-            containerColor = NavBarColor,
+            containerColor = White,
             modifier = Modifier
                 .fillMaxWidth()
         ) {

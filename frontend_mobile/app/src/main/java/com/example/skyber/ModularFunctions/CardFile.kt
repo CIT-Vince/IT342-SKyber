@@ -139,7 +139,7 @@ fun CandidateCard(
             )
 
             Text(
-                text = "${candidateProfile.partyList}",
+                text = "${candidateProfile.partylist}",
                 fontSize = 20.sp, // Consistent font size
                 color = SoftCardFontGreen,
                 fontWeight = FontWeight.Medium, // Adjusted weight for better readability
@@ -147,14 +147,6 @@ fun CandidateCard(
                 overflow = TextOverflow.Ellipsis
             )
 
-            Text(
-                text = "${candidateProfile.address}",
-                fontSize = 18.sp, // Slightly smaller font for better hierarchy
-                color = SoftCardFontGreen,
-                fontWeight = FontWeight.Medium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
         }
     }
 }
@@ -563,56 +555,48 @@ fun ScholarshipCard(
     }
 }
 
-/*@Preview(showBackground = true)
-@Composable
-fun Preview() {
-     ScholarshipCard(
-        backgroundColor = SoftCardContainerPast,
-        fontColor = SoftCardFontPast,
-        scholarship = Scholarship(
-            title = "College Professor",
-            institution = "CIT-U",
-            category =  "Public",
-        ),
-        onClick = {} // Simple empty lambda for preview
-    )
-}
-*/
-/*
-@Preview(showBackground = true)
-@Composable
-fun Preview() {
-    ProjectTransparencyCard(
-        backgroundColor = SoftCardContainerBrown,
-        fontColor = SoftCardFontBrown,
-        project = Project(
-            projectName = "Road Repair",
-            status = "Ongoing",
-            projectManager = "Jv Bayona",
-            budget = "8000",
-            startDate = "21/04/2025",
-            endDate = "29/04/2025"
-        ),
-        onClick = {} // Simple empty lambda for preview
-    )
-}
 
-
-@Preview(showBackground = true)
 @Composable
-fun VolunteerCardPreview() {
-    VolunteerCard(
-        backgroundColor = SoftCardContainer,
-        fontColor = SoftCardFont,
-        volunteerPost = VolunteerPost(
-            title = "Tree Planting",
-            contactperson = "Ethan",
-            contact = "0921938",
-            status = "Ongoing",
-            location = "Cebu",
-            eventdate = "04/21/2025"
-        ),
-        onClick = {} // Simple empty lambda for preview
-    )
+fun MemberCard(
+    backgroundColor: Color = White,
+    fontColor: Color = Black,
+    skProfile: SKProfile,
+    onClick: () -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        elevation = CardDefaults.cardElevation(6.dp),
+        border = BorderStroke(1.dp, SKyberDarkBlue),
+        shape = RoundedCornerShape(24.dp), // Reduced corner radius for a modern look
+        modifier = Modifier
+            .clickable { onClick() }
+            .padding(8.dp) // Adjusted padding for better alignment
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp) // Consistent spacing between elements
+        ) {
+            Text(
+                text = "${skProfile.firstName} ${skProfile.lastName}",
+                fontSize = 24.sp, // Slightly smaller font for better balance
+                fontWeight = FontWeight.Bold,
+                color = fontColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Text(
+                text = "${skProfile.position}",
+                fontSize = 20.sp, // Consistent font size
+                color = SoftCardFontGreen,
+                fontWeight = FontWeight.Medium, // Adjusted weight for better readability
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
 }
-*/

@@ -131,7 +131,6 @@ fun Home(navController: NavHostController, userProfile: MutableState<User?>, ref
                 .background(SKyberDarkBlueGradient),
             contentAlignment = Alignment.Center
         ) {
-
             CircularProgressIndicator(color = SKyberYellow)
         }
         return
@@ -157,14 +156,6 @@ fun Home(navController: NavHostController, userProfile: MutableState<User?>, ref
                         .graphicsLayer(alpha = 0.5f)
                 )
 
-                /*Text(
-                    text = "✨",
-                    fontSize = 24.sp,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(end = 30.dp, bottom = 20.dp)
-                        .graphicsLayer(alpha = 0.5f)
-                )*/
                 // Main content on top of the particle system
                 Column(
                     modifier = Modifier

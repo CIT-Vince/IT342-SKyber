@@ -1,6 +1,8 @@
 package com.example.skyber.userauth
 
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -43,6 +45,7 @@ import com.example.skyber.Screens
 import com.example.skyber.dataclass.User
 import com.example.skyber.ui.theme.*
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignupScreen(navController: NavHostController) {

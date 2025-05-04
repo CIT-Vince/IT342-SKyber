@@ -11,7 +11,7 @@ data class CandidateProfile (//Data class for Upcoming SK candidates
     val firstName: String? = "",
     val lastName: String? = "",
     val age: String? = "",
-    val partyList: String? = "",
+    val partylist: String? = "",
     val platform: String? = "",
     val address: String? = "",
     val candidateImage: String? = null  // This will store Base64 string
