@@ -301,10 +301,38 @@ const Announcements = () => {
       setLoading(false);
     }
   };
-  
-  const fetchAnnouncements = async () => {
-    try {
-      setLoading(true);
+
+  // Add this function outside of any hooks, near your other handler functions
+const fetchAnnouncements = async () => {
+  try {
+    setLoading(true);
+    
+    const API_URL = 'https://it342-skyber.onrender.com/api/announcements/getAllAnnouncements';
+    console.log("Fetching announcements from:", API_URL);
+    
+    const response = await fetch(API_URL);
+    
+    // Better error handling
+    if (!response.ok) {
+      console.error(`Server responded with ${response.status}: ${response.statusText}`);
+      throw new Error(`Server responded with ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log("Retrieved announcements data:", data);
+    
+    // Check if data exists and is not empty
+    if (data && data.length > 0) {
+      const transformedData = data.map(item => ({
+        id: item.id,
+        title: item.title || "Untitled Announcement",
+        category: item.category || 'Community',
+        date: item.postedAt ? new Date(item.postedAt).toLocaleDateString() : new Date().toLocaleDateString(),
+        image: item.imageData ? `data:image/jpeg;base64,${item.imageData}` : sample1,
+        description: item.content || "No description provided.",
+        likes: 0,
+        isLiked: false
+      }));
       
       const API_URL = 'https://it342-skyber.onrender.com/api/announcements/getAllAnnouncements';
       console.log("Fetching announcements from:", API_URL);
