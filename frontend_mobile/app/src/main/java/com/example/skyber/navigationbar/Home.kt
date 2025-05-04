@@ -100,24 +100,18 @@ fun Home(navController: NavHostController, userProfile: MutableState<User?>, ref
                     .children.mapNotNull { it.getValue(Announcement::class.java) }
             }
             val candidatesFetch = async {
-                Log.d("DataFetch", "Fetching candidates")
-
                 FirebaseHelper.databaseReference.child("Candidates").get().await()
                     .children.mapNotNull { it.getValue(CandidateProfile::class.java) }
             }
 
             val announcementsList = announcementFetch.await()
-            Log.d("DataFetch", "Fetched ${announcementsList.size} announcements")
-
             val candidatesList = candidatesFetch.await()
-            Log.d("DataFetch", "Fetched ${candidatesList.size} candidates")
 
             allAnnouncements.clear()
             allAnnouncements.addAll(announcementsList)
-            Log.d("DataFetch", "Announcements list updated")
+
             allCandidates.clear()
             allCandidates.addAll(candidatesList)
-            Log.d("DataFetch", "Candidates list updated")
         } catch (e: Exception) {
             Log.e("FetchError", "Failed to fetch data", e)
         }
