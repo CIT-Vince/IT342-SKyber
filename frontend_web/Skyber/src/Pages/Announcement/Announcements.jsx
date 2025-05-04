@@ -28,6 +28,7 @@ import sample3 from '../../assets/announce/sample3.png';
 import { useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { showNotification} from '@mantine/notifications';
+import { apiFetch } from '../utils/api';
 
 
 
@@ -39,6 +40,7 @@ function trimToWords(text, wordLimit = 200) {
 }
 
 const Announcements = () => {
+  {/* Hooks and State Management */}
   const { currentUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
@@ -62,6 +64,8 @@ const Announcements = () => {
     imageFile: null
   });
 
+  // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  
   useEffect(() => {
     // Check if we have an ID in the URL (e.g., /announcements/123)
     if (params.id) {
@@ -69,7 +73,7 @@ const Announcements = () => {
         try {
           setLoading(true);
           
-          const response = await fetch(`http://localhost:8080/api/announcements/getAnnouncementByHashId/${params.id}`);
+          const response = await apiFetch(`api/announcements/getAnnouncementByHashId/${params.id}`);
           console.log("Attempting to fetch announcement with ID:", params.id, "type:", typeof params.id);
           if (!response.ok) throw new Error('Announcement not found');
           
@@ -191,7 +195,7 @@ const Announcements = () => {
       content: announcement.description,
       category: announcement.category,
       barangay: announcement.barangay || 'All',
-      imageFile: null // Can't fill this from existing data
+      imageFile: null 
     });
     openEditModal();
   };
@@ -206,22 +210,37 @@ const Announcements = () => {
     try {
       setLoading(true);
       
-      const formDataObj = new FormData();
-      formDataObj.append('title', formData.title);
-      formDataObj.append('content', formData.content);
-      formDataObj.append('category', formData.category);
-      formDataObj.append('barangay', formData.barangay);
-      
+      // Check if an image is being uploaded
       if (formData.imageFile) {
+        const formDataObj = new FormData();
+        formDataObj.append('title', formData.title);
+        formDataObj.append('content', formData.content);
+        formDataObj.append('category', formData.category);
+        formDataObj.append('barangay', formData.barangay);
         formDataObj.append('image', formData.imageFile);
+        
+        const response = await apiFetch('api/announcements/createWithImage', {
+          method: 'POST',
+          body: formDataObj
+        });
+        
+        if (!response.ok) throw new Error('Failed to create announcement with image');
+      } else {
+        const response = await apiFetch('api/announcements/createAnnouncements', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            title: formData.title,
+            content: formData.content,
+            category: formData.category,
+            barangay: formData.barangay
+          })
+        });
+        
+        if (!response.ok) throw new Error('Failed to create announcement');
       }
-      
-      const response = await fetch('/api/announcements/createWithImage', {
-        method: 'POST',
-        body: formDataObj
-      });
-      
-      if (!response.ok) throw new Error('Failed to create announcement');
       
       showNotification({
         title: 'Success',
@@ -230,7 +249,7 @@ const Announcements = () => {
       });
       
       closeCreateModal();
-      fetchAnnouncements(); // Re-fetch announcements
+      fetchAnnouncements();
     } catch (error) {
       console.error('Error creating announcement:', error);
       showNotification({
@@ -248,7 +267,6 @@ const Announcements = () => {
     try {
       setLoading(true);
       
-      // For edit, we use updateAnnouncement endpoint with JSON body
       const updateData = {
         title: formData.title,
         content: formData.content,
@@ -256,7 +274,7 @@ const Announcements = () => {
         barangay: formData.barangay
       };
       
-      const response = await fetch(`http://skyber.onrender.com/api/announcements/updateAnnouncement/${selectedAnnouncement.id}`, {
+      const response = await apiFetch(`api/announcements/updateAnnouncement/${selectedAnnouncement.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updateData)
@@ -271,7 +289,7 @@ const Announcements = () => {
       });
       
       closeEditModal();
-      fetchAnnouncements(); // Re-fetch announcements
+      fetchAnnouncements(); 
     } catch (error) {
       console.error('Error updating announcement:', error);
       showNotification({
@@ -283,76 +301,77 @@ const Announcements = () => {
       setLoading(false);
     }
   };
-  // Add this function outside of any hooks, near your other handler functions
-const fetchAnnouncements = async () => {
-  try {
-    setLoading(true);
-    
-    const API_URL = 'https://skyber.onrender.com/api/announcements/getAllAnnouncements';
-    console.log("Fetching announcements from:", API_URL);
-    
-    const response = await fetch(API_URL);
-    
-    // Better error handling
-    if (!response.ok) {
-      console.error(`Server responded with ${response.status}: ${response.statusText}`);
-      throw new Error(`Server responded with ${response.status}`);
-    }
-    
-    const data = await response.json();
-    console.log("Retrieved announcements data:", data);
-    
-    // Check if data exists and is not empty
-    if (data && data.length > 0) {
-      const transformedData = data.map(item => ({
-        id: item.id,
-        title: item.title || "Untitled Announcement",
-        category: item.category || 'Community',
-        date: item.postedAt ? new Date(item.postedAt).toLocaleDateString() : new Date().toLocaleDateString(),
-        image: item.imageData ? `data:image/jpeg;base64,${item.imageData}` : sample1,
-        description: item.content || "No description provided.",
-        likes: 0,
-        isLiked: false
-      }));
+  
+  const fetchAnnouncements = async () => {
+    try {
+      setLoading(true);
       
-      setAnnounceData(transformedData);
-    } else {
-      console.warn("Server returned empty announcement data");
-      throw new Error("No announcements found in server response");
+      const API_URL = 'https://it342-skyber.onrender.com/api/announcements/getAllAnnouncements';
+      console.log("Fetching announcements from:", API_URL);
+      
+      const response = await fetch(API_URL);
+      
+      // Better error handling
+      if (!response.ok) {
+        console.error(`Server responded with ${response.status}: ${response.statusText}`);
+        throw new Error(`Server responded with ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("Retrieved announcements data:", data);
+      
+      // Check if data exists and is not empty
+      if (data && data.length > 0) {
+        const transformedData = data.map(item => ({
+          id: item.id,
+          title: item.title || "Untitled Announcement",
+          category: item.category || 'Community',
+          date: item.postedAt ? new Date(item.postedAt).toLocaleDateString() : new Date().toLocaleDateString(),
+          image: item.imageData ? `data:image/jpeg;base64,${item.imageData}` : sample1,
+          description: item.content || "No description provided.",
+          likes: 0,
+          isLiked: false
+        }));
+        
+        setAnnounceData(transformedData);
+      } else {
+        console.warn("Server returned empty announcement data");
+        throw new Error("No announcements found in server response");
+      }
+    } catch (error) {
+      console.error("Error fetching announcements:", error);
+      // sagdai lang ni
+      const mockData = [
+        {
+          id: "mock1",
+          title: "Community Meeting",
+          category: "Community",
+          date: new Date().toLocaleDateString(),
+          image: sample1,
+          description: "Join us for our monthly community meeting to discuss upcoming projects and initiatives. Everyone is welcome to attend and share their ideas.",
+          likes: 15,
+          isLiked: false
+        },
+      ];
+      
+      setAnnounceData(mockData);
+      
+      showNotification({
+        title: 'Using Demo Data',
+        message: 'Could not connect to server. Showing demo announcements.',
+        color: 'yellow',
+        position: 'top-right'
+      });
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Error fetching announcements:", error);
-    // Fall back to mock data
-    const mockData = [
-      {
-        id: "mock1",
-        title: "Community Meeting",
-        category: "Community",
-        date: new Date().toLocaleDateString(),
-        image: sample1,
-        description: "Join us for our monthly community meeting to discuss upcoming projects and initiatives. Everyone is welcome to attend and share their ideas.",
-        likes: 15,
-        isLiked: false
-      },
-    ];
-    
-    setAnnounceData(mockData);
-    
-    showNotification({
-      title: 'Using Demo Data',
-      message: 'Could not connect to server. Showing demo announcements.',
-      color: 'yellow',
-      position: 'top-right'
-    });
-  } finally {
-    setLoading(false);
-  }
-};
+  };
+
   const handleConfirmDelete = async () => {
     try {
       setLoading(true);
       
-      const response = await fetch(`/api/announcements/deleteAnnouncement/${selectedAnnouncement.id}`, {
+      const response = await apiFetch(`/api/announcements/deleteAnnouncement/${selectedAnnouncement.id}`, {
         method: 'DELETE'
       });
       
@@ -384,7 +403,7 @@ useEffect(() => {
     try {
       setLoading(true);
       
-      const API_URL = 'https://skyber.onrender.com/api/announcements/getAllAnnouncements';
+      const API_URL = 'https://it342-skyber.onrender.com/api/announcements/getAllAnnouncements';
       console.log("Fetching announcements from:", API_URL);
       
       const response = await fetch(API_URL);
@@ -541,18 +560,18 @@ const copyToClipboard = (text) => {
                 </Tabs>
               </Grid.Col>
               <Grid.Col span={12} className="mt-4">
-              {isAdmin && (
-  <div className="mb-4 flex justify-end">
-    <Button 
-      leftSection={<IconPlus size={16} />}
-      onClick={openCreateModal}
-      variant="gradient" 
-      gradient={{ from: 'blue', to: 'cyan' }}
-    >
-      Create Announcement
-    </Button>
-  </div>
-)}
+                    {isAdmin && (
+                      <div className="mb-4 flex justify-end">
+                        <Button 
+                          leftSection={<IconPlus size={16} />}
+                          onClick={openCreateModal}
+                          variant="gradient" 
+                          gradient={{ from: 'blue', to: 'cyan' }}
+                        >
+                          Create Announcement
+                        </Button>
+                      </div>
+                    )}
                 </Grid.Col>
             </Grid>
           </Paper>
@@ -829,94 +848,149 @@ const copyToClipboard = (text) => {
         )}
       </Modal>
       {/* Create Modal */}
-<Modal opened={createModalOpen} onClose={closeCreateModal} title="Create Announcement" size="lg">
-  <form onSubmit={handleCreateSubmit}>
-    <TextInput
-      label="Title"
-      required
-      placeholder="Announcement title"
-      value={formData.title}
-      onChange={(e) => setFormData({...formData, title: e.target.value})}
-      className="mb-3"
-    />
-    
-    <Select
-      label="Category"
-      data={[
-        { value: 'News', label: 'News' },
-        { value: 'Event', label: 'Event' },
-        { value: 'Notice', label: 'Notice' },
-        { value: 'Emergency', label: 'Emergency' },
-      ]}
-      value={formData.category}
-      onChange={(value) => setFormData({...formData, category: value})}
-      className="mb-3"
-      required
-    />
-    
-    <Select
-      label="Barangay"
-      data={[
-        { value: 'All', label: 'All Barangays' },
-        { value: 'Barangay 1', label: 'Barangay 1' },
-        { value: 'Barangay 2', label: 'Barangay 2' },
-        { value: 'Barangay 3', label: 'Barangay 3' },
-      ]}
-      value={formData.barangay}
-      onChange={(value) => setFormData({...formData, barangay: value})}
-      className="mb-3"
-      required
-    />
-    
-    <Textarea
-      label="Content"
-      placeholder="Announcement content"
-      required
-      minRows={4}
-      value={formData.content}
-      onChange={(e) => setFormData({...formData, content: e.target.value})}
-      className="mb-3"
-    />
-    
-    <FileInput
-      label="Image"
-      placeholder="Upload announcement image"
-      accept="image/*"
-      onChange={(file) => setFormData({...formData, imageFile: file})}
-      className="mb-4"
-    />
-    
-    <Group position="right" mt="md">
-      <Button variant="outline" onClick={closeCreateModal}>Cancel</Button>
-      <Button type="submit" color="blue">Create</Button>
-    </Group>
-  </form>
-</Modal>
+      <Modal opened={createModalOpen} onClose={closeCreateModal} title="Create Announcement" size="lg">
+        <form onSubmit={handleCreateSubmit}>
+          <TextInput
+            label="Title"
+            required
+            placeholder="Announcement title"
+            value={formData.title}
+            onChange={(e) => setFormData({...formData, title: e.target.value})}
+            className="mb-3"
+          />
+          
+          <Select
+            label="Category"
+            data={[
+              { value: 'News', label: 'News' },
+              { value: 'Event', label: 'Event' },
+              { value: 'Notice', label: 'Notice' },
+              { value: 'Emergency', label: 'Emergency' },
+            ]}
+            value={formData.category}
+            onChange={(value) => setFormData({...formData, category: value})}
+            className="mb-3"
+            required
+          />
+          
+          <Select
+            label="Barangay"
+            data={[
+              { value: 'All', label: 'All Barangays' },
+              { value: 'Barangay 1', label: 'Barangay 1' },
+              { value: 'Barangay 2', label: 'Barangay 2' },
+              { value: 'Barangay 3', label: 'Barangay 3' },
+            ]}
+            value={formData.barangay}
+            onChange={(value) => setFormData({...formData, barangay: value})}
+            className="mb-3"
+            required
+          />
+          
+          <Textarea
+            label="Content"
+            placeholder="Announcement content"
+            required
+            minRows={4}
+            value={formData.content}
+            onChange={(e) => setFormData({...formData, content: e.target.value})}
+            className="mb-3"
+          />
+          
+          <FileInput
+            label="Image"
+            placeholder="Upload announcement image"
+            accept="image/*"
+            onChange={(file) => setFormData({...formData, imageFile: file})}
+            className="mb-4"
+          />
+          
+          <Group position="right" mt="md">
+            <Button variant="outline" onClick={closeCreateModal}>Cancel</Button>
+            <Button type="submit" color="blue">Create</Button>
+          </Group>
+        </form>
+      </Modal>
 
-{/* Edit Modal */}
-<Modal opened={editModalOpen} onClose={closeEditModal} title="Edit Announcement" size="lg">
-  <form onSubmit={handleEditSubmit}>
-    {/* Same fields as Create Modal */}
-    <Group position="right" mt="md">
-      <Button variant="outline" onClick={closeEditModal}>Cancel</Button>
-      <Button type="submit" color="yellow">Update</Button>
-    </Group>
-  </form>
-</Modal>
+      {/* Edit Modal */}
+      <Modal opened={editModalOpen} onClose={closeEditModal} title="Edit Announcement" size="lg">
+        <form onSubmit={handleEditSubmit}>
+          <TextInput
+            label="Title"
+            required
+            placeholder="Announcement title"
+            value={formData.title}
+            onChange={(e) => setFormData({...formData, title: e.target.value})}
+            className="mb-3"
+          />
+          
+          <Select
+            label="Category"
+            data={[
+              { value: 'News', label: 'News' },
+              { value: 'Event', label: 'Event' },
+              { value: 'Notice', label: 'Notice' },
+              { value: 'Emergency', label: 'Emergency' },
+            ]}
+            value={formData.category}
+            onChange={(value) => setFormData({...formData, category: value})}
+            className="mb-3"
+            required
+          />
+          
+          <Select
+            label="Barangay"
+            data={[
+              { value: 'All', label: 'All Barangays' },
+              { value: 'Barangay 1', label: 'Barangay 1' },
+              { value: 'Barangay 2', label: 'Barangay 2' },
+              { value: 'Barangay 3', label: 'Barangay 3' },
+            ]}
+            value={formData.barangay}
+            onChange={(value) => setFormData({...formData, barangay: value})}
+            className="mb-3"
+            required
+          />
+          
+          <Textarea
+            label="Content"
+            placeholder="Announcement content"
+            required
+            minRows={4}
+            value={formData.content}
+            onChange={(e) => setFormData({...formData, content: e.target.value})}
+            className="mb-3"
+          />
+          
+          <FileInput
+            label="Image (Optional)"
+            description="Leave empty to keep existing image"
+            placeholder="Upload new announcement image"
+            accept="image/*"
+            onChange={(file) => setFormData({...formData, imageFile: file})}
+            className="mb-4"
+          />
+          
+          <Group position="right" mt="md">
+            <Button variant="outline" onClick={closeEditModal}>Cancel</Button>
+            <Button type="submit" color="yellow">Update</Button>
+          </Group>
+        </form>
+      </Modal>
 
-{/* Delete Confirmation Modal */}
-<Modal opened={deleteModalOpen} onClose={closeDeleteModal} title="Delete Announcement" size="sm">
-  <Text>Are you sure you want to delete this announcement?</Text>
-  <Text size="sm" color="dimmed" className="mt-2">This action cannot be undone.</Text>
-  
-  <Group position="right" mt="xl">
-    <Button variant="outline" onClick={closeDeleteModal}>Cancel</Button>
-    <Button color="red" onClick={handleConfirmDelete}>Delete</Button>
-  </Group>
-</Modal>
+      {/* Delete Confirmation Modal */}
+      <Modal opened={deleteModalOpen} onClose={closeDeleteModal} title="Delete Announcement" size="sm">
+        <Text>Are you sure you want to delete this announcement?</Text>
+        <Text size="sm" color="dimmed" className="mt-2">This action cannot be undone.</Text>
+        
+        <Group position="right" mt="xl">
+          <Button variant="outline" onClick={closeDeleteModal}>Cancel</Button>
+          <Button color="red" onClick={handleConfirmDelete}>Delete</Button>
+        </Group>
+      </Modal>
     </>
   );
 
 };
 
-export default Announcements;
+export default Announcements; 

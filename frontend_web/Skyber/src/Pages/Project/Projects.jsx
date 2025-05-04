@@ -141,9 +141,7 @@ const [projectForm, setProjectForm] = useState({
   sustainabilityGoals: '',
   imageFile: null
 });
-const API_BASE_URL = import.meta.env.MODE === 'production' 
-  ? 'https://skyber.onrender.com' 
-  : '';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
   // Filters
@@ -450,7 +448,7 @@ const handleCreateSubmit = async (e) => {
       projectManager: projectForm.projectManager || 'Not Assigned'
     });
     
-    const response = await fetch(`${API_BASE_URL}/api/projects/createWithImage`, {
+    const response = await fetch(`${API_BASE_URL}/api/projects/createWithImage` , {
       method: 'POST',
       body: formDataObj
     });

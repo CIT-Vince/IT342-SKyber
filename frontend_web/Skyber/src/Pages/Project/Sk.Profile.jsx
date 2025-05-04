@@ -135,7 +135,7 @@ const SkProfile = () => {
     <>
       {/* Header with gradient background */}
       <div
-        className="w-full h-auto pt-30!"
+        className="w-full h-auto pt-30!w"
         style={{
           background: 'linear-gradient(180deg, #0134AA 0%, #001544 100%)',
         }}
