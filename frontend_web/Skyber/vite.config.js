@@ -9,7 +9,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://skyber.onrender.com',
+        target: 'https://it342-skyber.onrender.com',
         changeOrigin: true,
         secure: false,
       }

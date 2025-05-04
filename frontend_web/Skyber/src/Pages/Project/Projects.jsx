@@ -450,7 +450,7 @@ const handleCreateSubmit = async (e) => {
       projectManager: projectForm.projectManager || 'Not Assigned'
     });
     
-    const response = await fetch(`${API_BASE_URL}/api/projects/createWithImage`, {
+    const response = await fetch(`${API_BASE_URL}/api/projects/createWithImage` , {
       method: 'POST',
       body: formDataObj
     });
