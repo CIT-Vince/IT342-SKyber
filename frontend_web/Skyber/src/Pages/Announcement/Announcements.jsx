@@ -302,42 +302,13 @@ const Announcements = () => {
     }
   };
 
-  // Add this function outside of any hooks, near your other handler functions
-const fetchAnnouncements = async () => {
-  try {
-    setLoading(true);
-    
-    const API_URL = 'https://it342-skyber.onrender.com/api/announcements/getAllAnnouncements';
-    console.log("Fetching announcements from:", API_URL);
-    
-    const response = await fetch(API_URL);
-    
-    // Better error handling
-    if (!response.ok) {
-      console.error(`Server responded with ${response.status}: ${response.statusText}`);
-      throw new Error(`Server responded with ${response.status}`);
-    }
-    
-    const data = await response.json();
-    console.log("Retrieved announcements data:", data);
-    
-    // Check if data exists and is not empty
-    if (data && data.length > 0) {
-      const transformedData = data.map(item => ({
-        id: item.id,
-        title: item.title || "Untitled Announcement",
-        category: item.category || 'Community',
-        date: item.postedAt ? new Date(item.postedAt).toLocaleDateString() : new Date().toLocaleDateString(),
-        image: item.imageData ? `data:image/jpeg;base64,${item.imageData}` : sample1,
-        description: item.content || "No description provided.",
-        likes: 0,
-        isLiked: false
-      }));
+  
+  // Clean implementation of fetchAnnouncements
+  const fetchAnnouncements = async () => {
+    try {
+      setLoading(true);
       
-      const API_URL = 'https://it342-skyber.onrender.com/api/announcements/getAllAnnouncements';
-      console.log("Fetching announcements from:", API_URL);
-      
-      const response = await fetch(API_URL);
+      const response = await apiFetch('api/announcements/getAllAnnouncements');
       
       // Better error handling
       if (!response.ok) {
@@ -368,7 +339,7 @@ const fetchAnnouncements = async () => {
       }
     } catch (error) {
       console.error("Error fetching announcements:", error);
-      // sagdai lang ni
+      // Fallback to mock data
       const mockData = [
         {
           id: "mock1",
@@ -425,103 +396,103 @@ const fetchAnnouncements = async () => {
     }
   };
 
-// firebase nato
-useEffect(() => {
-  const fetchAnnouncements = async () => {
-    try {
-      setLoading(true);
-      
-      const API_URL = 'https://it342-skyber.onrender.com/api/announcements/getAllAnnouncements';
-      console.log("Fetching announcements from:", API_URL);
-      
-      const response = await fetch(API_URL);
-      
-      // Better error handling
-      if (!response.ok) {
-        console.error(`Server responded with ${response.status}: ${response.statusText}`);
-        throw new Error(`Server responded with ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log("Retrieved announcements data:", data);
-      
-      // Check if data exists and is not empty
-      if (data && data.length > 0) {
-        const transformedData = data.map(item => ({
-          id: item.id,
-          title: item.title || "Untitled Announcement",
-          category: item.category || 'Community',
-          date: item.postedAt ? new Date(item.postedAt).toLocaleDateString() : new Date().toLocaleDateString(),
-          image: item.imageData ? `data:image/jpeg;base64,${item.imageData}` : sample1,
-          description: item.content || "No description provided.",
-          likes: 0,
-          isLiked: false
-        }));
+  // firebase nato
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        setLoading(true);
         
-        setAnnounceData(transformedData);
+        const API_URL = 'https://it342-skyber.onrender.com/api/announcements/getAllAnnouncements';
+        console.log("Fetching announcements from:", API_URL);
         
-        // showNotification({
-        //   title: 'Connected to SKyber Server',
-        //   message: `Loaded ${transformedData.length} announcements from backend`,
-        //   color: 'green',
-        //   position: 'top-right'
-        // });
-      } else {
-        // error naa diri
-        console.warn("Server returned empty announcement data");
-        throw new Error("No announcements found in server response");
+        const response = await fetch(API_URL);
+        
+        // Better error handling
+        if (!response.ok) {
+          console.error(`Server responded with ${response.status}: ${response.statusText}`);
+          throw new Error(`Server responded with ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log("Retrieved announcements data:", data);
+        
+        // Check if data exists and is not empty
+        if (data && data.length > 0) {
+          const transformedData = data.map(item => ({
+            id: item.id,
+            title: item.title || "Untitled Announcement",
+            category: item.category || 'Community',
+            date: item.postedAt ? new Date(item.postedAt).toLocaleDateString() : new Date().toLocaleDateString(),
+            image: item.imageData ? `data:image/jpeg;base64,${item.imageData}` : sample1,
+            description: item.content || "No description provided.",
+            likes: 0,
+            isLiked: false
+          }));
+          
+          setAnnounceData(transformedData);
+          
+          // showNotification({
+          //   title: 'Connected to SKyber Server',
+          //   message: `Loaded ${transformedData.length} announcements from backend`,
+          //   color: 'green',
+          //   position: 'top-right'
+          // });
+        } else {
+          // error naa diri
+          console.warn("Server returned empty announcement data");
+          throw new Error("No announcements found in server response");
+        }
+      } catch (error) {
+        console.error("Error fetching announcements:", error);
+        // sagdai lang ni
+        const mockData = [
+          {
+            id: "mock1",
+            title: "Community Meeting",
+            category: "Community",
+            date: new Date().toLocaleDateString(),
+            image: sample1,
+            description: "Join us for our monthly community meeting to discuss upcoming projects and initiatives. Everyone is welcome to attend and share their ideas.",
+            likes: 15,
+            isLiked: false
+          },
+        ];
+        
+        setAnnounceData(mockData);
+        
+    showNotification({
+          title: 'Using Demo Data',
+          message: 'Could not connect to server. Showing demo announcements.',
+          color: 'yellow',
+          position: 'top-right'
+        });
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching announcements:", error);
-      // sagdai lang ni
-      const mockData = [
-        {
-          id: "mock1",
-          title: "Community Meeting",
-          category: "Community",
-          date: new Date().toLocaleDateString(),
-          image: sample1,
-          description: "Join us for our monthly community meeting to discuss upcoming projects and initiatives. Everyone is welcome to attend and share their ideas.",
-          likes: 15,
-          isLiked: false
-        },
-      ];
-      
-      setAnnounceData(mockData);
-      
-  showNotification({
-        title: 'Using Demo Data',
-        message: 'Could not connect to server. Showing demo announcements.',
-        color: 'yellow',
-        position: 'top-right'
+    };
+    
+    fetchAnnouncements();
+  }, []);
+
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        showNotification({
+          title: 'Link Copied!',
+          message: 'Share link has been copied to clipboard',
+          color: 'blue',
+        });
+      })
+      .catch(err => {
+        console.error('Failed to copy:', err);
+        showNotification({
+          title: 'Copy Failed',
+          message: 'Please try selecting and copying the URL manually',
+          color: 'red',
+        });
       });
-    } finally {
-      setLoading(false);
-    }
   };
-  
-  fetchAnnouncements();
-}, []);
-
-
-const copyToClipboard = (text) => {
-  navigator.clipboard.writeText(text)
-    .then(() => {
-      showNotification({
-        title: 'Link Copied!',
-        message: 'Share link has been copied to clipboard',
-        color: 'blue',
-      });
-    })
-    .catch(err => {
-      console.error('Failed to copy:', err);
-      showNotification({
-        title: 'Copy Failed',
-        message: 'Please try selecting and copying the URL manually',
-        color: 'red',
-      });
-    });
-};
 
   if (loading) {
     return (
