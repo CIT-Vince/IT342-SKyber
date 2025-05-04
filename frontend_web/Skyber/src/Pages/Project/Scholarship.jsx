@@ -386,7 +386,37 @@ const handleCreateSubmit = async (e) => {
     setLoading(false);
   }
 };
-
+const completeSubmit = async (formData) => {
+  try {
+    const response = await fetch('/api/scholarships/createScholarship/with-image', {
+      method: 'POST',
+      body: formData
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to create scholarship: ${errorText}`);
+    }
+    
+    notifications.show({
+      title: 'Success',
+      message: 'Scholarship created successfully',
+      color: 'green'
+    });
+    
+    closeCreateModal();
+    fetchScholarships();
+  } catch (error) {
+    console.error('Error creating scholarship:', error);
+    notifications.show({
+      title: 'Error',
+      message: error.message || 'Failed to create scholarship',
+      color: 'red'
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 const handleEditSubmit = async (e) => {
   e.preventDefault();
   

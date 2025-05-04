@@ -288,7 +288,7 @@ const fetchAnnouncements = async () => {
   try {
     setLoading(true);
     
-    const API_URL = 'https://skyber.onrender.com/api/announcements/getAllAnnouncements';
+    const API_URL = 'https://it342-skyber.onrender.com/api/announcements/getAllAnnouncements';
     console.log("Fetching announcements from:", API_URL);
     
     const response = await fetch(API_URL);
@@ -384,7 +384,7 @@ useEffect(() => {
     try {
       setLoading(true);
       
-      const API_URL = 'https://skyber.onrender.com/api/announcements/getAllAnnouncements';
+      const API_URL = 'https://it342-skyber.onrender.com/api/announcements/getAllAnnouncements';
       console.log("Fetching announcements from:", API_URL);
       
       const response = await fetch(API_URL);
