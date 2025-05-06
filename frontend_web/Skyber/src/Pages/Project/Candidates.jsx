@@ -13,12 +13,22 @@ import {
   Divider,
   Loader,
   TextInput,
-  Select
+  Select,
+  ActionIcon, 
+  Textarea ,
+  FileInput  
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { IconSearch, IconShare, IconArrowLeft } from '@tabler/icons-react';
+import { IconSearch, IconShare, IconArrowLeft,IconPlus,
+  IconEdit,
+  IconTrash,
+  IconEye,
+ } from '@tabler/icons-react';
 import Navbar from '../../components/Navbar';
 import { useDisclosure } from '@mantine/hooks';
+import { apiFetch } from '../utils/api'; 
+import { useAuth } from '../../contexts/AuthContext';
+import { DateInput } from '@mantine/dates';
 
 const CandidatesList = () => {
   const [candidates, setCandidates] = useState([]);
@@ -28,68 +38,103 @@ const CandidatesList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activePartylist, setActivePartylist] = useState('All');
   const [opened, { open, close }] = useDisclosure(false);
+  {/* admin shits*/}
+  const { currentUser } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [createModalOpen, { open: openCreateModal, close: closeCreateModal }] = useDisclosure(false);
+  const [editModalOpen, { open: openEditModal, close: closeEditModal }] = useDisclosure(false);
+  const [deleteModalOpen, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
+  const [candidateForm, setCandidateForm] = useState({
+    firstName: '',
+    lastName: '',
+    age: '',
+    address: '',
+    partylist: 'Independent',
+    platform: '',
+    imageFile: null
+  });
 
-  // Fetch candidates from backend
   useEffect(() => {
-    const fetchCandidates = async () => {
-      try {
-        setLoading(true);
-        
-        const API_URL = '/api/candidates/getAllCandidates';
-        console.log("Fetching candidates from:", API_URL);
-        
-        const response = await fetch(API_URL);
-        
-        // Better error handling
-        if (!response.ok) {
-          console.error(`Server responded with ${response.status}: ${response.statusText}`);
-          throw new Error(`Server responded with ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log("Retrieved candidates data:", data);
-        
-        if (data && data.length > 0) {
-          const transformedData = data.map(item => ({
-            id: item.id,
-            firstname: item.firstName || '', 
-            lastname: item.lastName || '',   
-            age: item.age || '',
-            address: item.address || '',
-            partylist: item.partylist || 'Independent',
-            position: item.position || 'Candidate',
-            platform: item.platform || 'No platform provided.',
-            candidateImage: item.candidateImage || '',
-            achievements: item.achievements ? 
-              item.achievements.split(',').map(a => a.trim()) : 
-              ['Community Service'] 
-          }));
+    if (currentUser) {
+      const checkUserRole = async () => {
+        try {
+          const { getDatabase, ref, get } = await import('firebase/database');
+          const db = getDatabase();
+          const userRef = ref(db, `users/${currentUser.uid}`);
+          const snapshot = await get(userRef);
           
-          setCandidates(transformedData);
-          setError(null);
-          
-          notifications.show({
-            title: 'Candidates Loaded',
-            message: `Successfully loaded ${transformedData.length} candidates`,
-            color: 'green',
-          });
-        } else {
-          console.warn("Server returned empty candidates data");
-          throw new Error("No candidates found in server response");
+          if (snapshot.exists()) {
+            const userData = snapshot.val();
+            setIsAdmin(userData.role === 'ADMIN');
+          }
+        } catch (error) {
+          console.error('Error checking user role:', error);
         }
-      } catch (error) {
-        console.error("Error fetching candidates:", error);
-        setError(error.message);
+      };
+      
+      checkUserRole();
+    }
+  }, [currentUser]);
+
+  
+  const fetchCandidates = async () => {
+    try {
+      setLoading(true);
+      
+      const response = await apiFetch('api/candidates/getAllCandidates');
+      
+      // Better error handling with cute notification! (*ﾟ▽ﾟ)ﾉ
+      if (!response.ok) {
+        console.error(`Server responded with ${response.status}: ${response.statusText}`);
+        throw new Error(`Server responded with ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("Retrieved candidates data:", data);
+      
+      if (data && data.length > 0) {
+        const transformedData = data.map(item => ({
+          id: item.id,
+          firstname: item.firstName || '', 
+          lastname: item.lastName || '',   
+          age: item.age || '',
+          address: item.address || '',
+          partylist: item.partylist || 'Independent',
+          position: item.position || 'Candidate',
+          platform: item.platform || 'No platform provided.',
+          candidateImage: item.candidateImage || '',
+          achievements: item.achievements ? 
+            item.achievements.split(',').map(a => a.trim()) : 
+            ['Community Service'] 
+        }));
+        
+        setCandidates(transformedData);
+        setError(null);
         
         notifications.show({
-          title: 'Error Loading Candidates',
-          message: 'Please try again later or contact support',
-          color: 'red',
+          title: 'Candidates Loaded (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧',
+          message: `Successfully loaded ${transformedData.length} candidates!`,
+          color: 'green',
         });
-      } finally {
-        setLoading(false);
+      } else {
+        console.warn("Server returned empty candidates data");
+        throw new Error("No candidates found in server response");
       }
-    };
+    } catch (error) {
+      console.error("Error fetching candidates:", error);
+      setError(error.message);
+      
+      notifications.show({
+        title: 'Error Loading Candidates (╥﹏╥)',
+        message: 'Please try again later or contact support',
+        color: 'red',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  // Fetch candidates from backend
+  useEffect(() => {
     
     fetchCandidates();
   }, []);
@@ -120,6 +165,220 @@ const CandidatesList = () => {
       case 'Batan-on United': return { from: 'pink', to: 'violet' };
       case 'Progressive Youth': return { from: 'teal', to: 'blue' };
       default: return { from: 'gray', to: 'blue' };
+    }
+  };
+  const handleEditClick = (candidate) => {
+    setCandidateForm({
+      firstName: candidate.firstname,
+      lastName: candidate.lastname,
+      age: candidate.age,
+      address: candidate.address,
+      partylist: candidate.partylist,
+      platform: candidate.platform,
+      imageFile: null
+    });
+    
+    setSelectedCandidate(candidate);
+    openEditModal();
+  };
+  
+  const handleDeleteClick = (candidate) => {
+    setSelectedCandidate(candidate);
+    openDeleteModal();
+  };
+  
+  const resetForm = () => {
+    setCandidateForm({
+      firstName: '',
+      lastName: '',
+      age: '',
+      address: '',
+      partylist: 'Independent',
+      platform: '',
+      imageFile: null
+    });
+  };
+  
+  const handleCreateClick = () => {
+    resetForm();
+    openCreateModal();
+  };
+
+  const handleCreateSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!candidateForm.firstName || !candidateForm.lastName) {
+      notifications.show({
+        title: 'Validation Error (⊙△⊙✿)',
+        message: 'Name fields are required! Please fill them in~',
+        color: 'pink'
+      });
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      
+      // If we have an image, use FormData and the with-image endpoint
+      if (candidateForm.imageFile) {
+        const formDataObj = new FormData();
+        formDataObj.append('firstName', candidateForm.firstName);
+        formDataObj.append('lastName', candidateForm.lastName);
+        formDataObj.append('age', candidateForm.age);
+        formDataObj.append('address', candidateForm.address);
+        formDataObj.append('partylist', candidateForm.partylist);
+        formDataObj.append('platform', candidateForm.platform);
+        formDataObj.append('image', candidateForm.imageFile);
+        
+        const response = await apiFetch('api/candidates/createCandidate/with-image', {
+          method: 'POST',
+          body: formDataObj
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to create candidate: ${response.status}`);
+        }
+      } 
+      // No image, use JSON and the regular endpoint
+      else {
+        const candidateData = {
+          firstName: candidateForm.firstName,
+          lastName: candidateForm.lastName,
+          age: candidateForm.age,
+          address: candidateForm.address,
+          partylist: candidateForm.partylist,
+          platform: candidateForm.platform,
+        };
+        
+        const response = await apiFetch('api/candidates/createCandidate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(candidateData)
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to create candidate: ${response.status}`);
+        }
+      }
+  
+      notifications.show({
+        title: 'Success (ﾉ´ヮ`)ﾉ*:･ﾟ✧',
+        message: 'Candidate created successfully!',
+        color: 'green'
+      });
+      
+      closeCreateModal();
+      fetchCandidates();
+      
+    } catch (error) {
+      console.error('Error creating candidate:', error);
+      notifications.show({
+        title: 'Error (｡•́︿•̀｡)',
+        message: 'Failed to create candidate: ' + error.message,
+        color: 'red'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      setLoading(true);
+      
+      // For updating the candidate details without image
+      const candidateData = {
+        firstName: candidateForm.firstName,
+        lastName: candidateForm.lastName,
+        age: candidateForm.age,
+        address: candidateForm.address,
+        partylist: candidateForm.partylist,
+        platform: candidateForm.platform,
+      };
+      
+      // First update the candidate details
+      const response = await apiFetch(`api/candidates/updateCandidate/${selectedCandidate.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(candidateData)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
+      }
+      
+      // If there's a new image, update it separately
+      if (candidateForm.imageFile) {
+        const imageFormData = new FormData();
+        imageFormData.append('image', candidateForm.imageFile);
+        
+        const imageResponse = await apiFetch(`api/candidates/updateCandidate/${selectedCandidate.id}/image`, {
+          method: 'PUT',
+          body: imageFormData
+        });
+        
+        if (!imageResponse.ok) {
+          throw new Error(`Image upload failed: ${imageResponse.status}`);
+        }
+      }
+      
+      notifications.show({
+        title: 'Success (っ◔◡◔)っ ♥',
+        message: 'Candidate updated successfully!',
+        color: 'green'
+      });
+      
+      closeEditModal();
+      fetchCandidates();
+      
+    } catch (error) {
+      console.error('Error updating candidate:', error);
+      notifications.show({
+        title: 'Error (｡•́︿•̀｡)',
+        message: 'Failed to update candidate: ' + error.message,
+        color: 'red'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleConfirmDelete = async () => {
+    try {
+      setLoading(true);
+      
+      const response = await apiFetch(`api/candidates/deleteCandidate/${selectedCandidate.id}`, {
+        method: 'DELETE'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
+      }
+      
+      notifications.show({
+        title: 'Success (づ￣ ³￣)づ',
+        message: 'Candidate deleted successfully',
+        color: 'green'
+      });
+      
+      closeDeleteModal();
+      fetchCandidates();
+      
+    } catch (error) {
+      console.error('Error deleting candidate:', error);
+      notifications.show({
+        title: 'Error (｡ŏ﹏ŏ)',
+        message: 'Failed to delete candidate: ' + error.message,
+        color: 'red'
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -193,6 +452,23 @@ const CandidatesList = () => {
               data={partylistOptions}
               className="w-full md:w-1/4"
             />
+            {/* Add this right after the filters section */}
+            <div className="max-w-7xl mx-auto px-4 mt-4">
+            {isAdmin && (
+              <div className="mb-4 flex justify-end">
+                <Button
+                  leftSection={<IconPlus size={16} />}
+                  variant="gradient"
+                  gradient={{ from: 'blue', to: 'cyan' }}
+                  onClick={openCreateModal}
+                  className="mt-4"
+                  radius="md"
+                >
+                  Add New Candidate
+                </Button>
+              </div>
+            )}
+            </div>
           </div>
         </div>
       </div>
@@ -230,7 +506,6 @@ const CandidatesList = () => {
                         <Group spacing={8} className="mb-1">
                           <Text size="sm" color="dimmed">Age: {candidate.age}</Text>
                           <Text color="dimmed" size="sm">•</Text>
-                          <Text size="sm" color="dimmed">{candidate.position}</Text>
                         </Group>
                         
                         <Badge 
@@ -250,6 +525,33 @@ const CandidatesList = () => {
                         >
                           View Platform
                         </Button>
+                        {/* Show admin actions if user is admin (っ˘ω˘ς ) */}
+                        {isAdmin && (
+                          <>
+                            <ActionIcon 
+                              color="yellow" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditClick(candidate);
+                              }}
+                              variant="light"
+                              size="sm"
+                            >
+                              <IconEdit size={14} />
+                            </ActionIcon>
+                            <ActionIcon 
+                              color="red" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteClick(candidate);
+                              }}
+                              variant="light"
+                              size="sm"
+                            >
+                              <IconTrash size={14} />
+                            </ActionIcon>
+                          </>
+                        )}
                       </div>
                     </div>
                   </Card>
@@ -328,10 +630,6 @@ const CandidatesList = () => {
                 {/* Details Grid - Keeping this section more structured */}
                 <div className="grid grid-cols-2 gap-y-2 gap-x-4 w-full max-w-md mx-auto">
                   <div>
-                    <Text size="sm" color="dimmed">Position:</Text>
-                    <Text weight={500}>{selectedCandidate.position}</Text>
-                  </div>
-                  <div>
                     <Text size="sm" color="dimmed">Age:</Text>
                     <Text weight={500}>{selectedCandidate.age}</Text>
                   </div>
@@ -403,6 +701,221 @@ const CandidatesList = () => {
             </div>
           </div>
         )}
+      </Modal>
+      {/* Create Modal */}
+      <Modal
+        opened={createModalOpen}
+        onClose={closeCreateModal}
+        title="Add New Candidate"
+        size="lg"
+      >
+        <form onSubmit={handleCreateSubmit}>
+          <Grid>
+            <Grid.Col span={6}>
+              <TextInput
+                label="First Name"
+                placeholder="Enter first name"
+                required
+                value={candidateForm.firstName}
+                onChange={(e) => setCandidateForm({...candidateForm, firstName: e.target.value})}
+                className="mb-3"
+              />
+            </Grid.Col>
+            <Grid.Col span={6}>
+              <TextInput
+                label="Last Name"
+                placeholder="Enter last name"
+                required
+                value={candidateForm.lastName}
+                onChange={(e) => setCandidateForm({...candidateForm, lastName: e.target.value})}
+                className="mb-3"
+              />
+            </Grid.Col>
+          </Grid>
+          
+          <Grid>
+            <Grid.Col span={6}>
+              <TextInput
+                label="Age"
+                placeholder="Enter age"
+                type="number"
+                value={candidateForm.age}
+                onChange={(e) => setCandidateForm({...candidateForm, age: e.target.value})}
+                className="mb-3"
+              />
+            </Grid.Col>
+            <Grid.Col span={6}>
+              <TextInput
+                label="Address"
+                placeholder="Enter address"
+                value={candidateForm.address}
+                onChange={(e) => setCandidateForm({...candidateForm, address: e.target.value})}
+                className="mb-3"
+              />
+            </Grid.Col>
+          </Grid>
+          
+          <Grid>
+            <Grid.Col span={6}>
+              <Select
+                label="Partylist"
+                data={[
+                  { value: 'Independent', label: 'Independent' },
+                  { value: 'Kabataan Para sa Kaayohan', label: 'Kabataan Para sa Kaayohan' },
+                  { value: 'Batan-on United', label: 'Batan-on United' },
+                  { value: 'Progressive Youth', label: 'Progressive Youth' },
+                ]}
+                value={candidateForm.partylist}
+                onChange={(value) => setCandidateForm({...candidateForm, partylist: value})}
+                className="mb-3"
+              />
+            </Grid.Col>
+          </Grid>
+          
+          <Textarea
+            label="Platform"
+            placeholder="Enter candidate platform"
+            required
+            minRows={4}
+            value={candidateForm.platform}
+            onChange={(e) => setCandidateForm({...candidateForm, platform: e.target.value})}
+            className="mb-3"
+          />
+          
+          
+          <FileInput
+            label="Candidate Photo"
+            placeholder="Upload an image"
+            accept="image/*"
+            onChange={(file) => setCandidateForm({...candidateForm, imageFile: file})}
+            className="mb-4"
+          />
+          
+          <Group position="right" mt="md">
+            <Button variant="outline" onClick={closeCreateModal}>Cancel</Button>
+            <Button type="submit" color="blue">Add Candidate</Button>
+          </Group>
+        </form>
+      </Modal>
+
+      {/* Edit Modal */}
+      <Modal
+        opened={editModalOpen}
+        onClose={closeEditModal}
+        title="Edit Candidate"
+        size="lg"
+      >
+        <form onSubmit={handleEditSubmit}>
+          <Grid>
+            <Grid.Col span={6}>
+              <TextInput
+                label="First Name"
+                placeholder="Enter first name"
+                required
+                value={candidateForm.firstName}
+                onChange={(e) => setCandidateForm({...candidateForm, firstName: e.target.value})}
+                className="mb-3"
+              />
+            </Grid.Col>
+            <Grid.Col span={6}>
+              <TextInput
+                label="Last Name"
+                placeholder="Enter last name"
+                required
+                value={candidateForm.lastName}
+                onChange={(e) => setCandidateForm({...candidateForm, lastName: e.target.value})}
+                className="mb-3"
+              />
+            </Grid.Col>
+          </Grid>
+          
+          <Grid>
+            <Grid.Col span={6}>
+              <TextInput
+                label="Age"
+                placeholder="Enter age"
+                type="number"
+                value={candidateForm.age}
+                onChange={(e) => setCandidateForm({...candidateForm, age: e.target.value})}
+                className="mb-3"
+              />
+            </Grid.Col>
+            <Grid.Col span={6}>
+              <TextInput
+                label="Address"
+                placeholder="Enter address"
+                value={candidateForm.address}
+                onChange={(e) => setCandidateForm({...candidateForm, address: e.target.value})}
+                className="mb-3"
+              />
+            </Grid.Col>
+          </Grid>
+          
+          <Grid>
+            <Grid.Col span={6}>
+              <Select
+                label="Partylist"
+                data={[
+                  { value: 'Independent', label: 'Independent' },
+                  { value: 'Kabataan Para sa Kaayohan', label: 'Kabataan Para sa Kaayohan' },
+                  { value: 'Batan-on United', label: 'Batan-on United' },
+                  { value: 'Progressive Youth', label: 'Progressive Youth' },
+                ]}
+                value={candidateForm.partylist}
+                onChange={(value) => setCandidateForm({...candidateForm, partylist: value})}
+                className="mb-3"
+              />
+            </Grid.Col>
+          </Grid>
+          
+          <Textarea
+            label="Platform"
+            placeholder="Enter candidate platform"
+            required
+            minRows={4}
+            value={candidateForm.platform}
+            onChange={(e) => setCandidateForm({...candidateForm, platform: e.target.value})}
+            className="mb-3"
+          />
+          
+          <TextInput
+            label="Achievements"
+            placeholder="Comma-separated list of achievements"
+            value={candidateForm.achievements}
+            onChange={(e) => setCandidateForm({...candidateForm, achievements: e.target.value})}
+            className="mb-3"
+          />
+          
+          <FileInput
+            label="Candidate Photo (Optional)"
+            description="Leave empty to keep existing photo"
+            placeholder="Upload a new image"
+            accept="image/*"
+            onChange={(file) => setCandidateForm({...candidateForm, imageFile: file})}
+            className="mb-4"
+          />
+          
+          <Group position="right" mt="md">
+            <Button variant="outline" onClick={closeEditModal}>Cancel</Button>
+            <Button type="submit" color="yellow">Update Candidate</Button>
+          </Group>
+        </form>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        opened={deleteModalOpen}
+        onClose={closeDeleteModal}
+        title="Delete Candidate"
+        size="sm"
+      >
+        <Text>Are you sure you want to remove "{selectedCandidate?.firstname} {selectedCandidate?.lastname}" from the candidates list?</Text>
+        <Text size="sm" color="dimmed" className="mt-2">This action cannot be undone.</Text>
+        
+        <Group position="right" mt="xl">
+          <Button variant="outline" onClick={closeDeleteModal}>Cancel</Button>
+          <Button color="red" onClick={handleConfirmDelete}>Delete</Button>
+        </Group>
       </Modal>
     </>
   );
