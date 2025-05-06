@@ -53,6 +53,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
             "http://localhost:8080",
             "http://localhost:5173",
+            "http://localhost:3000",
             "https://skyber-coral.vercel.app",
             "https://it342-skyber.onrender.com"
         ));
