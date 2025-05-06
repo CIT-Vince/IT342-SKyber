@@ -1,6 +1,7 @@
 package com.example.skyber.ModularFunctions
 
 import android.icu.text.SimpleDateFormat
+import android.os.Parcelable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -56,6 +57,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.State
+import androidx.navigation.NavHostController
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -210,3 +214,57 @@ fun CustomOutlinedTextField(
     )
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomSearchOTF(
+    value: String,
+    onValueChange: (String) -> Unit,
+    onSearchClick: () -> Unit,
+    onClearClick: () -> Unit,
+    label: String = "Search",
+    modifier: Modifier = Modifier.fillMaxWidth(),
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    maxLines: Int = 1
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        modifier = modifier,
+        shape = RoundedCornerShape(8.dp),
+        keyboardOptions = keyboardOptions,
+        trailingIcon = {
+            Row {
+                if (value.isNotEmpty()) {
+                    IconButton(onClick = onClearClick) {
+                        Icon(Icons.Default.Close, contentDescription = "Clear Search")
+                    }
+                }
+                IconButton(onClick = onSearchClick) {
+                    Icon(Icons.Default.Search, contentDescription = "Search Icon")
+                }
+            }
+        },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(0xFF0066FF),
+            unfocusedBorderColor = Color(0xFFD1D5DB)
+        ),
+        maxLines = maxLines,
+        singleLine = true
+    )
+}
+
+
+@Composable
+fun <T : Parcelable> DetailScreenHandler(
+    navController: NavHostController,
+    key: String,
+    onDataAvailable: @Composable (State<T?>) -> Unit
+) {
+    // Access data from SavedStateHandle
+    val data = navController.previousBackStackEntry?.savedStateHandle?.get<T>(key)
+
+    // Show data when available
+    onDataAvailable((data ?: remember { mutableStateOf(null) }) as State<T?>)
+}

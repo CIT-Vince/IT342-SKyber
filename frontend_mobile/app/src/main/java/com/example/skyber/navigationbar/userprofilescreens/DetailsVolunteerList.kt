@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.VolunteerPost
-import com.example.skyber.headerbar.HeaderBar
-import com.example.skyber.headerbar.NotificationHandler
+import com.example.skyber.ModularFunctions.headerbar.HeaderBar
+import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.ui.theme.BoxGreen
 import com.example.skyber.ui.theme.BoxRed
 import com.example.skyber.ui.theme.BoxTextGreen

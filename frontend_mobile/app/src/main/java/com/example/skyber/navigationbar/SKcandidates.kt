@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -38,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -54,43 +54,55 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.skyber.FirebaseHelper
 import com.example.skyber.ModularFunctions.CandidateCard
+import com.example.skyber.ModularFunctions.CustomSearchOTF
 import com.example.skyber.ModularFunctions.MemberCard
 import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.CandidateProfile
 import com.example.skyber.dataclass.SKProfile
-import com.example.skyber.headerbar.HeaderBar
-import com.example.skyber.headerbar.NotificationHandler
+import com.example.skyber.ModularFunctions.headerbar.HeaderBar
+import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
+import com.example.skyber.dataclass.User
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.SoftCardContainerBlue
 import com.example.skyber.ui.theme.SoftCardFontBlue
 import com.example.skyber.ui.theme.White
-import com.google.android.gms.tasks.Tasks
 import kotlinx.coroutines.async
 import kotlinx.coroutines.tasks.await
 
 @Suppress("SpellCheckingInspection")
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun SKcandidates(navController: NavHostController) {
+fun SKcandidates(navController: NavHostController, userProfile: MutableState<User?>) {
     val allCandidates = remember { mutableStateListOf<CandidateProfile>() }
     val allMembers = remember { mutableStateListOf<SKProfile>() }
     var isLoading by remember { mutableStateOf(true) }
     var selectedTab by remember { mutableStateOf("Members") }
+    var searchQuery by remember { mutableStateOf("") }
+    var searchVisible by remember { mutableStateOf(false) }
+    var user = userProfile.value
+
+    val filteredCandidates = allCandidates.filter {
+        val fullName = "${it.firstName.orEmpty()} ${it.lastName.orEmpty()}"
+        fullName.contains(searchQuery, ignoreCase = true)
+    }
+
+    val filteredMembers = allMembers.filter {
+        val fullName = "${it.firstName.orEmpty()} ${it.lastName.orEmpty()}"
+        fullName.contains(searchQuery, ignoreCase = true)
+    }
 
     LaunchedEffect(Unit) {
         isLoading = true
         try {
             val candidatesDeferred = async {
-                Log.d("DataFetch", "Fetching Candidates")
                 FirebaseHelper.databaseReference.child("Candidates").get().await()
                     .children.mapNotNull { it.getValue(CandidateProfile::class.java) }
             }
 
             val membersDeferred = async {
-                Log.d("DataFetch", "Fetching SKProfiles")
                 FirebaseHelper.databaseReference.child("SKProfiles").get().await()
                     .children.mapNotNull { it.getValue(SKProfile::class.java) }
             }
@@ -100,11 +112,9 @@ fun SKcandidates(navController: NavHostController) {
 
             allCandidates.clear()
             allCandidates.addAll(fetchedCandidates)
-            Log.d("DataFetch", "Fetched ${fetchedCandidates.size} candidates")
 
             allMembers.clear()
             allMembers.addAll(fetchedMembers)
-            Log.d("DataFetch", "Fetched ${fetchedMembers.size} SK profiles")
 
         } catch (e: Exception) {
             Log.e("DataFetchError", "Failed to fetch SK data", e)
@@ -148,7 +158,11 @@ fun SKcandidates(navController: NavHostController) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             floatingActionButton = {
-                PostOptionsFAB(navController = navController)
+                if(user != null && user.role == "ADMIN"){
+                    PostOptionsFAB(navController = navController)
+            }else{
+                    null
+                }
             },
             floatingActionButtonPosition = FabPosition.End
         ) { innerPadding ->
@@ -175,7 +189,7 @@ fun SKcandidates(navController: NavHostController) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(top = 12.dp, bottom = 12.dp),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -186,13 +200,34 @@ fun SKcandidates(navController: NavHostController) {
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Text(
-                        "Sangguniang Kabataan",
-                        fontSize = 24.sp,
-                        color = White,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
+                    if (searchVisible) {
+                        CustomSearchOTF(
+                            value = searchQuery,
+                            onValueChange = { searchQuery = it },
+                            onSearchClick = {
+                                searchQuery = ""
+                                searchVisible = false
+                            },
+                            onClearClick = {
+                                searchQuery = ""
+                                searchVisible = false
+                            },
+                            label = "Search SK ${selectedTab}",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                    } else {
+                        Text(
+                            "Sangguniang Kabataan",
+                            fontSize = 24.sp,
+                            color = White,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .padding(top = 8.dp)
+                                .clickable { searchVisible = true }
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -235,12 +270,11 @@ fun SKcandidates(navController: NavHostController) {
                     ) {
                         when (selectedTab) {
                             "Candidates" -> {
-                                if (allCandidates.isEmpty()) {
-                                    item {
-                                        Text("No candidates available.")
-                                    }
+                                val list = filteredCandidates.reversed()
+                                if (list.isEmpty()) {
+                                    item { Text("") }
                                 } else {
-                                    items(allCandidates.reversed()) { candidate ->
+                                    items(list) { candidate ->
                                         CandidateCard(
                                             candidateProfile = candidate,
                                             backgroundColor = SoftCardContainerBlue,
@@ -258,12 +292,11 @@ fun SKcandidates(navController: NavHostController) {
                             }
 
                             "Members" -> {
-                                if (allMembers.isEmpty()) {
-                                    item {
-                                        Text("No SK members available.")
-                                    }
+                                val list = filteredMembers.reversed()
+                                if (list.isEmpty()) {
+                                    item { Text("") }
                                 } else {
-                                    items(allMembers.reversed()) { member ->
+                                    items(list) { member ->
                                         MemberCard(
                                             skProfile = member,
                                             backgroundColor = SoftCardContainerBlue,
@@ -280,10 +313,8 @@ fun SKcandidates(navController: NavHostController) {
                                 }
                             }
                         }
-                    }
-                    // Floating Action Button for each tab(apply later to Portal navigation screen)
-                    //
 
+                    }
                 }
             }
         }

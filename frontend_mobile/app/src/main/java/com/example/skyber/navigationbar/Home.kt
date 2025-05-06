@@ -49,8 +49,8 @@ import com.example.skyber.Screens
 import com.example.skyber.dataclass.Announcement
 import com.example.skyber.dataclass.CandidateProfile
 import com.example.skyber.dataclass.User
-import com.example.skyber.headerbar.HeaderBar
-import com.example.skyber.headerbar.NotificationHandler
+import com.example.skyber.ModularFunctions.headerbar.HeaderBar
+import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ui.theme.White
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
@@ -94,8 +94,6 @@ fun Home(navController: NavHostController, userProfile: MutableState<User?>, ref
         refreshUserProfile()
         try {
             val announcementFetch = async {
-                Log.d("DataFetch", "Fetching announcements")
-
                 FirebaseHelper.databaseReference.child("Announcements").get().await()
                     .children.mapNotNull { it.getValue(Announcement::class.java) }
             }
@@ -113,7 +111,6 @@ fun Home(navController: NavHostController, userProfile: MutableState<User?>, ref
             allCandidates.clear()
             allCandidates.addAll(candidatesList)
         } catch (e: Exception) {
-            Log.e("FetchError", "Failed to fetch data", e)
         }
     }
 
@@ -154,7 +151,7 @@ fun Home(navController: NavHostController, userProfile: MutableState<User?>, ref
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(top = 12.dp, bottom = 12.dp),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -245,7 +242,7 @@ fun Home(navController: NavHostController, userProfile: MutableState<User?>, ref
                             val latestAnnouncement = allAnnouncements.last() // Get the latest announcement
                             item {
                                 AnnouncementCard(
-                                    backgroundColor = SoftCardContainerBlue,
+                                    backgroundColor = White,
                                     fontColor = SoftCardFontBlue,
                                     announcement = latestAnnouncement,
                                     onClick = {
@@ -286,7 +283,7 @@ fun Home(navController: NavHostController, userProfile: MutableState<User?>, ref
                             item {
                                 CandidateCard(
                                     candidateProfile = latestCandidate,
-                                    backgroundColor = SoftCardContainerBlue,
+                                    backgroundColor = White,
                                     fontColor = SoftCardFontBlue,
                                     onClick = {
                                         navController.currentBackStackEntry?.savedStateHandle?.set(

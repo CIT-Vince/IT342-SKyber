@@ -199,9 +199,12 @@ fun ProjectTransparencyCard(backgroundColor: Color = White,
                             fontColor: Color = Black,
                             project: Project,
                             onClick: () -> Unit){
-    val isOngoing = project.status.lowercase() == "ongoing"
-    val StatusColor = if (isOngoing) BoxOrange else BoxGreen
-    val textColor = if (isOngoing) BoxTextOrange else BoxTextGreen
+    val (statusColor, textColor) = when (project.status.lowercase()) {
+        "ongoing", "active", "in-progress" -> SoftCardContainerGreen to SoftCardFontGreen
+        "planning" , "upcoming"-> SKyberYellow to Black
+        "finished" -> BoxGreen to BoxTextGreen
+        else -> SoftCardContainerLavender to SoftCardFontLavender
+    }
 
     Card(
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
@@ -231,15 +234,17 @@ fun ProjectTransparencyCard(backgroundColor: Color = White,
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
                         color = fontColor,
-                        maxLines = 2,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
                     )
 
-                    Spacer(modifier = Modifier.width(26.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(22.dp))
-                            .background(StatusColor)
+                            .background(statusColor)
                             .padding(horizontal = 8.dp)
                             .wrapContentWidth()
 
@@ -309,21 +314,22 @@ fun ProjectTransparencyCard(backgroundColor: Color = White,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-
             }
-
     }
 }
 
 @Composable
-fun VolunteerCard(backgroundColor: Color = White,
-                     fontColor: Color = Black,
-                     volunteerPost: VolunteerPost,
-                     onClick: () -> Unit){
-
-    val isOngoing = volunteerPost.status.lowercase() == "ongoing"
-    val statusColor = if (isOngoing) BoxGreen else BoxRed
-    val textColor = if (isOngoing) BoxTextGreen else SKyberRed
+fun VolunteerCard(
+    backgroundColor: Color = White,
+    fontColor: Color = Black,
+    volunteerPost: VolunteerPost,
+    onClick: () -> Unit
+) {
+    val (statusColor, textColor) = when (volunteerPost.status.lowercase()) {
+        "ongoing", "active" -> BoxGreen to BoxTextGreen
+        "upcoming" -> SKyberYellow to Black
+        else -> SoftCardContainerLavender to SoftCardFontLavender
+    }
 
     Card(
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
@@ -336,71 +342,65 @@ fun VolunteerCard(backgroundColor: Color = White,
             .fillMaxWidth()
             .padding(8.dp),
     ) {
-
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxHeight()
-                    .fillMaxWidth()//width(210.dp),
-                //verticalArrangement = Arrangement.SpaceBetween,
-            ){
-                Row(
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = volunteerPost.title,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = fontColor,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ){
+                        .weight(1f)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(22.dp))
+                        .background(statusColor)
+                        .padding(horizontal = 12.dp, vertical = 4.dp)
+                ) {
                     Text(
-                        //modifier = Modifier.fillMaxWidth(),
-                        text = volunteerPost.title,
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = fontColor,
-                        maxLines = 2,
+                        text = volunteerPost.status,
+                        fontSize = 16.sp,
+                        color = textColor,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Spacer(modifier = Modifier.width(26.dp))
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(22.dp))
-                            .background(statusColor)
-                            .padding(horizontal = 8.dp)
-                            .wrapContentWidth()
-
-                    ){
-                        Text(
-                            text = volunteerPost.status,
-                            fontSize = 18.sp,
-                            color = textColor,
-                            fontWeight = FontWeight.SemiBold,
-                            overflow = TextOverflow.Ellipsis
-
-                        )
-                    }
                 }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    text = "${volunteerPost.contactPerson} • ${volunteerPost.contactEmail}",
-                    fontSize = 20.sp,
-                    color = fontColor,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    text = "${volunteerPost.location} • ${volunteerPost.eventDate}",
-                    fontSize = 20.sp,
-                    color = fontColor,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis
-                )
             }
 
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "${volunteerPost.contactPerson} • ${volunteerPost.contactEmail}",
+                fontSize = 18.sp,
+                color = fontColor,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "${volunteerPost.location} • ${volunteerPost.eventDate}",
+                fontSize = 18.sp,
+                color = fontColor,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 
@@ -412,18 +412,20 @@ fun JobListingCard(
     joblisting: JobListing,
     onClick: () -> Unit
 ) {
-    val jobCategory = joblisting.employmentType.lowercase() == "full-time"
-    val statusColor = if (jobCategory) BoxGreen else SoftCardContainerBlue
-    val textColor = if (jobCategory) BoxTextGreen else SoftCardFontBlue
+    val (statusColor, textColor) = when (joblisting.employementType.lowercase()) {
+        "full-time" -> BoxGreen to BoxTextGreen
+        "part-time" -> SKyberYellow to Black
+        else -> SoftCardContainerLavender to SoftCardFontLavender
+    }
 
     Card(
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(6.dp),
         border = BorderStroke(1.dp, SKyberDarkBlue),
-        shape = RoundedCornerShape(24.dp), // Reduced corner radius for a modern look
+        shape = RoundedCornerShape(24.dp),
         modifier = Modifier
             .clickable { onClick() }
-            .padding(8.dp) // Adjusted padding for better alignment
+            .padding(8.dp)
             .fillMaxWidth()
             .wrapContentHeight()
     ) {
@@ -431,61 +433,58 @@ fun JobListingCard(
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp) // Consistent spacing between elements
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween // Aligns elements evenly
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = joblisting.companyName,
-                    fontSize = 24.sp, // Slightly smaller font for better balance
+                    fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     color = fontColor,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
+                Spacer(modifier = Modifier.width(8.dp))
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp)) // Reduced corner radius for the status box
+                        .clip(RoundedCornerShape(16.dp))
                         .background(statusColor)
-                        .padding(horizontal = 12.dp, vertical = 4.dp) // Adjusted padding for better proportions
+                        .padding(horizontal = 12.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = joblisting.employmentType,
-                        fontSize = 16.sp, // Smaller font for better hierarchy
+                        text = joblisting.employementType,
+                        fontSize = 14.sp,
                         color = textColor,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
 
             Text(
                 text = joblisting.jobTitle,
-                fontSize = 20.sp, // Consistent font size
+                fontSize = 20.sp,
                 color = fontColor,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween // Aligns contact details evenly
-            ) {
-                Text(
-                    text = joblisting.address,
-                    fontSize = 18.sp,
-                    color = fontColor,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-            }
+            Text(
+                text = joblisting.address,
+                fontSize = 18.sp,
+                color = fontColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
+
 
 
 @Composable

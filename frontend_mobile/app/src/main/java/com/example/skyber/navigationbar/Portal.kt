@@ -10,37 +10,51 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Campaign
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Construction
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Work
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.skyber.ModularFunctions.PortalTile
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.User
-import com.example.skyber.headerbar.HeaderBar
-import com.example.skyber.headerbar.NotificationHandler
+import com.example.skyber.ModularFunctions.headerbar.HeaderBar
+import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberGreen
 import com.example.skyber.ui.theme.SKyberRed
 import com.example.skyber.ui.theme.SKyberYellow
+import com.example.skyber.ui.theme.White
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -69,13 +83,12 @@ fun Portal(navController: NavHostController,  userProfile: MutableState<User?>) 
     )
 
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        floatingActionButton = {},
+        containerColor = Color.Transparent,
     ) { innerPadding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(SKyberDarkBlueGradient)
+            modifier = Modifier.fillMaxSize().background(SKyberDarkBlueGradient),
         ) {
             // Particle system as the background
             ParticleSystem(
@@ -92,19 +105,10 @@ fun Portal(navController: NavHostController,  userProfile: MutableState<User?>) 
                     .graphicsLayer(alpha = 0.5f)
             )
 
-            /*Text(
-                text = "✨",
-                fontSize = 24.sp,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(end = 30.dp, bottom = 20.dp)
-                    .graphicsLayer(alpha = 0.5f)
-            )*/
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
+                    .padding(top = 12.dp, bottom = 12.dp),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -143,21 +147,119 @@ fun Portal(navController: NavHostController,  userProfile: MutableState<User?>) 
                         title = "Projects",
                         backgroundColor = SKyberGreen
                     ) { navController.navigate(Screens.Projects.screen) }
-
                 }
 
-            }//end of scaffold
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                if (user != null) {
+                    if(user.role != "ADMIN"){
+
+                    }else{
+                        PortalOptionsFAB(//Fab tastic buttons
+                            navController = navController,
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(end = 20.dp, bottom = 30.dp)
+                        )
+                    }
+                }
+            }
+
         }
     }
 }
 
-/*
-@Preview(showBackground = true)
 @Composable
-fun PortalPreview() {
-    val navController = rememberNavController()
-    Portal(navController = navController)
-}
-*/
+fun PortalOptionsFAB(
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
 
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        Column(
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.Bottom,
+            modifier = Modifier.padding(end = 16.dp, bottom = 16.dp)
+        ) {
+            if (expanded) {
+                PortalFabItem(
+                    label = "Post Announcement",
+                    icon = Icons.Filled.Campaign,
+                    onClick = {
+                        expanded = false
+                        navController.navigate(Screens.PostAnnouncement.screen)
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                PortalFabItem(
+                    label = "Post Job Listing",
+                    icon = Icons.Filled.Work,
+                    onClick = {
+                        expanded = false
+                        navController.navigate(Screens.PostJob.screen)
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                PortalFabItem(
+                    label = "Post Project",
+                    icon = Icons.Filled.Build,
+                    onClick = {
+                        expanded = false
+                        navController.navigate(Screens.PostProject.screen)
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                PortalFabItem(
+                    label = "Post Scholarship",
+                    icon = Icons.Filled.School,
+                    onClick = {
+                        expanded = false
+                        navController.navigate(Screens.PostScholarship.screen)
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            FloatingActionButton(
+                onClick = { expanded = !expanded },
+                containerColor = White
+            ) {
+                Icon(
+                    imageVector = if (expanded) Icons.Filled.Close else Icons.Filled.Add,
+                    contentDescription = "Toggle FAB",
+                    tint = SKyberBlue
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PortalFabItem(
+    label: String,
+    icon: ImageVector,
+    onClick: () -> Unit
+) {
+    ExtendedFloatingActionButton(
+        text = { Text(label, color = SKyberBlue) },
+        icon = { Icon(icon, contentDescription = null, tint = SKyberBlue) },
+        onClick = onClick,
+        containerColor = White
+    )
+}
 

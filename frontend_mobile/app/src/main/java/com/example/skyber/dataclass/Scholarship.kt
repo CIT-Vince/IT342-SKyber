@@ -13,4 +13,5 @@ data class Scholarship (
     val link: String ="",
     val contactEmail: String = "",
     val type: String = "",//Private or Public or institution-type Agnostic
+    val scholarImage: String? = null
 ): Parcelable

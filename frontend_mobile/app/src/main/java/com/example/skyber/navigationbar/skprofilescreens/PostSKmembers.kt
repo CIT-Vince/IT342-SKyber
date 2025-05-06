@@ -60,8 +60,8 @@ import com.example.skyber.ModularFunctions.TransparentSimpleDatePickerField
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.SKProfile
 import com.example.skyber.dataclass.User
-import com.example.skyber.headerbar.HeaderBar
-import com.example.skyber.headerbar.NotificationHandler
+import com.example.skyber.ModularFunctions.headerbar.HeaderBar
+import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberYellow
@@ -159,7 +159,7 @@ fun PostSKmembers(navController: NavHostController, userProfile: MutableState<Us
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
@@ -318,9 +318,15 @@ fun PostSKmembers(navController: NavHostController, userProfile: MutableState<Us
                                     // Create SK member  object
                                    val ageNumber = age.toIntOrNull()
                                     if  (firstName.isBlank() || lastName.isBlank() || address.isBlank() || platform.isBlank()){
-                                        com.example.skyber.portalnavigator.ProjectTransparency.showToast(context, "Please fill out required fields")
+                                        com.example.skyber.navigationbar.portalnavigator.ProjectTransparency.showToast(
+                                            context,
+                                            "Please fill out required fields"
+                                        )
                                     }else if (ageNumber == null || ageNumber <= 0)  {
-                                        com.example.skyber.portalnavigator.ProjectTransparency.showToast(context, "Please enter a valid age")
+                                        com.example.skyber.navigationbar.portalnavigator.ProjectTransparency.showToast(
+                                            context,
+                                            "Please enter a valid age"
+                                        )
                                     } else {
                                         val databaseRef = FirebaseHelper.databaseReference.child("SKProfiles").push()
                                         val memberId = databaseRef.key
@@ -379,14 +385,14 @@ fun PostSKmembers(navController: NavHostController, userProfile: MutableState<Us
 fun uploadMemberProfile(skProfile: SKProfile, context: Context, navController: NavHostController, databaseRef: DatabaseReference) {
     databaseRef.setValue(skProfile)
         .addOnSuccessListener {
-            com.example.skyber.portalnavigator.ProjectTransparency.showToast(
+            com.example.skyber.navigationbar.portalnavigator.ProjectTransparency.showToast(
                 context,
                 "Member Profile uploaded successfully"
             )// Show success toast when announcement is uploaded successfully
             navController.navigate(Screens.SKcandidates.screen)
         }
         .addOnFailureListener { error ->
-            com.example.skyber.portalnavigator.ProjectTransparency.showToast(
+            com.example.skyber.navigationbar.portalnavigator.ProjectTransparency.showToast(
                 context,
                 "Failed to Upload Member Profile"
             )    // Show failure toast when something goes wrong

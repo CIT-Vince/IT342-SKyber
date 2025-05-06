@@ -51,9 +51,9 @@ import com.example.skyber.ModularFunctions.convertMillisToDate
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.User
 import com.example.skyber.dataclass.VolunteerPost
-import com.example.skyber.headerbar.HeaderBar
-import com.example.skyber.headerbar.NotificationHandler
-import com.example.skyber.portalnavigator.ProjectTransparency.showToast
+import com.example.skyber.ModularFunctions.headerbar.HeaderBar
+import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
+import com.example.skyber.navigationbar.portalnavigator.ProjectTransparency.showToast
 import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberYellow
@@ -275,7 +275,7 @@ fun PostVolunteerHub(navController: NavHostController, userProfile: MutableState
                                             showToast(context, "Please fill out required fields")
                                         } else {
                                             val databaseRef =
-                                                FirebaseHelper.databaseReference.child("VolunteerHubEvent")
+                                                FirebaseHelper.databaseReference.child("Volunteers")
                                                     .push()
                                             val postId = databaseRef.key
                                             if (postId != null) {
