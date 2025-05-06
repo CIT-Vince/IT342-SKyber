@@ -42,6 +42,8 @@ import sample2 from '../../assets/proj/sample2.png';
 import sample3 from '../../assets/proj/sample3.png';
 import { showNotification } from '@mantine/notifications';
 import { useAuth } from '../../contexts/AuthContext';
+import { DateInput } from '@mantine/dates';
+import { apiFetch } from '../utils/api';
 
 const projects = [
   {
@@ -67,52 +69,6 @@ const projects = [
     stakeholders: ["Local Community Garden Committee", "Environmental Protection Group", "Municipal Parks Department"],
     sustainabilityGoal: "Green Spaces & Biodiversity"
   },
-  {
-    id: 2,
-    title: 'Youth Sports Center Construction',
-    status: 'Pending',
-    startDate: '04/10/2025',
-    endDate: '05/10/2025',
-    image: sample2,
-    description: 'Building a multi-purpose sports facility for youth activities including basketball, volleyball, and other recreational programs.',
-    progress: 60,
-    volunteers: 18,
-    budget: '₱450,000',
-    manager: {
-      name: "Maria Santos",
-      image: "https://i.pravatar.cc/150?img=44"
-    },
-    teamMembers: [
-      { name: "Team Member 1", image: "https://i.pravatar.cc/150?img=45" },
-      { name: "Team Member 2", image: "https://i.pravatar.cc/150?img=46" },
-    ],
-    stakeholders: ["Youth Sports Association", "Local Schools", "Municipal Recreation Department"],
-    sustainabilityGoal: "Health & Well-being"
-  },
-  {
-    id: 3,
-    title: 'Local Library Technology Upgrade',
-    status: 'Closed',
-    startDate: '04/11/2025',
-    endDate: '05/11/2025',
-    image: sample3,
-    description: 'Updating computers, adding free WiFi, and creating a digital learning center in our community library.',
-    progress: 0,
-    volunteers: 12,
-    budget: '₱250,000',
-    manager: {
-      name: "Juan Cruz",
-      image: "https://i.pravatar.cc/150?img=60"
-    },
-    teamMembers: [
-      { name: "Team Member 1", image: "https://i.pravatar.cc/150?img=61" },
-      { name: "Team Member 2", image: "https://i.pravatar.cc/150?img=62" },
-      { name: "Team Member 3", image: "https://i.pravatar.cc/150?img=63" },
-      { name: "Team Member 4", image: "https://i.pravatar.cc/150?img=64" },
-    ],
-    stakeholders: ["Public Library Board", "Digital Literacy Foundation", "Community Education Center"],
-    sustainabilityGoal: "Quality Education"
-  },
 ];
 
 const Projects = () => {
@@ -124,11 +80,11 @@ const Projects = () => {
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null); 
   const { currentUser } = useAuth();
-const [isAdmin, setIsAdmin] = useState(false);
-const [createModalOpen, { open: openCreateModal, close: closeCreateModal }] = useDisclosure(false);
-const [editModalOpen, { open: openEditModal, close: closeEditModal }] = useDisclosure(false);
-const [deleteModalOpen, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
-const [projectForm, setProjectForm] = useState({
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [createModalOpen, { open: openCreateModal, close: closeCreateModal }] = useDisclosure(false);
+  const [editModalOpen, { open: openEditModal, close: closeEditModal }] = useDisclosure(false);
+  const [deleteModalOpen, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
+  const [projectForm, setProjectForm] = useState({
   projectName: '',
   description: '',
   budget: '',
@@ -140,8 +96,8 @@ const [projectForm, setProjectForm] = useState({
   stakeholders: '',
   sustainabilityGoals: '',
   imageFile: null
-});
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  });
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
   // Filters
@@ -166,48 +122,48 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
       default: return 'gray';
     }
   };
-
-    const formatBudget = (budgetValue) => {
-      // Handle null, undefined or empty values
-      if (!budgetValue) return "₱0";
-      
-      // If already has peso sign, just return it
-      if (typeof budgetValue === 'string' && budgetValue.includes('₱')) {
-        return budgetValue;
-      }
-      
-      // Remove any non-numeric characters
-      const numericValue = budgetValue.toString().replace(/[^\d.-]/g, '');
-      
-      try {
-        const formattedValue = Number(numericValue).toLocaleString('en-PH');
-        return `₱${formattedValue}`;
-      } catch (error) {
-        return `₱${budgetValue}`;
-      }
-    };
-    useEffect(() => {
-      if (currentUser) {
-        const checkUserRole = async () => {
-          try {
-            const { getDatabase, ref, get } = await import('firebase/database');
-            const db = getDatabase();
-            const userRef = ref(db, `users/${currentUser.uid}`);
-            const snapshot = await get(userRef);
-            
-            if (snapshot.exists()) {
-              const userData = snapshot.val();
-              setIsAdmin(userData.role === 'ADMIN');
-            }
-          } catch (error) {
-            console.error('Error checking user role:', error);
+  const formatBudget = (budgetValue) => {
+    // Handle null, undefined or empty values
+    if (!budgetValue) return "₱0";
+    
+    // If already has peso sign, just return it
+    if (typeof budgetValue === 'string' && budgetValue.includes('₱')) {
+      return budgetValue;
+    }
+    
+    // Remove any non-numeric characters
+    const numericValue = budgetValue.toString().replace(/[^\d.-]/g, '');
+    
+    try {
+      const formattedValue = Number(numericValue).toLocaleString('en-PH');
+      return `₱${formattedValue}`;
+    } catch (error) {
+      return `₱${budgetValue}`;
+    }
+  };
+  useEffect(() => {
+    if (currentUser) {
+      const checkUserRole = async () => {
+        try {
+          const { getDatabase, ref, get } = await import('firebase/database');
+          const db = getDatabase();
+          const userRef = ref(db, `users/${currentUser.uid}`);
+          const snapshot = await get(userRef);
+          
+          if (snapshot.exists()) {
+            const userData = snapshot.val();
+            setIsAdmin(userData.role === 'ADMIN');
           }
-        };
-        
-        checkUserRole();
-      }
-    }, [currentUser]);
+        } catch (error) {
+          console.error('Error checking user role:', error);
+        }
+      };
+      
+      checkUserRole();
+    }
+  }, [currentUser]);
 
+    
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -366,7 +322,7 @@ const handleCreateSubmit = async (e) => {
   if (!projectForm.projectName || !projectForm.description) {
     showNotification({
       title: 'Validation Error',
-      message: 'Project name and description are required',
+      message: 'Project name and description are required (っ °Д °;)っ',
       color: 'red'
     });
     return;
@@ -377,7 +333,7 @@ const handleCreateSubmit = async (e) => {
   if (isNaN(budgetValue)) {
     showNotification({
       title: 'Validation Error',
-      message: 'Budget must be a valid number',
+      message: 'Budget must be a valid number (´。＿。｀)',
       color: 'red'
     });
     return;
@@ -387,7 +343,7 @@ const handleCreateSubmit = async (e) => {
   if (!projectForm.startDate || !projectForm.endDate) {
     showNotification({
       title: 'Validation Error',
-      message: 'Start date and end date are required',
+      message: 'Start date and end date are required (⊙︿⊙)',
       color: 'red'
     });
     return;
@@ -438,25 +394,30 @@ const handleCreateSubmit = async (e) => {
       formDataObj.append('image', projectForm.imageFile);
     }
     
-    console.log("Sending project data to API:", {
-      projectName: projectForm.projectName,
-      description: projectForm.description,
-      budget: budgetValue,
-      startDate: formatDate(projectForm.startDate),
-      endDate: formatDate(projectForm.endDate),
-      status: projectForm.status || 'Planning',
-      projectManager: projectForm.projectManager || 'Not Assigned'
-    });
-    
-    const response = await fetch(`${API_BASE_URL}/api/projects/createWithImage` , {
+    // Replace fetch with apiFetch
+    const response = await apiFetch('api/projects/createWithImage', {
       method: 'POST',
       body: formDataObj
     });
     
+    if (!response.ok) {
+      throw new Error(`Failed to create project: ${response.status}`);
+    }
+
+    showNotification({
+      title: 'Success (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧',
+      message: 'Project created successfully!',
+      color: 'green'
+    });
+    
+    // Close modal and refresh project list
+    closeCreateModal();
+    fetchProjects();
+    
   } catch (error) {
     console.error('Error creating project:', error);
     showNotification({
-      title: 'Error',
+      title: 'Error (┬┬﹏┬┬)',
       message: 'Failed to create project: ' + error.message,
       color: 'red'
     });
@@ -485,7 +446,7 @@ const handleEditSubmit = async (e) => {
       sustainabilityGoals: projectForm.sustainabilityGoals
     };
     
-    const response = await fetch(`${API_BASE_URL}/api/projects/${selectedProject.id}`, {
+    const response = await apiFetch(`api/projects/${selectedProject.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -502,7 +463,7 @@ const handleEditSubmit = async (e) => {
       const imageFormData = new FormData();
       imageFormData.append('image', projectForm.imageFile);
       
-      const imageResponse = await fetch(`/api/projects/${selectedProject.id}/updateImage`, {
+      const imageResponse = await apiFetch(`api/projects/${selectedProject.id}/updateImage`, {
         method: 'POST',
         body: imageFormData
       });
@@ -513,18 +474,18 @@ const handleEditSubmit = async (e) => {
     }
     
     showNotification({
-      title: 'Success',
-      message: 'Project updated successfully',
+      title: 'Success (っ◔◡◔)っ ♥',
+      message: 'Project updated successfully!',
       color: 'green'
     });
     
     closeEditModal();
-    fetchProjects(); // Make sure to define this outside useEffect
+    fetchProjects();
     
   } catch (error) {
     console.error('Error updating project:', error);
     showNotification({
-      title: 'Error',
+      title: 'Error (｡•́︿•̀｡)',
       message: 'Failed to update project: ' + error.message,
       color: 'red'
     });
@@ -537,7 +498,7 @@ const handleConfirmDelete = async () => {
   try {
     setLoading(true);
     
-    const response = await fetch(`${API_BASE_URL}/api/projects/${selectedProject.id}`, {
+    const response = await apiFetch(`api/projects/${selectedProject.id}`, {
       method: 'DELETE'
     });
     
@@ -546,18 +507,18 @@ const handleConfirmDelete = async () => {
     }
     
     showNotification({
-      title: 'Success',
+      title: 'Success (づ￣ ³￣)づ',
       message: 'Project deleted successfully',
       color: 'green'
     });
     
     closeDeleteModal();
-    fetchProjects(); // Make sure to define this outside useEffect
+    fetchProjects();
     
   } catch (error) {
     console.error('Error deleting project:', error);
     showNotification({
-      title: 'Error',
+      title: 'Error (｡ŏ﹏ŏ)',
       message: 'Failed to delete project: ' + error.message,
       color: 'red'
     });
@@ -565,15 +526,12 @@ const handleConfirmDelete = async () => {
     setLoading(false);
   }
 };
-// Extract this function from useEffect so it can be called from other functions
+
 const fetchProjects = async () => {
   try {
     setLoading(true);
     
-    const API_URL = `${API_BASE_URL}/api/projects/all`;
-    console.log("Fetching projects from:", API_URL);
-    
-    const response = await fetch(API_URL);
+    const response = await apiFetch('api/projects/all');
     
     // Better error handling
     if (!response.ok) {
@@ -616,11 +574,12 @@ const fetchProjects = async () => {
     console.error("Error fetching projects:", error);
     setError(error.message);
     
+    // Fallback to sample data with cute notification
     setProjectData(projects);
     
     showNotification({
-      title: 'Using Sample Data',
-      message: 'Could not load projects from server. Showing sample data.',
+      title: 'Using Sample Data (ﾉ´ヮ`)ﾉ*: ･ﾟ',
+      message: 'Could not load projects from server. Showing sample data instead.',
       color: 'yellow'
     });
   } finally {
@@ -705,9 +664,12 @@ useEffect(() => {
                   </Tabs.List>
                 </Tabs>
               </Grid.Col>
-            </Grid>
+              
             {/* Add this admin button */}
+            
+            <Grid.Col span={12} className="mt-4">
                 {isAdmin && (
+                      <div className="mb-4 flex justify-end">
                   <Button
                     leftSection={<IconPlus size={16} />}
                     variant="gradient"
@@ -718,7 +680,10 @@ useEffect(() => {
                   >
                     Create New Project
                   </Button>
+                  </div>
                 )}
+                </Grid.Col>
+            </Grid>
           </Paper>
 
           {/* Projects Cards */}
@@ -1067,13 +1032,143 @@ useEffect(() => {
         )}
       </Modal>
       {/* Create Project Modal */}
-<Modal
-  opened={createModalOpen}
-  onClose={closeCreateModal}
-  title="Create New Project"
+      <Modal
+        opened={createModalOpen}
+        onClose={closeCreateModal}
+        title="Create New Project"
+        size="lg"
+      >
+        <form onSubmit={handleCreateSubmit}>
+          <TextInput
+            label="Project Name"
+            placeholder="Enter project name"
+            required
+            value={projectForm.projectName}
+            onChange={(e) => setProjectForm({...projectForm, projectName: e.target.value})}
+            className="mb-3"
+          />
+          
+          <Grid>
+            <Grid.Col span={6}>
+              <TextInput
+                label="Project Manager"
+                placeholder="Manager name"
+                value={projectForm.projectManager}
+                onChange={(e) => setProjectForm({...projectForm, projectManager: e.target.value})}
+                className="mb-3"
+              />
+            </Grid.Col>
+            <Grid.Col span={6}>
+              <Select
+                label="Status"
+                data={[
+                  { value: 'Planning', label: 'Planning' },
+                  { value: 'Ongoing', label: 'Ongoing' },
+                  { value: 'Completed', label: 'Completed' },
+                  { value: 'Delayed', label: 'Delayed' },
+                ]}
+                value={projectForm.status}
+                onChange={(value) => setProjectForm({...projectForm, status: value})}
+                className="mb-3"
+              />
+            </Grid.Col>
+          </Grid>
+          
+          <Grid>
+            <Grid.Col span={6}>
+              <DateInput
+                label="Start Date"
+                placeholder="Pick a day! ♪(´▽｀)"
+                value={projectForm.startDate ? new Date(projectForm.startDate) : null}
+                onChange={(date) => setProjectForm({
+                  ...projectForm, 
+                  startDate: date ? date.toLocaleDateString('en-US') : ''
+                })}
+                className="mb-3"
+                required
+              />
+            </Grid.Col>
+            <Grid.Col span={6}>
+              <DateInput
+                label="End Date"
+                placeholder="When will it finish? (• ◡•)"
+                value={projectForm.endDate ? new Date(projectForm.endDate) : null}
+                onChange={(date) => setProjectForm({
+                  ...projectForm, 
+                  endDate: date ? date.toLocaleDateString('en-US') : ''
+                })}
+                className="mb-3"
+                required
+                minDate={projectForm.startDate ? new Date(projectForm.startDate) : undefined}
+              />
+            </Grid.Col>
+          </Grid>
+          
+          <TextInput
+            label="Budget"
+            placeholder="Budget amount"
+            value={projectForm.budget}
+            onChange={(e) => setProjectForm({...projectForm, budget: e.target.value})}
+            className="mb-3"
+          />
+          
+          <Textarea
+            label="Description"
+            placeholder="Project description"
+            required
+            minRows={3}
+            value={projectForm.description}
+            onChange={(e) => setProjectForm({...projectForm, description: e.target.value})}
+            className="mb-3"
+          />
+          
+          <TextInput
+            label="Team Members"
+            placeholder="Comma-separated list of team members"
+            value={projectForm.teamMembers}
+            onChange={(e) => setProjectForm({...projectForm, teamMembers: e.target.value})}
+            className="mb-3"
+          />
+          
+          <TextInput
+            label="Stakeholders"
+            placeholder="Comma-separated list of stakeholders"
+            value={projectForm.stakeholders}
+            onChange={(e) => setProjectForm({...projectForm, stakeholders: e.target.value})}
+            className="mb-3"
+          />
+          
+          <TextInput
+            label="Sustainability Goals"
+            placeholder="Sustainability goals for this project"
+            value={projectForm.sustainabilityGoals}
+            onChange={(e) => setProjectForm({...projectForm, sustainabilityGoals: e.target.value})}
+            className="mb-3"
+          />
+          
+          <FileInput
+            label="Project Image"
+            placeholder="Upload an image"
+            accept="image/*"
+            onChange={(file) => setProjectForm({...projectForm, imageFile: file})}
+            className="mb-4"
+          />
+          
+          <Group position="right" mt="md">
+            <Button variant="outline" onClick={closeCreateModal}>Cancel</Button>
+            <Button type="submit" color="blue">Create Project</Button>
+          </Group>
+        </form>
+      </Modal>
+
+    {/* Edit Project Modal */}
+    <Modal
+  opened={editModalOpen}
+  onClose={closeEditModal}
+  title="Edit Project"
   size="lg"
 >
-  <form onSubmit={handleCreateSubmit}>
+  <form onSubmit={handleEditSubmit}>
     <TextInput
       label="Project Name"
       placeholder="Enter project name"
@@ -1111,21 +1206,30 @@ useEffect(() => {
     
     <Grid>
       <Grid.Col span={6}>
-        <TextInput
-          label="Start Date (MM/DD/YYYY)"
-          placeholder="MM/DD/YYYY"
-          value={projectForm.startDate}
-          onChange={(e) => setProjectForm({...projectForm, startDate: e.target.value})}
+        <DateInput
+          label="Start Date"
+          placeholder="Select start date"
+          value={projectForm.startDate ? new Date(projectForm.startDate) : null}
+          onChange={(date) => setProjectForm({
+            ...projectForm, 
+            startDate: date ? date.toLocaleDateString('en-US') : ''
+          })}
           className="mb-3"
+          required
         />
       </Grid.Col>
       <Grid.Col span={6}>
-        <TextInput
-          label="End Date (MM/DD/YYYY)"
-          placeholder="MM/DD/YYYY"
-          value={projectForm.endDate}
-          onChange={(e) => setProjectForm({...projectForm, endDate: e.target.value})}
+        <DateInput
+          label="End Date"
+          placeholder="Select end date"
+          value={projectForm.endDate ? new Date(projectForm.endDate) : null}
+          onChange={(date) => setProjectForm({
+            ...projectForm, 
+            endDate: date ? date.toLocaleDateString('en-US') : ''
+          })}
           className="mb-3"
+          required
+          minDate={projectForm.startDate ? new Date(projectForm.startDate) : undefined}
         />
       </Grid.Col>
     </Grid>
@@ -1173,7 +1277,8 @@ useEffect(() => {
     />
     
     <FileInput
-      label="Project Image"
+      label="Project Image (Optional)"
+      description="Leave empty to keep existing image"
       placeholder="Upload an image"
       accept="image/*"
       onChange={(file) => setProjectForm({...projectForm, imageFile: file})}
@@ -1181,27 +1286,11 @@ useEffect(() => {
     />
     
     <Group position="right" mt="md">
-      <Button variant="outline" onClick={closeCreateModal}>Cancel</Button>
-      <Button type="submit" color="blue">Create Project</Button>
-    </Group>
-  </form>
-</Modal>
-
-{/* Edit Project Modal (similar to Create) */}
-<Modal
-  opened={editModalOpen}
-  onClose={closeEditModal}
-  title="Edit Project"
-  size="lg"
->
-  <form onSubmit={handleEditSubmit}>
-    {/* Same fields as Create with different submit handler */}
-    <Group position="right" mt="md">
       <Button variant="outline" onClick={closeEditModal}>Cancel</Button>
       <Button type="submit" color="yellow">Update Project</Button>
     </Group>
   </form>
-</Modal>
+    </Modal>
 
 {/* Delete Confirmation Modal */}
 <Modal
