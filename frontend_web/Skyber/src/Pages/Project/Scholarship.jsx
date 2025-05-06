@@ -36,6 +36,7 @@ import Navbar from '../../components/Navbar';
 import { useDisclosure } from '@mantine/hooks';
 import { Select, Textarea } from '@mantine/core';
 import { useAuth } from '../../contexts/AuthContext';
+import { apiFetch } from '../utils/api';
 
 
 const Scholarship = () => {
@@ -46,32 +47,39 @@ const Scholarship = () => {
   const [selectedScholarship, setSelectedScholarship] = useState(null);
   const [modalOpened, setModalOpened] = useState(false);
   const { currentUser } = useAuth();
-const [isAdmin, setIsAdmin] = useState(false);
-const [createModalOpen, { open: openCreateModal, close: closeCreateModal }] = useDisclosure(false);
-const [editModalOpen, { open: openEditModal, close: closeEditModal }] = useDisclosure(false);
-const [deleteModalOpen, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
-const [scholarshipForm, setScholarshipForm] = useState({
-  title: '',
-  description: '',
-  link: '',
-  contactEmail: '',
-  type: 'public',
-  deadline: '',
-  amount: '',
-  imageFile: null
-});
-  
-  // Fetch scholarships from API
-  useEffect(() => {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [createModalOpen, { open: openCreateModal, close: closeCreateModal }] = useDisclosure(false);
+  const [editModalOpen, { open: openEditModal, close: closeEditModal }] = useDisclosure(false);
+  const [deleteModalOpen, { open: openDeleteModal, close: closeDeleteModal }] = useDisclosure(false);
+  const [scholarshipForm, setScholarshipForm] = useState({
+    title: '',
+    description: '',
+    link: '',
+    contactEmail: '',
+    type: 'public',
+    deadline: '',
+    amount: '',
+    imageFile: null
+  });
+  const sanitizeLink = (link) => {
+    if (!link) return '';
+    return link.startsWith('http://') || link.startsWith('https://')
+      ? link
+      : `https://${link}`;
+  };
+
+    // Fetch scholarships from API
+    useEffect(() => {
+      
+      fetchScholarships();
+    }, []);
+
     const fetchScholarships = async () => {
       try {
         setLoading(true);
         
-        // The actual API endpoint
-        const API_URL = '/api/scholarships/getAllScholarships';
-        console.log("Fetching scholarships from:", API_URL);
-        
-        const response = await fetch(API_URL);
+        // Use apiFetch instead of direct fetch! Much cleaner!
+        const response = await apiFetch('api/scholarships/getAllScholarships');
         
         if (!response.ok) {
           console.error(`Server responded with ${response.status}: ${response.statusText}`);
@@ -90,19 +98,17 @@ const [scholarshipForm, setScholarshipForm] = useState({
             link: item.link || "#",
             contactEmail: item.contactEmail || "contact@skyber.org",
             category: item.type?.toLowerCase() === 'private' ? 'private' : 'public',
-            deadline: item.deadline || "Open until filled",
-            amount: item.amount || "Varies",
             saved: false,
             scholarImage: item.scholarImage || ""
           }));
           
           setScholarships(transformedData);
           
-          notifications.show({
-            title: 'Scholarships Loaded',
-            message: `Successfully loaded ${transformedData.length} scholarships`,
-            color: 'green',
-          });
+          // notifications.show({
+          //   title: 'Scholarships Loaded (ﾉ´ヮ`)ﾉ*:･ﾟ✧',
+          //   message: `Successfully loaded ${transformedData.length} adorable scholarships!`,
+          //   color: 'green',
+          // });
         } else {
           console.warn("No scholarships found");
           setScholarships([]);
@@ -112,54 +118,11 @@ const [scholarshipForm, setScholarshipForm] = useState({
         
         // Fall back to sample data in case of error
         setScholarships([
-          {
-            id: 1,
-            title: "SKyber Excellence Scholarship",
-            description: "Full scholarship for outstanding students pursuing computer science or IT-related courses. Covers tuition, books, and monthly allowance.",
-            link: "https://skyber.org/excellence-scholarship",
-            contactEmail: "excellence@skyber.org",
-            category: "public",
-            deadline: "June 30, 2025",
-            amount: "$5,000",
-            saved: false
-          },
-          {
-            id: 2,
-            title: "Women in Tech Scholarship",
-            description: "Supporting female students pursuing degrees in STEM fields with focus on addressing gender disparities in technology careers.",
-            link: "https://skyber.org/women-in-tech",
-            contactEmail: "womenintech@skyber.org",
-            category: "public",
-            deadline: "July 15, 2025",
-            amount: "$3,500",
-            saved: true
-          },
-          {
-            id: 3,
-            title: "Rural Development Innovation Grant",
-            description: "For students from rural communities developing technology solutions for agricultural or community development.",
-            link: "https://skyber.org/rural-innovation",
-            contactEmail: "ruralinnovation@skyber.org",
-            category: "private",
-            deadline: "August 5, 2025",
-            amount: "$4,200",
-            saved: false
-          },
-          {
-            id: 4,
-            title: "Digital Arts & Design Scholarship",
-            description: "Supporting creative students pursuing education in digital arts, UI/UX design, and interactive media.",
-            link: "https://skyber.org/digital-arts",
-            contactEmail: "arts@skyber.org",
-            category: "public",
-            deadline: "May 20, 2025",
-            amount: "$2,800",
-            saved: false
-          }
+          // Your existing sample data
         ]);
         
         notifications.show({
-          title: 'Error Loading Scholarships',
+          title: 'Error Loading Scholarships (╥﹏╥)',
           message: 'Using sample data instead. Please check your connection.',
           color: 'red',
         });
@@ -167,370 +130,281 @@ const [scholarshipForm, setScholarshipForm] = useState({
         setLoading(false);
       }
     };
-    
-    fetchScholarships();
-  }, []);
-// Extract this function from useEffect so it can be called from handlers
-const fetchScholarships = async () => {
-  try {
-    setLoading(true);
-    
-    // The actual API endpoint
-    const API_URL = '/api/scholarships/getAllScholarships';
-    console.log("Fetching scholarships from:", API_URL);
-    
-    const response = await fetch(API_URL);
-    
-    if (!response.ok) {
-      console.error(`Server responded with ${response.status}: ${response.statusText}`);
-      throw new Error(`Server responded with ${response.status}`);
-    }
-    
-    const data = await response.json();
-    console.log("Retrieved scholarships:", data);
-    
-    // Transform data from backend format to frontend format
-    if (data && data.length > 0) {
-      const transformedData = data.map(item => ({
-        id: item.id || Math.random().toString(),
-        title: item.title || "Untitled Scholarship",
-        description: item.description || "No description provided",
-        link: item.link || "#",
-        contactEmail: item.contactEmail || "contact@skyber.org",
-        category: item.type?.toLowerCase() === 'private' ? 'private' : 'public',
-        deadline: item.deadline || "Open until filled",
-        amount: item.amount || "Varies",
-        saved: false,
-        scholarImage: item.scholarImage || ""
-      }));
+
+    // In useEffect, just call the function
+    useEffect(() => {
+      fetchScholarships();
+    }, []);
+    // Filter scholarships based on search and category
+    const filteredScholarships = scholarships.filter(scholarship => {
+      const matchesSearch = scholarship.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          scholarship.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = activeTab === 'all' || scholarship.category === activeTab;
       
-      setScholarships(transformedData);
+      return matchesSearch && matchesCategory;
+    });
+
+    // Toggle save/bookmark scholarship
+    const toggleSaveScholarship = (id, event) => {
+      event.stopPropagation(); // Prevent card click when clicking the bookmark icon
+      
+      setScholarships(scholarships.map(scholarship => 
+        scholarship.id === id 
+          ? { ...scholarship, saved: !scholarship.saved } 
+          : scholarship
+      ));
+      
+      const scholarship = scholarships.find(s => s.id === id);
+      const action = scholarship.saved ? 'removed from' : 'added to';
       
       notifications.show({
-        title: 'Scholarships Loaded',
-        message: `Successfully loaded ${transformedData.length} scholarships`,
-        color: 'green',
+        title: `Scholarship ${action} favorites`,
+        message: `"${scholarship.title}" has been ${action} your favorites!`,
+        color: scholarship.saved ? 'gray' : 'pink',
       });
-    } else {
-      console.warn("No scholarships found");
-      setScholarships([]);
-    }
-  } catch (error) {
-    console.error("Failed to fetch scholarships:", error);
-    
-    // Fall back to sample data in case of error
-    setScholarships([
-      // Your sample data here
-    ]);
-    
-    notifications.show({
-      title: 'Error Loading Scholarships',
-      message: 'Using sample data instead. Please check your connection.',
-      color: 'red',
-    });
-  } finally {
-    setLoading(false);
-  }
-};
-
-// In useEffect, just call the function
-useEffect(() => {
-  fetchScholarships();
-}, []);
-  // Filter scholarships based on search and category
-  const filteredScholarships = scholarships.filter(scholarship => {
-    const matchesSearch = scholarship.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         scholarship.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = activeTab === 'all' || scholarship.category === activeTab;
-    
-    return matchesSearch && matchesCategory;
-  });
-
-  // Toggle save/bookmark scholarship
-  const toggleSaveScholarship = (id, event) => {
-    event.stopPropagation(); // Prevent card click when clicking the bookmark icon
-    
-    setScholarships(scholarships.map(scholarship => 
-      scholarship.id === id 
-        ? { ...scholarship, saved: !scholarship.saved } 
-        : scholarship
-    ));
-    
-    const scholarship = scholarships.find(s => s.id === id);
-    const action = scholarship.saved ? 'removed from' : 'added to';
-    
-    notifications.show({
-      title: `Scholarship ${action} favorites`,
-      message: `"${scholarship.title}" has been ${action} your favorites!`,
-      color: scholarship.saved ? 'gray' : 'pink',
-    });
-  };
-  
-  // View scholarship details
-  const viewScholarshipDetails = (scholarship) => {
-    setSelectedScholarship(scholarship);
-    setModalOpened(true);
-  };
-
-  useEffect(() => {
-    if (currentUser) {
-      const checkUserRole = async () => {
-        try {
-          const { getDatabase, ref, get } = await import('firebase/database');
-          const db = getDatabase();
-          const userRef = ref(db, `users/${currentUser.uid}`);
-          const snapshot = await get(userRef);
-          
-          if (snapshot.exists()) {
-            const userData = snapshot.val();
-            setIsAdmin(userData.role === 'ADMIN');
-          }
-        } catch (error) {
-          console.error('Error checking user role:', error);
-        }
-      };
-      
-      checkUserRole();
-    }
-  }, [currentUser]);
-
-  // Add these handler functions to your component
-const handleCreateClick = () => {
-  setScholarshipForm({
-    title: '',
-    description: '',
-    link: '',
-    contactEmail: '',
-    type: 'public',
-    deadline: '',
-    amount: '',
-    imageFile: null
-  });
-  openCreateModal();
-};
-
-const handleEditClick = (scholarship) => {
-  setSelectedScholarship(scholarship);
-  setScholarshipForm({
-    title: scholarship.title,
-    description: scholarship.description,
-    link: scholarship.link,
-    contactEmail: scholarship.contactEmail,
-    type: scholarship.category === 'public' ? 'public' : 'private',
-    deadline: scholarship.deadline || '',
-    amount: scholarship.amount || '',
-    imageFile: null // Can't prefill image
-  });
-  openEditModal();
-};
-
-const handleDeleteClick = (scholarship) => {
-  setSelectedScholarship(scholarship);
-  openDeleteModal();
-};
-
-const handleCreateSubmit = async (e) => {
-  e.preventDefault();
-  
-  // Validate required fields
-  if (!scholarshipForm.title || !scholarshipForm.description || !scholarshipForm.contactEmail) {
-    notifications.show({
-      title: 'Validation Error',
-      message: 'Title, description and contact email are required',
-      color: 'red'
-    });
-    return;
-  }
-  
-  try {
-    setLoading(true);
-    
-    const formData = new FormData();
-    formData.append('title', scholarshipForm.title);
-    formData.append('description', scholarshipForm.description);
-    formData.append('link', scholarshipForm.link || '#');
-    formData.append('contactEmail', scholarshipForm.contactEmail);
-    formData.append('type', scholarshipForm.type);
-    
-    if (scholarshipForm.imageFile) {
-      formData.append('image', scholarshipForm.imageFile);
-    }
-    
-    const response = await fetch('/api/scholarships/createScholarship/with-image', {
-      method: 'POST',
-      body: formData
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to create scholarship: ${errorText}`);
-    }
-    
-    notifications.show({
-      title: 'Success',
-      message: 'Scholarship created successfully',
-      color: 'green'
-    });
-    
-    closeCreateModal();
-    fetchScholarships(); // Make sure to extract this from your useEffect
-    
-  } catch (error) {
-    console.error('Error creating scholarship:', error);
-    notifications.show({
-      title: 'Error',
-      message: error.message || 'Failed to create scholarship',
-      color: 'red'
-    });
-  } finally {
-    setLoading(false);
-  }
-};
-const completeSubmit = async (formData) => {
-  try {
-    const response = await fetch('/api/scholarships/createScholarship/with-image', {
-      method: 'POST',
-      body: formData
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to create scholarship: ${errorText}`);
-    }
-    
-    notifications.show({
-      title: 'Success',
-      message: 'Scholarship created successfully',
-      color: 'green'
-    });
-    
-    closeCreateModal();
-    fetchScholarships();
-  } catch (error) {
-    console.error('Error creating scholarship:', error);
-    notifications.show({
-      title: 'Error',
-      message: error.message || 'Failed to create scholarship',
-      color: 'red'
-    });
-  } finally {
-    setLoading(false);
-  }
-};
-const handleEditSubmit = async (e) => {
-  e.preventDefault();
-  
-  if (!selectedScholarship) return;
-  
-  // Validate required fields
-  if (!scholarshipForm.title || !scholarshipForm.description || !scholarshipForm.contactEmail) {
-    notifications.show({
-      title: 'Validation Error',
-      message: 'Title, description and contact email are required',
-      color: 'red'
-    });
-    return;
-  }
-  
-  try {
-    setLoading(true);
-    
-    // First update scholarship details
-    const updateData = {
-      title: scholarshipForm.title,
-      description: scholarshipForm.description,
-      link: scholarshipForm.link || '#',
-      contactEmail: scholarshipForm.contactEmail,
-      type: scholarshipForm.type,
-      // Keep existing image if no new image is provided
-      scholarImage: selectedScholarship.scholarImage
     };
     
-    const response = await fetch(`/api/scholarships/updateScholarship/${selectedScholarship.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(updateData)
+    // View scholarship details
+    const viewScholarshipDetails = (scholarship) => {
+      setSelectedScholarship(scholarship);
+      setModalOpened(true);
+    };
+
+    useEffect(() => {
+      if (currentUser) {
+        const checkUserRole = async () => {
+          try {
+            const { getDatabase, ref, get } = await import('firebase/database');
+            const db = getDatabase();
+            const userRef = ref(db, `users/${currentUser.uid}`);
+            const snapshot = await get(userRef);
+            
+            if (snapshot.exists()) {
+              const userData = snapshot.val();
+              setIsAdmin(userData.role === 'ADMIN');
+            }
+          } catch (error) {
+            console.error('Error checking user role:', error);
+          }
+        };
+        
+        checkUserRole();
+      }
+    }, [currentUser]);
+
+    // Add these handler functions to your component
+  const handleCreateClick = () => {
+    setScholarshipForm({
+      title: '',
+      description: '',
+      link: '',
+      contactEmail: '',
+      type: 'public',
+      deadline: '',
+      amount: '',
+      imageFile: null
     });
+    openCreateModal();
+  };
+
+  const handleEditClick = (scholarship) => {
+    setSelectedScholarship(scholarship);
+    setScholarshipForm({
+      title: scholarship.title,
+      description: scholarship.description,
+      link: scholarship.link,
+      contactEmail: scholarship.contactEmail,
+      type: scholarship.category === 'public' ? 'public' : 'private',
+      deadline: scholarship.deadline || '',
+      amount: scholarship.amount || '',
+      imageFile: null // Can't prefill image
+    });
+    openEditModal();
+  };
+
+  const handleDeleteClick = (scholarship) => {
+    setSelectedScholarship(scholarship);
+    openDeleteModal();
+  };
+
+  const handleCreateSubmit = async (e) => {
+    e.preventDefault();
+  
+    if (!scholarshipForm.title || !scholarshipForm.description || !scholarshipForm.contactEmail) {
+      notifications.show({
+        title: 'Validation Error (⊙△⊙✿)',
+        message: 'Title, description and contact email are required',
+        color: 'red'
+      });
+      return;
+    }
+  
+    try {
+      setLoading(true);
+  
+      // Always use FormData and the with-image endpoint
+      const formData = new FormData();
+      formData.append('title', scholarshipForm.title || '');
+      formData.append('description', scholarshipForm.description || '');
+      formData.append('link', sanitizeLink(scholarshipForm.link));
+      formData.append('contactEmail', scholarshipForm.contactEmail || '');
+      formData.append('type', scholarshipForm.type || '');
+
+      // Always append image, even if empty
+      if (scholarshipForm.imageFile) {
+        formData.append('image', scholarshipForm.imageFile);
+      } else {
+        // Some backends require the param to exist, so send an empty Blob
+        formData.append('image', new Blob([]), '');
+      }
+  
+      const response = await apiFetch('api/scholarships/createScholarship/with-image', {
+        method: 'POST',
+        body: formData
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to create scholarship: ${errorText}`);
+      }
+  
+      notifications.show({
+        title: 'Success (ﾉ´ヮ`)ﾉ*:･ﾟ✧',
+        message: 'Scholarship created successfully!',
+        color: 'green'
+      });
+  
+      closeCreateModal();
+      fetchScholarships();
+  
+    } catch (error) {
+      console.error('Error creating scholarship:', error);
+      notifications.show({
+        title: 'Error (｡•́︿•̀｡)',
+        message: error.message || 'Failed to create scholarship',
+        color: 'red'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
     
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to update scholarship: ${errorText}`);
+    if (!selectedScholarship) return;
+    
+    // Validate required fields
+    if (!scholarshipForm.title || !scholarshipForm.description || !scholarshipForm.contactEmail) {
+      notifications.show({
+        title: 'Validation Error (⊙△⊙✿)',
+        message: 'Title, description and contact email are required',
+        color: 'red'
+      });
+      return;
     }
     
-    // If there's a new image, update it separately
-    if (scholarshipForm.imageFile) {
-      const imageFormData = new FormData();
-      imageFormData.append('image', scholarshipForm.imageFile);
+    try {
+      setLoading(true);
       
-      const imageResponse = await fetch(`/api/scholarships/updateScholarship/${selectedScholarship.id}/image`, {
+      // First update scholarship details
+      const updateData = {
+        title: scholarshipForm.title,
+        description: scholarshipForm.description,
+        link: scholarshipForm.link || '#',
+        contactEmail: scholarshipForm.contactEmail,
+        type: scholarshipForm.type,
+        scholarImage: selectedScholarship.scholarImage
+      };
+      
+      // Use apiFetch instead of direct fetch
+      const response = await apiFetch(`api/scholarships/updateScholarship/${selectedScholarship.id}`, {
         method: 'PUT',
-        body: imageFormData
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updateData)
       });
       
-      if (!imageResponse.ok) {
-        const errorText = await imageResponse.text();
-        throw new Error(`Failed to update image: ${errorText}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to update scholarship: ${errorText}`);
       }
+      
+      // If there's a new image, update it separately
+      if (scholarshipForm.imageFile) {
+        const imageFormData = new FormData();
+        imageFormData.append('image', scholarshipForm.imageFile);
+        
+        const imageResponse = await apiFetch(`api/scholarships/updateScholarship/${selectedScholarship.id}/image`, {
+          method: 'PUT',
+          body: imageFormData
+        });
+        
+        if (!imageResponse.ok) {
+          const errorText = await imageResponse.text();
+          throw new Error(`Failed to update image: ${errorText}`);
+        }
+      }
+      
+      notifications.show({
+        title: 'Success (っ◔◡◔)っ ♥',
+        message: 'Scholarship updated successfully!',
+        color: 'green'
+      });
+      
+      closeEditModal();
+      fetchScholarships();
+      
+    } catch (error) {
+      console.error('Error updating scholarship:', error);
+      notifications.show({
+        title: 'Error (｡•́︿•̀｡)',
+        message: error.message || 'Failed to update scholarship',
+        color: 'red'
+      });
+    } finally {
+      setLoading(false);
     }
-    
-    notifications.show({
-      title: 'Success',
-      message: 'Scholarship updated successfully',
-      color: 'green'
-    });
-    
-    closeEditModal();
-    fetchScholarships(); // Make sure to extract this from your useEffect
-    
-  } catch (error) {
-    console.error('Error updating scholarship:', error);
-    notifications.show({
-      title: 'Error',
-      message: error.message || 'Failed to update scholarship',
-      color: 'red'
-    });
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
-const handleDeleteConfirm = async () => {
-  if (!selectedScholarship) return;
-  
-  try {
-    setLoading(true);
+  const handleDeleteConfirm = async () => {
+    if (!selectedScholarship) return;
     
-    const response = await fetch(`/api/scholarships/deleteScholarship/${selectedScholarship.id}`, {
-      method: 'DELETE'
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to delete scholarship: ${errorText}`);
+    try {
+      setLoading(true);
+      
+      // Use apiFetch instead of direct fetch
+      const response = await apiFetch(`api/scholarships/deleteScholarship/${selectedScholarship.id}`, {
+        method: 'DELETE'
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to delete scholarship: ${errorText}`);
+      }
+      
+      notifications.show({
+        title: 'Success (づ￣ ³￣)づ',
+        message: 'Scholarship deleted successfully!',
+        color: 'green'
+      });
+      
+      closeDeleteModal();
+      fetchScholarships();
+      
+    } catch (error) {
+      console.error('Error deleting scholarship:', error);
+      notifications.show({
+        title: 'Error (｡ŏ﹏ŏ)',
+        message: error.message || 'Failed to delete scholarship',
+        color: 'red'
+      });
+    } finally {
+      setLoading(false);
     }
-    
-    notifications.show({
-      title: 'Success',
-      message: 'Scholarship deleted successfully',
-      color: 'green'
-    });
-    
-    closeDeleteModal();
-    fetchScholarships(); // Make sure to extract this from your useEffect
-    
-  } catch (error) {
-    console.error('Error deleting scholarship:', error);
-    notifications.show({
-      title: 'Error',
-      message: error.message || 'Failed to delete scholarship',
-      color: 'red'
-    });
-  } finally {
-    setLoading(false);
-  }
-};
+  };
+
   if (loading) {
     return (
       <>
@@ -590,19 +464,21 @@ const handleDeleteConfirm = async () => {
                 </Tabs>
               </Grid.Col>
               
+            <Grid.Col span={12} className="mt-4">
             {isAdmin && (
-      <Grid.Col span={12} className="mt-4">
-        <Button
-          leftSection={<IconPlus size={16} />}
-          variant="gradient"
-          gradient={{ from: 'blue', to: 'cyan' }}
-          onClick={openCreateModal}
-          radius="md"
-        >
-          Add New Scholarship
-        </Button>
-      </Grid.Col>
-    )}
+                      <div className="mb-4 flex justify-end">
+              <Button
+                leftSection={<IconPlus size={16} />}
+                variant="gradient"
+                gradient={{ from: 'blue', to: 'cyan' }}
+                onClick={openCreateModal}
+                radius="md"
+              >
+                Add New Scholarship
+              </Button>
+              </div>
+          )}
+            </Grid.Col>
             </Grid>
           </Paper>
 
@@ -626,38 +502,32 @@ const handleDeleteConfirm = async () => {
                           {scholarship.category.charAt(0).toUpperCase() + scholarship.category.slice(1)}
                         </Badge>
                         <Group spacing={4}>
-      {isAdmin && (
-        <>
-          <ActionIcon 
-            variant="light" 
-            color="yellow"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleEditClick(scholarship);
-            }}
-          >
-            <IconEdit size={16} />
-          </ActionIcon>
-          <ActionIcon 
-            variant="light" 
-            color="red"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDeleteClick(scholarship);
-            }}
-          >
-            <IconTrash size={16} />
-          </ActionIcon>
-        </>
-      )}
-      <ActionIcon 
-        variant="subtle" 
-        color={scholarship.saved ? "pink" : "gray"}
-        onClick={(e) => toggleSaveScholarship(scholarship.id, e)}
-      >
-        <IconBookmark size={18} />
-      </ActionIcon>
-    </Group>
+                          {isAdmin && (
+                            <>
+                              <ActionIcon 
+                                variant="light" 
+                                color="yellow"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEditClick(scholarship);
+                                }}
+                              >
+                                <IconEdit size={16} />
+                              </ActionIcon>
+                              <ActionIcon 
+                                variant="light" 
+                                color="red"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteClick(scholarship);
+                                }}
+                              >
+                                <IconTrash size={16} />
+                              </ActionIcon>
+                            </>
+                          )}
+                          
+                        </Group>
                       </div>
                     </Card.Section>
 
@@ -669,10 +539,6 @@ const handleDeleteConfirm = async () => {
                         {scholarship.description}
                       </Text>
 
-                      <Group className="mb-2">
-                        <Badge variant="dot" color="green">Amount: {scholarship.amount}</Badge>
-                        <Badge variant="dot" color="red">Deadline: {scholarship.deadline}</Badge>
-                      </Group>
 
                       <Divider my="sm" />
 
@@ -751,24 +617,6 @@ const handleDeleteConfirm = async () => {
               {selectedScholarship.description}
             </Text>
             
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <div className="flex items-center">
-                <IconCalendarEvent size={20} className="text-blue-500 mr-2" />
-                <div>
-                  <Text size="sm" weight={500}>Application Deadline</Text>
-                  <Text size="sm">{selectedScholarship.deadline}</Text>
-                </div>
-              </div>
-              
-              <div className="flex items-center">
-                <IconCoin size={20} className="text-blue-500 mr-2" />
-                <div>
-                  <Text size="sm" weight={500}>Award Amount</Text>
-                  <Text size="sm">{selectedScholarship.amount}</Text>
-                </div>
-              </div>
-            </div>
-            
             <Divider className="my-3" />
             
             <Group position="apart" className="mb-4">
@@ -793,159 +641,173 @@ const handleDeleteConfirm = async () => {
           </div>
         )}
       </Modal>
-      {/* Add these modal components at the bottom of your component */}
-{/* Create Scholarship Modal */}
-<Modal
-  opened={createModalOpen}
-  onClose={closeCreateModal}
-  title="Add New Scholarship"
-  size="lg"
->
-  <form onSubmit={handleCreateSubmit}>
-    <TextInput
-      label="Title"
-      required
-      placeholder="Scholarship name"
-      value={scholarshipForm.title}
-      onChange={(e) => setScholarshipForm({...scholarshipForm, title: e.target.value})}
-      className="mb-3"
-    />
-    
-    <Select
-      label="Type"
-      data={[
-        { value: 'public', label: 'Public' },
-        { value: 'private', label: 'Private' },
-      ]}
-      value={scholarshipForm.type}
-      onChange={(value) => setScholarshipForm({...scholarshipForm, type: value})}
-      className="mb-3"
-      required
-    />
-    
-    <TextInput
-      label="Application Link"
-      placeholder="https://example.com/application"
-      value={scholarshipForm.link}
-      onChange={(e) => setScholarshipForm({...scholarshipForm, link: e.target.value})}
-      className="mb-3"
-    />
-    
-    <TextInput
-      label="Contact Email"
-      required
-      placeholder="contact@example.com"
-      value={scholarshipForm.contactEmail}
-      onChange={(e) => setScholarshipForm({...scholarshipForm, contactEmail: e.target.value})}
-      className="mb-3"
-    />
-    
-    <Grid>
-      <Grid.Col span={6}>
-        <TextInput
-          label="Deadline"
-          placeholder="e.g., June 30, 2025"
-          value={scholarshipForm.deadline}
-          onChange={(e) => setScholarshipForm({...scholarshipForm, deadline: e.target.value})}
-          className="mb-3"
-        />
-      </Grid.Col>
-      <Grid.Col span={6}>
-        <TextInput
-          label="Amount"
-          placeholder="e.g., $5,000"
-          value={scholarshipForm.amount}
-          onChange={(e) => setScholarshipForm({...scholarshipForm, amount: e.target.value})}
-          className="mb-3"
-        />
-      </Grid.Col>
-    </Grid>
-    
-    <Textarea
-      label="Description"
-      placeholder="Describe the scholarship details, eligibility, and requirements"
-      required
-      minRows={4}
-      value={scholarshipForm.description}
-      onChange={(e) => setScholarshipForm({...scholarshipForm, description: e.target.value})}
-      className="mb-3"
-    />
-    
-    <FileInput
-      label="Scholarship Image"
-      placeholder="Upload an image"
-      accept="image/*"
-      onChange={(file) => setScholarshipForm({...scholarshipForm, imageFile: file})}
-      className="mb-4"
-    />
-    
-    <Group position="right" mt="md">
-      <Button variant="outline" onClick={closeCreateModal}>Cancel</Button>
-      <Button type="submit" color="blue">Create Scholarship</Button>
-    </Group>
-  </form>
-</Modal>
-
-{/* Edit Scholarship Modal */}
-<Modal
-  opened={editModalOpen}
-  onClose={closeEditModal}
-  title="Edit Scholarship"
-  size="lg"
->
-  <form onSubmit={handleEditSubmit}>
-    {/* Same fields as create modal */}
-    <TextInput
-      label="Title"
-      required
-      placeholder="Scholarship name"
-      value={scholarshipForm.title}
-      onChange={(e) => setScholarshipForm({...scholarshipForm, title: e.target.value})}
-      className="mb-3"
-    />
-    
-    <Select
-      label="Type"
-      data={[
-        { value: 'public', label: 'Public' },
-        { value: 'private', label: 'Private' },
-      ]}
-      value={scholarshipForm.type}
-      onChange={(value) => setScholarshipForm({...scholarshipForm, type: value})}
-      className="mb-3"
-      required
-    />
-    
-    {/* Other fields... */}
-    
-    <Group position="right" mt="md">
-      <Button variant="outline" onClick={closeEditModal}>Cancel</Button>
-      <Button type="submit" color="yellow">Update Scholarship</Button>
-    </Group>
-  </form>
-</Modal>
-
-{/* Delete Confirmation Modal */}
-<Modal
-  opened={deleteModalOpen}
-  onClose={closeDeleteModal}
-  title="Delete Scholarship"
-  size="sm"
->
-  {selectedScholarship && (
-    <>
-      <Text>Are you sure you want to delete "{selectedScholarship.title}"?</Text>
-      <Text size="sm" color="dimmed" className="mt-2">
-        This action cannot be undone.
-      </Text>
       
-      <Group position="right" className="mt-4">
-        <Button variant="outline" onClick={closeDeleteModal}>Cancel</Button>
-        <Button color="red" onClick={handleDeleteConfirm}>Delete</Button>
-      </Group>
-    </>
-  )}
-</Modal>
+    {/* Create Scholarship Modal */}
+    <Modal
+      opened={createModalOpen}
+      onClose={closeCreateModal}
+      title="Add New Scholarship"
+      size="lg"
+    >
+      <form onSubmit={handleCreateSubmit}>
+        <TextInput
+          label="Title"
+          required
+          placeholder="Scholarship name"
+          value={scholarshipForm.title}
+          onChange={(e) => setScholarshipForm({...scholarshipForm, title: e.target.value})}
+          className="mb-3"
+        />
+        
+        <Select
+          label="Type"
+          data={[
+            { value: 'public', label: 'Public' },
+            { value: 'private', label: 'Private' },
+          ]}
+          value={scholarshipForm.type}
+          onChange={(value) => setScholarshipForm({...scholarshipForm, type: value})}
+          className="mb-3"
+          required
+        />
+        
+        <TextInput
+          label="Application Link"
+          placeholder="https://example.com/application"
+          value={scholarshipForm.link}
+          onChange={(e) => setScholarshipForm({...scholarshipForm, link: e.target.value})}
+          className="mb-3"
+        />
+        
+        <TextInput
+          label="Contact Email"
+          required
+          placeholder="contact@example.com"
+          value={scholarshipForm.contactEmail}
+          onChange={(e) => setScholarshipForm({...scholarshipForm, contactEmail: e.target.value})}
+          className="mb-3"
+        />
+        
+        
+        <Textarea
+          label="Description"
+          placeholder="Describe the scholarship details, eligibility, and requirements"
+          required
+          minRows={4}
+          value={scholarshipForm.description}
+          onChange={(e) => setScholarshipForm({...scholarshipForm, description: e.target.value})}
+          className="mb-3"
+        />
+        
+        <FileInput
+          label="Scholarship Image"
+          placeholder="Upload an image"
+          accept="image/*"
+          onChange={(file) => setScholarshipForm({...scholarshipForm, imageFile: file})}
+          className="mb-4"
+        />
+        
+        <Group position="right" mt="md">
+          <Button variant="outline" onClick={closeCreateModal}>Cancel</Button>
+          <Button type="submit" color="blue">Create Scholarship</Button>
+        </Group>
+      </form>
+    </Modal>
+
+    {/* Edit Scholarship Modal */}
+    <Modal
+      opened={editModalOpen}
+      onClose={closeEditModal}
+      title="Edit Scholarship"
+      size="lg"
+    >
+      <form onSubmit={handleEditSubmit}>
+        <TextInput
+          label="Title"
+          required
+          placeholder="Scholarship name"
+          value={scholarshipForm.title}
+          onChange={(e) => setScholarshipForm({...scholarshipForm, title: e.target.value})}
+          className="mb-3"
+        />
+        
+        <Select
+          label="Type"
+          data={[
+            { value: 'public', label: 'Public' },
+            { value: 'private', label: 'Private' },
+          ]}
+          value={scholarshipForm.type}
+          onChange={(value) => setScholarshipForm({...scholarshipForm, type: value})}
+          className="mb-3"
+          required
+        />
+        
+        <TextInput
+          label="Application Link"
+          placeholder="https://example.com/application"
+          value={scholarshipForm.link}
+          onChange={(e) => setScholarshipForm({...scholarshipForm, link: e.target.value})}
+          className="mb-3"
+        />
+        
+        <TextInput
+          label="Contact Email"
+          required
+          placeholder="contact@example.com"
+          value={scholarshipForm.contactEmail}
+          onChange={(e) => setScholarshipForm({...scholarshipForm, contactEmail: e.target.value})}
+          className="mb-3"
+        />
+        
+        
+        <Textarea
+          label="Description"
+          placeholder="Describe the scholarship details, eligibility, and requirements"
+          required
+          minRows={4}
+          value={scholarshipForm.description}
+          onChange={(e) => setScholarshipForm({...scholarshipForm, description: e.target.value})}
+          className="mb-3"
+        />
+        
+        <FileInput
+          label="Scholarship Image (Optional)"
+          description="Leave empty to keep existing image"
+          placeholder="Upload a new image"
+          accept="image/*"
+          onChange={(file) => setScholarshipForm({...scholarshipForm, imageFile: file})}
+          className="mb-4"
+        />
+        
+        <Group position="right" mt="md">
+          <Button variant="outline" onClick={closeEditModal}>Cancel</Button>
+          <Button type="submit" color="yellow">Update Scholarship</Button>
+        </Group>
+      </form>
+    </Modal>
+
+    {/* Delete Confirmation Modal */}
+    <Modal
+      opened={deleteModalOpen}
+      onClose={closeDeleteModal}
+      title="Delete Scholarship"
+      size="sm"
+    >
+      {selectedScholarship && (
+        <>
+          <Text>Are you sure you want to delete "{selectedScholarship.title}"?</Text>
+          <Text size="sm" color="dimmed" className="mt-2">
+            This action cannot be undone.
+          </Text>
+          
+          <Group position="right" className="mt-4">
+            <Button variant="outline" onClick={closeDeleteModal}>Cancel</Button>
+            <Button color="red" onClick={handleDeleteConfirm}>Delete</Button>
+          </Group>
+        </>
+      )}
+    </Modal>
     </>
   );
 };
