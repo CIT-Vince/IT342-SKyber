@@ -60,7 +60,8 @@ const JobListings = () => {
       const API_URL = '/api/jobs/getAllJobs';
       console.log("Fetching job listings from:", API_URL);
       
-      const response = await fetch(API_URL);
+      // Replace fetch with apiFetch
+      const response = await apiFetch(API_URL);
       
       if (!response.ok) {
         throw new Error(`Server responded with ${response.status}`);
@@ -88,18 +89,18 @@ const JobListings = () => {
         setJobs(transformedJobs);
         
         notifications.show({
-          title: 'Jobs Loaded',
+          title: 'Jobs Loaded (｡•̀ᴗ-)✧',
           message: `Successfully loaded ${transformedJobs.length} job listings`,
           color: 'green',
         });
       } else {
-        console.warn("No job listings found");
+        console.warn("No job listings found (´。＿。｀)");
       }
     } catch (error) {
       console.error('Error fetching jobs:', error);
       
       notifications.show({
-        title: 'Error Loading Jobs',
+        title: 'Error Loading Jobs (ノಠ益ಠ)ノ彡┻━┻',
         message: 'Using sample data instead',
         color: 'red',
       });
@@ -107,6 +108,7 @@ const JobListings = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     if (currentUser) {
       const checkUserRole = async () => {
