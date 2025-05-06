@@ -40,6 +40,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,8 +64,9 @@ import com.example.skyber.ModularFunctions.CustomOutlinedTextField
 import com.example.skyber.ModularFunctions.ImageUtils
 import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.dataclass.CandidateProfile
-import com.example.skyber.headerbar.HeaderBar
-import com.example.skyber.headerbar.NotificationHandler
+import com.example.skyber.ModularFunctions.headerbar.HeaderBar
+import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
+import com.example.skyber.dataclass.User
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
@@ -75,7 +77,8 @@ import com.example.skyber.ui.theme.gradientBrush
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun DetailsSKcandidates(navController: NavHostController) {
+fun DetailsSKcandidates(navController: NavHostController, userProfile: MutableState<User?>) {
+    val user = userProfile.value
     val candidateProfile = navController.previousBackStackEntry?.savedStateHandle?.get<CandidateProfile>("CandidateProfile")
     var isEditMode by rememberSaveable { mutableStateOf(false) }
     var newPlatform by remember { mutableStateOf("") }
@@ -168,7 +171,7 @@ fun DetailsSKcandidates(navController: NavHostController) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(innerPadding),
+                            .padding(),
                         verticalArrangement = Arrangement.Top,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -284,95 +287,95 @@ fun DetailsSKcandidates(navController: NavHostController) {
 
                                         Spacer(modifier = Modifier.height(24.dp))
 
-                                        Button(
-                                            onClick = {
-                                                val database = FirebaseHelper.databaseReference
-                                                val candidateId = candidateProfile.id
-                                                if(candidateId != null){
-                                                    val updatedCandidateProfile = CandidateProfile(
-                                                        firstName = newFirstname.ifEmpty { candidateProfile.firstName },
-                                                        lastName = newLastname.ifEmpty { candidateProfile.lastName },
-                                                        age = newAge.ifEmpty { candidateProfile.age },
-                                                        partylist = newPartylist.ifEmpty { candidateProfile.partylist },
-                                                        platform = newPlatform.ifEmpty { candidateProfile.platform },
-                                                        address = newAddress.ifEmpty{ candidateProfile.address},
-                                                        candidateImage = newBase64Image?.ifEmpty { candidateProfile.candidateImage },
-                                                    )
-                                                    // Save updated project to database
-                                                    database.child("Candidates").child(candidateId)
-                                                        .setValue(updatedCandidateProfile)
-                                                        .addOnSuccessListener {
-                                                            Toast.makeText(
-                                                                context,
-                                                                "updated successfully",
-                                                                Toast.LENGTH_SHORT
-                                                            ).show()
-                                                            isEditMode = false
-                                                        }
-                                                        .addOnFailureListener {
-                                                            Toast.makeText(
-                                                                context,
-                                                                "Update unsuccessful",
-                                                                Toast.LENGTH_SHORT
-                                                            ).show()
-                                                        }
-                                                }
 
-                                            },
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(60.dp),
-                                            shape = RoundedCornerShape(28.dp),
-                                            contentPadding = PaddingValues(0.dp),
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                                        ) {
-                                            Box(
+                                            Button(
+                                                onClick = {
+                                                    val database = FirebaseHelper.databaseReference
+                                                    val candidateId = candidateProfile.id
+                                                    if(candidateId != null){
+                                                        val updatedCandidateProfile = CandidateProfile(
+                                                            firstName = newFirstname.ifEmpty { candidateProfile.firstName },
+                                                            lastName = newLastname.ifEmpty { candidateProfile.lastName },
+                                                            age = newAge.ifEmpty { candidateProfile.age },
+                                                            partylist = newPartylist.ifEmpty { candidateProfile.partylist },
+                                                            platform = newPlatform.ifEmpty { candidateProfile.platform },
+                                                            address = newAddress.ifEmpty{ candidateProfile.address},
+                                                            candidateImage = newBase64Image?.ifEmpty { candidateProfile.candidateImage },
+                                                        )
+                                                        // Save updated project to database
+                                                        database.child("Candidates").child(candidateId)
+                                                            .setValue(updatedCandidateProfile)
+                                                            .addOnSuccessListener {
+                                                                Toast.makeText(
+                                                                    context,
+                                                                    "updated successfully",
+                                                                    Toast.LENGTH_SHORT
+                                                                ).show()
+                                                                isEditMode = false
+                                                            }
+                                                            .addOnFailureListener {
+                                                                Toast.makeText(
+                                                                    context,
+                                                                    "Update unsuccessful",
+                                                                    Toast.LENGTH_SHORT
+                                                                ).show()
+                                                            }
+                                                    }
+
+                                                },
                                                 modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .background(gradientBrush),
-                                                contentAlignment = Alignment.Center
+                                                    .fillMaxWidth()
+                                                    .height(60.dp),
+                                                shape = RoundedCornerShape(28.dp),
+                                                contentPadding = PaddingValues(0.dp),
+                                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                                             ) {
-                                                Text(
-                                                    text = "Edit",
-                                                    fontSize = 16.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    color = Color.White
-                                                )
-                                            }
-                                        }
-
-                                        Spacer(modifier = Modifier.height(14.dp))
-
-                                        Text(
-                                            text = "Delete",
-                                            fontSize = 14.sp,
-                                            color = SKyberRed,
-                                            fontWeight = FontWeight.Medium,
-                                            modifier = Modifier.clickable {
-                                                val database = FirebaseHelper.databaseReference
-                                                val candidateId = candidateProfile.id
-                                                if(candidateId != null){
-                                                    database.child("Candidates").child(candidateId)
-                                                        .removeValue()
-                                                        .addOnSuccessListener {
-                                                            Toast.makeText(
-                                                                context,
-                                                                "Deleted Successfully",
-                                                                Toast.LENGTH_SHORT
-                                                            ).show()
-                                                            isEditMode = false
-                                                        }
-                                                        .addOnFailureListener {
-                                                            Toast.makeText(
-                                                                context,
-                                                                "Deletion unsuccessful",
-                                                                Toast.LENGTH_SHORT
-                                                            ).show()
-                                                        }
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxSize()
+                                                        .background(gradientBrush),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(
+                                                        text = "Edit",
+                                                        fontSize = 16.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        color = Color.White
+                                                    )
                                                 }
                                             }
-                                        )
 
+                                            Spacer(modifier = Modifier.height(14.dp))
+
+                                            Text(
+                                                text = "Delete",
+                                                fontSize = 14.sp,
+                                                color = SKyberRed,
+                                                fontWeight = FontWeight.Medium,
+                                                modifier = Modifier.clickable {
+                                                    val database = FirebaseHelper.databaseReference
+                                                    val candidateId = candidateProfile.id
+                                                    if(candidateId != null){
+                                                        database.child("Candidates").child(candidateId)
+                                                            .removeValue()
+                                                            .addOnSuccessListener {
+                                                                Toast.makeText(
+                                                                    context,
+                                                                    "Deleted Successfully",
+                                                                    Toast.LENGTH_SHORT
+                                                                ).show()
+                                                                isEditMode = false
+                                                            }
+                                                            .addOnFailureListener {
+                                                                Toast.makeText(
+                                                                    context,
+                                                                    "Deletion unsuccessful",
+                                                                    Toast.LENGTH_SHORT
+                                                                ).show()
+                                                            }
+                                                    }
+                                                }
+                                            )
                                     }
                                 }
                             } else {// Display project details
@@ -470,28 +473,34 @@ fun DetailsSKcandidates(navController: NavHostController) {
 
                                         Spacer(modifier = Modifier.height(24.dp))
 
-                                        // Update Button
-                                        Button(
-                                            onClick = { isEditMode = true },
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(54.dp),
-                                            shape = RoundedCornerShape(28.dp),
-                                            contentPadding = PaddingValues(0.dp),
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                                        ) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .background(gradientBrush),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(
-                                                    text = "Update",
-                                                    fontSize = 16.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    color = Color.White
-                                                )
+                                        if(user != null){// Update Button
+                                            if(user.role == "ADMIN"){
+
+                                                Button(
+                                                    onClick = { isEditMode = true },
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .height(54.dp),
+                                                    shape = RoundedCornerShape(28.dp),
+                                                    contentPadding = PaddingValues(0.dp),
+                                                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                                                ) {
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .fillMaxSize()
+                                                            .background(gradientBrush),
+                                                        contentAlignment = Alignment.Center
+                                                    ) {
+                                                        Text(
+                                                            text = "Update",
+                                                            fontSize = 16.sp,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            color = Color.White
+                                                        )
+                                                    }
+                                                }
+                                            }else{
+                                                null
                                             }
                                         }
 

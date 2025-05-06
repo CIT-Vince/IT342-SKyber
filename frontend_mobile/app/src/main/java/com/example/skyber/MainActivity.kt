@@ -41,23 +41,23 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.skyber.dataclass.User
-import com.example.skyber.portalnavigator.Announcement.Announcements
+import com.example.skyber.navigationbar.portalnavigator.Announcement.Announcements
 import com.example.skyber.navigationbar.Home
 import com.example.skyber.navigationbar.Portal
 import com.example.skyber.navigationbar.SKcandidates
 import com.example.skyber.navigationbar.UserProfile
 import com.example.skyber.navigationbar.VolunteerHub
-import com.example.skyber.portalnavigator.Announcement.DetailsAnnouncement
-import com.example.skyber.portalnavigator.Announcement.PostAnnouncement
-import com.example.skyber.portalnavigator.Job.DetailsJob
-import com.example.skyber.portalnavigator.Job.Job
-import com.example.skyber.portalnavigator.Job.PostJob
-import com.example.skyber.portalnavigator.ProjectTransparency.DetailsProject
-import com.example.skyber.portalnavigator.ProjectTransparency.PostProject
-import com.example.skyber.portalnavigator.ProjectTransparency.Projects
-import com.example.skyber.portalnavigator.Scholarships.DetailsScholarship
-import com.example.skyber.portalnavigator.Scholarships.PostScholarship
-import com.example.skyber.portalnavigator.Scholarships.Scholarships
+import com.example.skyber.navigationbar.portalnavigator.Announcement.DetailsAnnouncement
+import com.example.skyber.navigationbar.portalnavigator.Announcement.PostAnnouncement
+import com.example.skyber.navigationbar.portalnavigator.Job.DetailsJob
+import com.example.skyber.navigationbar.portalnavigator.Job.Job
+import com.example.skyber.navigationbar.portalnavigator.Job.PostJob
+import com.example.skyber.navigationbar.portalnavigator.ProjectTransparency.DetailsProject
+import com.example.skyber.navigationbar.portalnavigator.ProjectTransparency.PostProject
+import com.example.skyber.navigationbar.portalnavigator.ProjectTransparency.Projects
+import com.example.skyber.navigationbar.portalnavigator.Scholarships.DetailsScholarship
+import com.example.skyber.navigationbar.portalnavigator.Scholarships.PostScholarship
+import com.example.skyber.navigationbar.portalnavigator.Scholarships.Scholarships
 import com.example.skyber.screens.CandidateTestScreen
 import com.example.skyber.navigationbar.skprofilescreens.DetailsSKcandidates
 import com.example.skyber.navigationbar.skprofilescreens.PostSKcandidates
@@ -81,8 +81,16 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.DisposableEffect
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.skyber.dataclass.Announcement
+import com.example.skyber.dataclass.CandidateProfile
+import com.example.skyber.dataclass.JobListing
+import com.example.skyber.dataclass.Project
+import com.example.skyber.dataclass.SKProfile
+import com.example.skyber.dataclass.Scholarship
+import com.example.skyber.dataclass.VolunteerPost
 import com.example.skyber.navigationbar.skprofilescreens.DetailsSKmembers
 import com.example.skyber.navigationbar.skprofilescreens.PostSKmembers
 import com.example.skyber.ui.theme.White
@@ -268,18 +276,34 @@ class MainActivity : ComponentActivity() {
 
                             // Main screens
                             composable(Screens.Home.screen) {Home(navController,userProfile = userProfile, ::refreshUserProfile)}
-                            composable(Screens.VolunteerHub.screen) { VolunteerHub(navController) }
+                            composable(Screens.VolunteerHub.screen) { VolunteerHub(navController , userProfile = userProfile) }
                             composable(Screens.Portal.screen) {Portal(navController,userProfile = userProfile)}
                             composable(Screens.UserProfile.screen) {UserProfile(navController,userProfile = userProfile,::refreshUserProfile )}
-                            composable(Screens.SKcandidates.screen) { SKcandidates(navController) }
+                            composable(Screens.SKcandidates.screen) { SKcandidates(navController,  userProfile = userProfile) }
 
                             //Nested screens for SKcandidates
                             composable(Screens.PostSKcandidates.screen) { PostSKcandidates(navController,userProfile = userProfile) }
-                            composable(Screens.DetailsSKcandidates.screen) { DetailsSKcandidates(navController) }
+                            composable(Screens.DetailsSKcandidates.screen) {
+                                val navBackStackEntry = navController.currentBackStackEntry
+                                DisposableEffect(navBackStackEntry) {
+                                    onDispose {
+                                        navBackStackEntry?.savedStateHandle?.remove<CandidateProfile>("CandidateProfile")
+                                    }
+                                }
+                                DetailsSKcandidates(navController, userProfile)
+                            }
 
                             //Nested screens for SK members
                             composable(Screens.PostSKmembers.screen) { PostSKmembers(navController, userProfile = userProfile) }
-                            composable(Screens.DetailsSKmembers.screen) { DetailsSKmembers(navController) }
+                            composable(Screens.DetailsSKmembers.screen) {
+                                val navBackStackEntry = navController.currentBackStackEntry
+                                DisposableEffect(navBackStackEntry) {
+                                    onDispose {
+                                        navBackStackEntry?.savedStateHandle?.remove<SKProfile>("SKProfile")
+                                    }
+                                }
+                                DetailsSKmembers(navController, userProfile)
+                            }
 
                             //Nested Screens in Portal
                             composable(Screens.Announcement.screen) { Announcements(navController) }
@@ -288,24 +312,64 @@ class MainActivity : ComponentActivity() {
                             composable(Screens.Scholarship.screen) { Scholarships(navController) }
 
                             //Nested Screens in Scholarship
-                            composable(Screens.PostScholarship.screen) {PostScholarship(navController,userProfile = userProfile)}
-                            composable(Screens.DetailsScholarship.screen){ DetailsScholarship(navController)}
+                            composable(Screens.PostScholarship.screen) { PostScholarship(navController,userProfile = userProfile) }
+                            composable(Screens.DetailsScholarship.screen) {
+                                val navBackStackEntry = navController.currentBackStackEntry
+                                DisposableEffect(navBackStackEntry) {
+                                    onDispose {
+                                        navBackStackEntry?.savedStateHandle?.remove<Scholarship>("scholarship")
+                                    }
+                                }
+                                DetailsScholarship(navController, userProfile)
+                            }
 
                             //Nested Screens in Job
-                            composable(Screens.PostJob.screen) {PostJob(navController,userProfile = userProfile)}
-                            composable(Screens.DetailsJob.screen) { DetailsJob(navController) }
+                            composable(Screens.PostJob.screen) { PostJob(navController,userProfile = userProfile) }
+                            composable(Screens.DetailsJob.screen) {
+                                val navBackStackEntry = navController.currentBackStackEntry
+                                DisposableEffect(navBackStackEntry) {
+                                    onDispose {
+                                        navBackStackEntry?.savedStateHandle?.remove<JobListing>("joblisting")
+                                    }
+                                }
+                                DetailsJob(navController, userProfile)
+                            }
 
                             //Nested Screens in Project
-                            composable(Screens.PostProject.screen) {PostProject(navController,userProfile = userProfile)}
-                            composable(Screens.DetailsProject.screen) { DetailsProject(navController) }
+                            composable(Screens.PostProject.screen) { PostProject(navController,userProfile = userProfile) }
+                            composable(Screens.DetailsProject.screen) {
+                                val navBackStackEntry = navController.currentBackStackEntry
+                                DisposableEffect(navBackStackEntry) {
+                                    onDispose {
+                                        navBackStackEntry?.savedStateHandle?.remove<Project>("project")
+                                    }
+                                }
+                                DetailsProject(navController, userProfile)
+                            }
 
                             //Nested Screens in Announcement
-                            composable(Screens.PostAnnouncement.screen) {PostAnnouncement(navController,userProfile = userProfile)}
-                            composable(Screens.DetailsAnnouncement.screen) { DetailsAnnouncement(navController) }
+                            composable(Screens.PostAnnouncement.screen) { PostAnnouncement(navController,userProfile = userProfile) }
+                            composable(Screens.DetailsAnnouncement.screen) {
+                                val navBackStackEntry = navController.currentBackStackEntry
+                                DisposableEffect(navBackStackEntry) {
+                                    onDispose {
+                                        navBackStackEntry?.savedStateHandle?.remove<Announcement>("announcement")
+                                    }
+                                }
+                                DetailsAnnouncement(navController, userProfile)
+                            }
 
                             //Nested Screens in VolunteerHub
                             composable(Screens.PostVolunteerHub.screen) { PostVolunteerHub(navController,userProfile = userProfile) }
-                            composable(Screens.DetailsVolunteerHub.screen) { DetailsVolunteerHub(navController) }
+                            composable(Screens.DetailsVolunteerHub.screen) {
+                                val navBackStackEntry = navController.currentBackStackEntry
+                                DisposableEffect(navBackStackEntry) {
+                                    onDispose {
+                                        navBackStackEntry?.savedStateHandle?.remove<VolunteerPost>("volunteerPost")
+                                    }
+                                }
+                                DetailsVolunteerHub(navController, userProfile)
+                            }
 
                             //Nested Screens in User Profile
                             composable(Screens.EditProfile.screen) { EditProfile(navController, userProfile = userProfile, ::refreshUserProfile) }

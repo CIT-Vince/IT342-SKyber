@@ -27,6 +27,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,15 +44,16 @@ import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.User
 import com.example.skyber.dataclass.VolunteerPost
-import com.example.skyber.headerbar.HeaderBar
-import com.example.skyber.headerbar.NotificationHandler
-import com.example.skyber.portalnavigator.Announcement.showToast
+import com.example.skyber.ModularFunctions.headerbar.HeaderBar
+import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
+import com.example.skyber.navigationbar.portalnavigator.Announcement.showToast
 import com.example.skyber.ui.theme.*
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun DetailsVolunteerHub(navController: NavHostController) {
+fun DetailsVolunteerHub(navController: NavHostController, userProfile: MutableState<User?>) {
+    val user = userProfile.value
     val volunteerPost =
         navController.previousBackStackEntry?.savedStateHandle?.get<VolunteerPost>("volunteerPost")
     val context = LocalContext.current
@@ -114,15 +116,6 @@ fun DetailsVolunteerHub(navController: NavHostController) {
                         .padding(start = topLeftPosition.dp + 10.dp, top = 20.dp)
                         .graphicsLayer(alpha = 0.3f) // Adjust opacity
                 )
-
-                /*Text(
-                    text = "✨",
-                    fontSize = 24.sp,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(end = 30.dp, bottom = 20.dp)
-                        .graphicsLayer(alpha = 0.3f) // Adjust opacity
-                )*/
 
                 Column(
                     modifier = Modifier
@@ -252,7 +245,7 @@ fun DetailsVolunteerHub(navController: NavHostController) {
 
                                 Spacer(modifier = Modifier.height(16.dp))
 
-                                Box(){
+                                /*Box(){
                                     Button(
                                         onClick = {
                                             applyToVolunteerEvent(volunteerPost.id, context)
@@ -279,7 +272,7 @@ fun DetailsVolunteerHub(navController: NavHostController) {
                                             )
                                         }
                                     }
-                                }
+                                }*/
 
                             }
 

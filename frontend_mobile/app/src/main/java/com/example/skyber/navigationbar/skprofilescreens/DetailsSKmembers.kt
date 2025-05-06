@@ -1,5 +1,6 @@
 package com.example.skyber.navigationbar.skprofilescreens
 
+import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
@@ -42,6 +43,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,8 +66,9 @@ import com.example.skyber.ModularFunctions.ImageUtils
 import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ModularFunctions.SimpleDatePickerField
 import com.example.skyber.dataclass.SKProfile
-import com.example.skyber.headerbar.HeaderBar
-import com.example.skyber.headerbar.NotificationHandler
+import com.example.skyber.ModularFunctions.headerbar.HeaderBar
+import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
+import com.example.skyber.dataclass.User
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberRed
@@ -73,12 +76,13 @@ import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.gradientBrush
 import com.example.skyber.userauth.RadioButtonGenders
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DetailsSKmembers(navController: NavHostController) {
+fun DetailsSKmembers(navController: NavHostController, userProfile: MutableState<User?>) {
+    val user = userProfile.value
     val skProfile = navController.previousBackStackEntry?.savedStateHandle?.get<SKProfile>("SKProfile")
     var isEditMode by rememberSaveable { mutableStateOf(false) }
-
     var newFirstname by remember { mutableStateOf("") }
     var newLastname by remember { mutableStateOf("") }
     var newEmail by remember { mutableStateOf("") }
@@ -179,7 +183,7 @@ fun DetailsSKmembers(navController: NavHostController) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -552,28 +556,37 @@ fun DetailsSKmembers(navController: NavHostController) {
 
                                         Spacer(modifier = Modifier.height(24.dp))
 
-                                        // Your untouched button
-                                        Button(
-                                            onClick = { isEditMode = true },
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(60.dp),
-                                            shape = RoundedCornerShape(28.dp),
-                                            contentPadding = PaddingValues(0.dp),
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                                        ) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .background(gradientBrush),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(
-                                                    text = "Update",
-                                                    fontSize = 16.sp,
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    color = Color.White
-                                                )
+                                        if(user != null){
+                                            if (user.role == "ADMIN") {
+                                                // Your untouched button
+                                                Button(
+                                                    onClick = { isEditMode = true },
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .height(60.dp),
+                                                    shape = RoundedCornerShape(28.dp),
+                                                    contentPadding = PaddingValues(0.dp),
+                                                    colors = ButtonDefaults.buttonColors(
+                                                        containerColor = Color.Transparent
+                                                    )
+                                                ) {
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .fillMaxSize()
+                                                            .background(gradientBrush),
+                                                        contentAlignment = Alignment.Center
+                                                    ) {
+                                                        Text(
+                                                            text = "Update",
+                                                            fontSize = 16.sp,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            color = Color.White
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                            }else{
+                                                    null
                                             }
                                         }
                                     }
@@ -585,4 +598,3 @@ fun DetailsSKmembers(navController: NavHostController) {
             }
         }
     }
-}

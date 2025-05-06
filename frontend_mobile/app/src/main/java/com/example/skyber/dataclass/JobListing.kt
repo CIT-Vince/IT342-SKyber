@@ -13,5 +13,6 @@ data class JobListing (
     val address: String = "",
     val description: String = "",
     val applicationLink: String = "",
-    val employmentType: String = "",//Part-Time or Full-Time
+    val employementType: String = "",//Part-Time or Full-Time
+    val jobImage: String? = null,
 ): Parcelable

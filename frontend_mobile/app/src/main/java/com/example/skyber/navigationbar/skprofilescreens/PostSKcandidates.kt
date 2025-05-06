@@ -66,9 +66,9 @@ import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.CandidateProfile
 import com.example.skyber.dataclass.User
-import com.example.skyber.headerbar.HeaderBar
-import com.example.skyber.headerbar.NotificationHandler
-import com.example.skyber.portalnavigator.ProjectTransparency.showToast
+import com.example.skyber.ModularFunctions.headerbar.HeaderBar
+import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
+import com.example.skyber.navigationbar.portalnavigator.ProjectTransparency.showToast
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlue
 import com.example.skyber.ui.theme.SKyberYellow
@@ -162,7 +162,7 @@ fun PostSKcandidates(navController: NavHostController, userProfile: MutableState
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){

@@ -17,6 +17,7 @@ data class Announcement(
     val postedAt: String = getCurrentDateTime(),
     val barangay: String = "",
     val category: String = "",
+    val imageData: String? = null, // Base64 string or URL
 ): Parcelable
 
 fun getCurrentDateTime(): String {

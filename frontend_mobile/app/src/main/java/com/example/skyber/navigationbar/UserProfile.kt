@@ -10,21 +10,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.ManageAccounts
 import androidx.compose.material.icons.filled.PersonPin
-import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -44,13 +40,11 @@ import androidx.navigation.NavHostController
 import com.example.skyber.ModularFunctions.ListCard
 import com.example.skyber.FirebaseHelper
 import com.example.skyber.ModularFunctions.ParticleSystem
+import com.example.skyber.ModularFunctions.headerbar.HeaderBar
+import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.User
-import com.example.skyber.headerbar.*
 import com.example.skyber.ui.theme.*
-
-
-
 
 @Composable@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun UserProfile(navController: NavHostController, userProfile : MutableState<User?>, refreshUserProfile: () -> Unit) {
@@ -117,7 +111,7 @@ fun UserProfile(navController: NavHostController, userProfile : MutableState<Use
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(top = 12.dp, bottom = 12.dp),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -148,13 +142,7 @@ fun UserProfile(navController: NavHostController, userProfile : MutableState<Use
                             modifier = Modifier
                                 .size(100.dp)
                         )
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(35.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.Top
-                        ) {
+
                             // Display the current user name and double check if null kay mo crash
                             if (user != null) {
                                 Text(
@@ -175,7 +163,7 @@ fun UserProfile(navController: NavHostController, userProfile : MutableState<Use
                             } else {
                                 CircularProgressIndicator(color = SKyberYellow)
                             }
-                        }
+
                     }
                     //Main Content
                     Box(
@@ -183,15 +171,6 @@ fun UserProfile(navController: NavHostController, userProfile : MutableState<Use
                             .padding(top = 6.dp)
                             .fillMaxWidth()
                             .weight(1f)
-                            .background(
-                                White,
-                                shape = RoundedCornerShape(
-                                    topStart = 60.dp,
-                                    topEnd = 60.dp,
-                                    bottomStart = 0.dp,
-                                    bottomEnd = 0.dp
-                                )
-                            )
                     ) {
                         Column(
                             modifier = Modifier
@@ -205,12 +184,12 @@ fun UserProfile(navController: NavHostController, userProfile : MutableState<Use
                                 onCardClick = {
                                     navController.navigate(Screens.EditProfile.screen)
                                 })
-                            ListCard(
+                            /*ListCard(
                                 title = "Volunteered Events",
                                 icon = Icons.Filled.VolunteerActivism,
                                 onCardClick = {
                                     navController.navigate(Screens.VolunteerList.screen)
-                                })
+                                })*/
                             ListCard(
                                 title = "Logout",
                                 icon = Icons.AutoMirrored.Filled.Logout,
