@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 import { 
   Paper, 
   Title, 
@@ -16,6 +17,10 @@ import {
 import { IconSearch, IconMapPin, IconExternalLink, IconBuilding, IconClock } from '@tabler/icons-react';
 import Navbar from '../../components/Navbar';
 import { notifications } from '@mantine/notifications';
+import { apiFetch } from '../utils/api';
+import { Modal, FileInput, Textarea, ActionIcon } from '@mantine/core';
+import { IconPlus, IconEdit, IconTrash } from '@tabler/icons-react';
+
 
 const JobListings = () => {
   const [jobs, setJobs] = useState([]);
@@ -23,75 +28,108 @@ const JobListings = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [locationFilter, setLocationFilter] = useState('all');
-
-  // Fetch jobs from API
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        setLoading(true);
+  const locations = ['all', ...new Set(jobs.map(job => job.location))];
+  {/* Admin check */}
+  const { currentUser } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [jobForm, setJobForm] = useState({
+    jobTitle: '',
+    companyName: '',
+    address: '',
+    employementType: 'full-time',
+    description: '',
+    applicationlink: '',
+    imageFile: null
+  });
+  const sanitizeLink = (link) => {
+    if (!link) return '';
+    return link.startsWith('http://') || link.startsWith('https://')
+      ? link
+      : `https://${link}`;
+  };
+  
+  const fetchJobs = async () => {
+    try {
+      setLoading(true);
+      
+      // API endpoint
+      const API_URL = '/api/jobs/getAllJobs';
+      console.log("Fetching job listings from:", API_URL);
+      
+      const response = await fetch(API_URL);
+      
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("Retrieved job listings:", data);
+      
+      // Transform data to match our component's expected structure
+      if (data && data.length > 0) {
+        const transformedJobs = data.map(job => ({
+          id: job.id || Math.random().toString(),
+          jobtitle: job.jobTitle || "Untitled Position",
+          companyName: job.companyName || "Company Name",
+          location: job.address || "Location not specified",
+          description: job.description || "No description provided",
+          address: job.address || "Address not specified",
+          applicationLink: job.applicationlink || "#",
+          employmentType: (job.employementType || "full-time").toLowerCase(),
+          salary: job.salary || "Competitive salary",
+          postedDate: "Recently posted",
+          saved: false
+        }));
         
-        // API endpoint
-        const API_URL = '/api/jobs/getAllJobs';
-        console.log("Fetching job listings from:", API_URL);
-        
-        const response = await fetch(API_URL);
-        
-        if (!response.ok) {
-          throw new Error(`Server responded with ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log("Retrieved job listings:", data);
-        
-        // Transform data to match our component's expected structure
-        if (data && data.length > 0) {
-          const transformedJobs = data.map(job => ({
-            id: job.id || Math.random().toString(),
-            jobtitle: job.jobTitle || "Untitled Position",
-            companyName: job.companyName || "Company Name",
-            location: job.address || "Location not specified",
-            description: job.description || "No description provided",
-            address: job.address || "Address not specified",
-            applicationLink: job.applicationlink || "#",
-            employmentType: (job.employementType || "full-time").toLowerCase(),
-            salary: job.salary || "Competitive salary",
-            postedDate: "Recently posted",
-            saved: false
-          }));
-          
-          setJobs(transformedJobs);
-          
-          notifications.show({
-            title: 'Jobs Loaded',
-            message: `Successfully loaded ${transformedJobs.length} job listings`,
-            color: 'green',
-          });
-        } else {
-          console.warn("No job listings found");
-          // Keep the sample data if no API data
-        }
-      } catch (error) {
-        console.error('Error fetching jobs:', error);
+        setJobs(transformedJobs);
         
         notifications.show({
-          title: 'Error Loading Jobs',
-          message: 'Using sample data instead',
-          color: 'red',
+          title: 'Jobs Loaded',
+          message: `Successfully loaded ${transformedJobs.length} job listings`,
+          color: 'green',
         });
-        
-        // Sample data is already loaded in the initial state
-      } finally {
-        setLoading(false);
+      } else {
+        console.warn("No job listings found");
       }
-    };
-    
-    fetchJobs();
-  }, []);
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+      
+      notifications.show({
+        title: 'Error Loading Jobs',
+        message: 'Using sample data instead',
+        color: 'red',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    if (currentUser) {
+      const checkUserRole = async () => {
+        try {
+          const { getDatabase, ref, get } = await import('firebase/database');
+          const db = getDatabase();
+          const userRef = ref(db, `users/${currentUser.uid}`);
+          const snapshot = await get(userRef);
+          
+          if (snapshot.exists()) {
+            const userData = snapshot.val();
+            setIsAdmin(userData.role === 'ADMIN');
+          }
+        } catch (error) {
+          console.error('Error checking user role:', error);
+        }
+      };
+      
+      checkUserRole();
+    }
+  }, [currentUser]);
 
-  // List of unique locations for the filter dropdown
-  const locations = ['all', ...new Set(jobs.map(job => job.location))];
-
-  // Filter jobs based on search, employment type, and location (⌒‿⌒)
+  // Filter 
   const filteredJobs = jobs.filter(job => {
     const matchesSearch = job.jobtitle.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          job.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -103,6 +141,174 @@ const JobListings = () => {
     
     return matchesSearch && matchesEmployment && matchesLocation;
   });
+
+  // Fetch jobs from API
+  useEffect(() => {
+    
+    fetchJobs();
+  }, []);
+
+
+  // Modal handlers
+  const handleCreateClick = () => {
+    setJobForm({
+      jobTitle: '',
+      companyName: '',
+      address: '',
+      employementType: 'full-time',
+      description: '',
+      applicationlink: '',
+      imageFile: null
+    });
+    setCreateModalOpen(true);
+  };
+
+  const handleEditClick = (job) => {
+    setSelectedJob(job);
+    setJobForm({
+      jobTitle: job.jobtitle,
+      companyName: job.companyName,
+      address: job.address,
+      employementType: job.employmentType,
+      description: job.description,
+      applicationlink: job.applicationLink,
+      imageFile: null // Can't prefill image
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleDeleteClick = (job) => {
+    setSelectedJob(job);
+    setDeleteModalOpen(true);
+  };
+
+  const handleCreateSubmit = async (e) => {
+    e.preventDefault();
+  
+    if (!jobForm.jobTitle || !jobForm.companyName || !jobForm.address || !jobForm.description) {
+      notifications.show({
+        title: 'Validation Error',
+        message: 'Please fill in all required fields.',
+        color: 'red'
+      });
+      return;
+    }
+  
+    try {
+      setLoading(true);
+  
+      if (jobForm.imageFile) {
+        const formData = new FormData();
+        formData.append('jobTitle', jobForm.jobTitle);
+        formData.append('companyName', jobForm.companyName);
+        formData.append('address', jobForm.address);
+        formData.append('employementType', jobForm.employementType);
+        formData.append('description', jobForm.description);
+        formData.append('applicationlink', sanitizeLink(jobForm.applicationlink));
+        formData.append('image', jobForm.imageFile);
+  
+        const response = await apiFetch('/api/jobs/createJob/with-image', {
+          method: 'POST',
+          body: formData
+        });
+  
+        if (!response.ok) throw new Error(await response.text());
+      } else {
+        const jobData = {
+          jobTitle: jobForm.jobTitle,
+          companyName: jobForm.companyName,
+          address: jobForm.address,
+          employementType: jobForm.employementType,
+          description: jobForm.description,
+          applicationlink: sanitizeLink(jobForm.applicationlink)
+        };
+  
+        const response = await apiFetch('/api/jobs/createJob', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(jobData)
+        });
+  
+        if (!response.ok) throw new Error(await response.text());
+      }
+  
+      notifications.show({ title: 'Success', message: 'Job created!', color: 'green' });
+      setCreateModalOpen(false);
+      fetchJobs();
+    } catch (error) {
+      notifications.show({ title: 'Error', message: error.message, color: 'red' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedJob) return;
+  
+    try {
+      setLoading(true);
+  
+      if (jobForm.imageFile) {
+        const formData = new FormData();
+        formData.append('jobTitle', jobForm.jobTitle);
+        formData.append('companyName', jobForm.companyName);
+        formData.append('address', jobForm.address);
+        formData.append('employementType', jobForm.employementType);
+        formData.append('description', jobForm.description);
+        formData.append('applicationlink', sanitizeLink(jobForm.applicationlink));
+        formData.append('image', jobForm.imageFile);
+  
+        const response = await apiFetch(`/api/jobs/updateJob/with-image/${selectedJob.id}`, {
+          method: 'PUT',
+          body: formData
+        });
+  
+        if (!response.ok) throw new Error(await response.text());
+      } else {
+        const jobData = {
+          jobTitle: jobForm.jobTitle,
+          companyName: jobForm.companyName,
+          address: jobForm.address,
+          employementType: jobForm.employementType,
+          description: jobForm.description,
+          applicationlink: sanitizeLink(jobForm.applicationlink)
+        };
+  
+        const response = await apiFetch(`/api/jobs/updateJob/${selectedJob.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(jobData)
+        });
+  
+        if (!response.ok) throw new Error(await response.text());
+      }
+  
+      notifications.show({ title: 'Success', message: 'Job updated!', color: 'green' });
+      setEditModalOpen(false);
+      fetchJobs();
+    } catch (error) {
+      notifications.show({ title: 'Error', message: error.message, color: 'red' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedJob) return;
+    try {
+      setLoading(true);
+      const response = await apiFetch(`/api/jobs/deleteJob/${selectedJob.id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error(await response.text());
+      notifications.show({ title: 'Deleted', message: 'Job deleted!', color: 'green' });
+      setDeleteModalOpen(false);
+      fetchJobs();
+    } catch (error) {
+      notifications.show({ title: 'Error', message: error.message, color: 'red' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -169,7 +375,33 @@ const JobListings = () => {
                     <Tabs.Tab value="part-time">Part Time</Tabs.Tab>
                   </Tabs.List>
                 </Tabs>
+                <Grid.Col span={12} className="mt-4">
+                {isAdmin && (
+                  <div className="mb-4 flex justify-end">
+                    <Button
+                      leftSection={<IconPlus size={16} />}
+                      variant="gradient"
+                      gradient={{ from: 'blue', to: 'cyan' }}
+                      onClick={handleCreateClick}
+                      radius="md"
+                    >
+                      Add New Job
+                    </Button>
+                  </div>
+                )}
               </Grid.Col>
+              </Grid.Col>
+              {/* <Grid.Col span={12} className="mt-4">
+              <div className="mb-4 flex justify-end">
+                {isAdmin && (
+                  <Group spacing={4}>
+                    <Button onClick={() => { setSelectedJob(job); setEditModalOpen(true); }}>Edit</Button>
+                    <Button color="red" onClick={() => { setSelectedJob(job); setDeleteModalOpen(true); }}>Delete</Button>
+                  </Group>
+                )}
+              </div>
+                
+              </Grid.Col> */}
             </Grid>
           </Paper>
 
@@ -193,6 +425,30 @@ const JobListings = () => {
                           >
                             {job.employmentType === 'full-time' ? 'Full Time' : 'Part Time'}
                           </Badge>
+                          {isAdmin && (
+                              <Group spacing={4} className="ml-2">
+                                <ActionIcon 
+                                  variant="light" 
+                                  color="yellow"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleEditClick(job);
+                                  }}
+                                >
+                                  <IconEdit size={16} />
+                                </ActionIcon>
+                                <ActionIcon 
+                                  variant="light" 
+                                  color="red"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteClick(job);
+                                  }}
+                                >
+                                  <IconTrash size={16} />
+                                </ActionIcon>
+                              </Group>
+                            )}
                         </div>
                         
                         <Group spacing="xs" className="mb-3">
@@ -249,6 +505,188 @@ const JobListings = () => {
         </div>
         )}
       </div>
+      {/* Create Job Modal */}
+      <Modal
+        opened={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        title="Add New Job"
+        size="lg"
+      >
+        <form onSubmit={handleCreateSubmit}>
+          <TextInput
+            label="Job Title"
+            required
+            placeholder="Position title"
+            value={jobForm.jobTitle}
+            onChange={(e) => setJobForm({...jobForm, jobTitle: e.target.value})}
+            className="mb-3"
+          />
+          
+          <TextInput
+            label="Company Name"
+            required
+            placeholder="Company name"
+            value={jobForm.companyName}
+            onChange={(e) => setJobForm({...jobForm, companyName: e.target.value})}
+            className="mb-3"
+          />
+          
+          <TextInput
+            label="Address/Location"
+            required
+            placeholder="Job location"
+            value={jobForm.address}
+            onChange={(e) => setJobForm({...jobForm, address: e.target.value})}
+            className="mb-3"
+          />
+          
+          <Select
+            label="Employment Type"
+            data={[
+              { value: 'full-time', label: 'Full Time' },
+              { value: 'part-time', label: 'Part Time' },
+            ]}
+            value={jobForm.employementType}
+            onChange={(value) => setJobForm({...jobForm, employementType: value})}
+            className="mb-3"
+            required
+          />
+          
+          <TextInput
+            label="Application Link"
+            placeholder="https://example.com/apply"
+            value={jobForm.applicationlink}
+            onChange={(e) => setJobForm({...jobForm, applicationlink: e.target.value})}
+            className="mb-3"
+          />
+          
+          <Textarea
+            label="Job Description"
+            placeholder="Describe the job responsibilities, requirements, and benefits"
+            required
+            minRows={4}
+            value={jobForm.description}
+            onChange={(e) => setJobForm({...jobForm, description: e.target.value})}
+            className="mb-3"
+          />
+          
+          <FileInput
+            label="Company Logo (Optional)"
+            placeholder="Upload an image"
+            accept="image/*"
+            onChange={(file) => setJobForm({...jobForm, imageFile: file})}
+            className="mb-4"
+          />
+          
+          <Group position="right" mt="md">
+            <Button variant="outline" onClick={() => setCreateModalOpen(false)}>Cancel</Button>
+            <Button type="submit" color="blue">Create Job</Button>
+          </Group>
+        </form>
+      </Modal>
+
+      {/* Edit Job Modal */}
+      <Modal
+        opened={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        title="Edit Job"
+        size="lg"
+      >
+        <form onSubmit={handleEditSubmit}>
+          <TextInput
+            label="Job Title"
+            required
+            placeholder="Position title"
+            value={jobForm.jobTitle}
+            onChange={(e) => setJobForm({...jobForm, jobTitle: e.target.value})}
+            className="mb-3"
+          />
+          
+          <TextInput
+            label="Company Name"
+            required
+            placeholder="Company name"
+            value={jobForm.companyName}
+            onChange={(e) => setJobForm({...jobForm, companyName: e.target.value})}
+            className="mb-3"
+          />
+          
+          <TextInput
+            label="Address/Location"
+            required
+            placeholder="Job location"
+            value={jobForm.address}
+            onChange={(e) => setJobForm({...jobForm, address: e.target.value})}
+            className="mb-3"
+          />
+          
+          <Select
+            label="Employment Type"
+            data={[
+              { value: 'full-time', label: 'Full Time' },
+              { value: 'part-time', label: 'Part Time' },
+            ]}
+            value={jobForm.employementType}
+            onChange={(value) => setJobForm({...jobForm, employementType: value})}
+            className="mb-3"
+            required
+          />
+          
+          <TextInput
+            label="Application Link"
+            placeholder="https://example.com/apply"
+            value={jobForm.applicationlink}
+            onChange={(e) => setJobForm({...jobForm, applicationlink: e.target.value})}
+            className="mb-3"
+          />
+          
+          <Textarea
+            label="Job Description"
+            placeholder="Describe the job responsibilities, requirements, and benefits"
+            required
+            minRows={4}
+            value={jobForm.description}
+            onChange={(e) => setJobForm({...jobForm, description: e.target.value})}
+            className="mb-3"
+          />
+          
+          <FileInput
+            label="Company Logo (Optional)"
+            description="Leave empty to keep existing image"
+            placeholder="Upload a new image"
+            accept="image/*"
+            onChange={(file) => setJobForm({...jobForm, imageFile: file})}
+            className="mb-4"
+          />
+          
+          <Group position="right" mt="md">
+            <Button variant="outline" onClick={() => setEditModalOpen(false)}>Cancel</Button>
+            <Button type="submit" color="yellow">Update Job</Button>
+          </Group>
+        </form>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        opened={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        title="Delete Job"
+        size="sm"
+      >
+        {selectedJob && (
+          <>
+            <Text>Are you sure you want to delete "{selectedJob.jobtitle}"?</Text>
+            <Text size="sm" color="dimmed" className="mt-2">
+              This action cannot be undone.
+            </Text>
+            
+            <Group position="right" className="mt-4">
+              <Button variant="outline" onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
+              <Button color="red" onClick={handleDeleteConfirm}>Delete</Button>
+            </Group>
+          </>
+        )}
+      </Modal>
     </>
   );
 };

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import { useDisclosure } from '@mantine/hooks';
+import { useAuth } from '../../contexts/AuthContext'; 
+import { apiFetch } from '../utils/api';
 import { 
   Paper, 
   Title, 
@@ -16,7 +18,11 @@ import {
   Modal,
   Button,
   Avatar,
-  LoadingOverlay
+  LoadingOverlay,
+  Select,
+  Textarea,
+  FileInput,
+  ActionIcon
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { 
@@ -28,7 +34,10 @@ import {
   IconArrowRight,
   IconArrowLeft,
   IconList,
-  IconHeart
+  IconHeart,
+  IconPlus,
+  IconEdit,
+  IconTrash
 } from '@tabler/icons-react';
 
 const VolunteerHub = () => {
@@ -38,69 +47,114 @@ const VolunteerHub = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
   const [opened, { open, close }] = useDisclosure(false);
+  {/* Admin NI ANIMAL */}
+  const { currentUser } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [volunteerForm, setVolunteerForm] = useState({
+    title: '',
+    description: '',
+    category: 'Community Service',
+    location: '',
+    eventDate: '',
+    contactPerson: '',
+    contactEmail: '',
+    status: 'active',
+    requirements: '',
+    registerLink: '',
+    imageFile: null
+  });
 
-  // Fetch volunteer opportunities from backend
+  // Admin check
   useEffect(() => {
-    const fetchOpportunities = async () => {
-      try {
-        setLoading(true);
-        
-        // The actual API endpoint
-        const API_URL = '/api/volunteers/getAllVolunteers';
-        console.log("Fetching volunteer opportunities from:", API_URL);
-        
-        const response = await fetch(API_URL);
-        
-        if (!response.ok) {
-          console.error(`Server responded with ${response.status}: ${response.statusText}`);
-          throw new Error(`Server responded with ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log("Retrieved volunteer opportunities:", data);
-        
-        // Transform data from backend format to frontend format
-        if (data && data.length > 0) {
-          const transformedData = data.map(item => ({
-            id: item.id || Math.random().toString(),
-            title: item.title || "Untitled Opportunity",
-            description: item.description || "No description provided",
-            category: item.category || "Other",
-            location: item.location || "Location not specified",
-            eventdate: item.eventDate || new Date().toISOString(),
-            contactperson: item.contactPerson || "Volunteer Coordinator",
-            contactemail: item.contactEmail || "contact@skyber.org",
-            status: item.status ? item.status.toLowerCase() : "active",
-            requirements: item.requirements || "No specific requirements.",
-            volunteers: Math.floor(Math.random() * 10) + 1, // Random number for demo
-            maxVolunteers: Math.floor(Math.random() * 20) + 10, // Random number for demo
-            image: item.volunteerImage ? `data:image/jpeg;base64,${item.volunteerImage}` : 
-              `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000)}?ixlib=rb-4.0.3&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400`
-          }));
+    if (currentUser) {
+      const checkUserRole = async () => {
+        try {
+          const { getDatabase, ref, get } = await import('firebase/database');
+          const db = getDatabase();
+          const userRef = ref(db, `users/${currentUser.uid}`);
+          const snapshot = await get(userRef);
           
-          setOpportunities(transformedData);
-          
-          notifications.show({
-            title: 'Volunteer Opportunities Loaded',
-            message: `Successfully loaded ${transformedData.length} opportunities`,
-            color: 'green',
-          });
-        } else {
-          console.warn("No volunteer opportunities found");
+          if (snapshot.exists()) {
+            const userData = snapshot.val();
+            setIsAdmin(userData.role === 'ADMIN');
+          }
+        } catch (error) {
+          console.error('Error checking user role (≧﹏ ≦)', error);
         }
-      } catch (error) {
-        console.error("Failed to fetch volunteer opportunities:", error);
+      };
+      
+      checkUserRole();
+    }
+  }, [currentUser]);
+  
+  const sanitizeLink = (link) => {
+    if (!link) return '';
+    return link.startsWith('http://') || link.startsWith('https://')
+      ? link
+      : `https://${link}`;
+  };
+
+  const fetchOpportunities = async () => {
+    try {
+      setLoading(true);
+      
+      // Using apiFetch instead of fetch
+      const response = await apiFetch('/api/volunteers/getAllVolunteers');
+      
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("Retrieved volunteer opportunities:", data);
+      
+      // Transform data from backend format to frontend format
+      if (data && data.length > 0) {
+        const transformedData = data.map(item => ({
+          id: item.id || Math.random().toString(),
+          title: item.title || "Untitled Opportunity",
+          description: item.description || "No description provided",
+          category: item.category || "Other",
+          location: item.location || "Location not specified",
+          eventdate: item.eventDate || new Date().toISOString(),
+          contactperson: item.contactPerson || "Volunteer Coordinator",
+          contactemail: item.contactEmail || "contact@skyber.org",
+          status: item.status ? item.status.toLowerCase() : "active",
+          requirements: item.requirements || "No specific requirements.",
+          registerLink: item.registerLink || "",
+          volunteers: Math.floor(Math.random() * 10) + 1, // Random number for demo
+          maxVolunteers: Math.floor(Math.random() * 20) + 10, // Random number for demo
+          image: item.volunteerImage ? `data:image/jpeg;base64,${item.volunteerImage}` : 
+            `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000)}?ixlib=rb-4.0.3&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400`
+        }));
+        
+        setOpportunities(transformedData);
         
         notifications.show({
-          title: 'Error Loading Opportunities',
-          message: 'Please try again later or contact support',
-          color: 'red',
+          title: 'Volunteer Opportunities Loaded',
+          message: `Successfully loaded ${transformedData.length} super kawaii opportunities ✧*。٩(ˊᗜˋ*)و✧*。`,
+          color: 'green',
         });
-      } finally {
-        setLoading(false);
+      } else {
+        console.warn("No volunteer opportunities found (◞‸◟；)");
       }
-    };
-    
+    } catch (error) {
+      console.error("Failed to fetch volunteer opportunities:", error);
+      
+      notifications.show({
+        title: 'Error Loading Opportunities (｡•́︿•̀｡)',
+        message: 'Please try again later or contact support',
+        color: 'red',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  // Fetch volunteer opportunities from backend
+  useEffect(() => {
     fetchOpportunities();
   }, []);
 
@@ -161,6 +215,248 @@ const VolunteerHub = () => {
       default: return { from: 'blue', to: 'cyan' };
     }
   };
+
+  // CRUD Operations for Admin
+  const handleCreateClick = () => {
+    setVolunteerForm({
+      title: '',
+      description: '',
+      category: 'Community Service',
+      location: '',
+      eventDate: '',
+      contactPerson: '',
+      contactEmail: '',
+      status: 'active',
+      requirements: '',
+      registerLink: '',
+      imageFile: null
+    });
+    setCreateModalOpen(true);
+  };
+
+  const handleEditClick = (opportunity) => {
+    setSelectedOpportunity(opportunity);
+    setVolunteerForm({
+      title: opportunity.title,
+      description: opportunity.description,
+      category: opportunity.category,
+      location: opportunity.location,
+      eventDate: opportunity.eventdate ? new Date(opportunity.eventdate).toISOString().split('T')[0] : '',
+      contactPerson: opportunity.contactperson,
+      contactEmail: opportunity.contactemail,
+      status: opportunity.status,
+      requirements: opportunity.requirements,
+      registerLink: opportunity.registerLink || '',
+      imageFile: null // Can't prefill image
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleDeleteClick = (opportunity) => {
+    setSelectedOpportunity(opportunity);
+    setDeleteModalOpen(true);
+  };
+
+  const handleCreateSubmit = async (e) => {
+    e.preventDefault();
+  
+    if (!volunteerForm.title || !volunteerForm.description) {
+      notifications.show({
+        title: 'Validation Error ｡ﾟ･ (>﹏<) ･ﾟ｡',
+        message: 'Please fill in all required fields, pretty please!',
+        color: 'red'
+      });
+      return;
+    }
+  
+    try {
+      setLoading(true);
+  
+      if (volunteerForm.imageFile) {
+        const formData = new FormData();
+        formData.append('title', volunteerForm.title);
+        formData.append('description', volunteerForm.description);
+        formData.append('category', volunteerForm.category);
+        formData.append('location', volunteerForm.location);
+        formData.append('eventDate', volunteerForm.eventDate);
+        formData.append('contactPerson', volunteerForm.contactPerson);
+        formData.append('contactEmail', volunteerForm.contactEmail);
+        formData.append('status', volunteerForm.status);
+        formData.append('requirements', volunteerForm.requirements);
+        formData.append('registerLink', sanitizeLink(volunteerForm.registerLink));
+        formData.append('image', volunteerForm.imageFile);
+  
+        const response = await apiFetch('/api/volunteers/createVolunteer/with-image', {
+          method: 'POST',
+          body: formData
+        });
+  
+        if (!response.ok) throw new Error(await response.text());
+      } else {
+        const volunteerData = {
+          title: volunteerForm.title,
+          description: volunteerForm.description,
+          category: volunteerForm.category,
+          location: volunteerForm.location,
+          eventDate: volunteerForm.eventDate,
+          contactPerson: volunteerForm.contactPerson,
+          contactEmail: volunteerForm.contactEmail,
+          status: volunteerForm.status,
+          requirements: volunteerForm.requirements,
+          registerLink: sanitizeLink(volunteerForm.registerLink)
+        };
+  
+        const response = await apiFetch('/api/volunteers/createVolunteer', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(volunteerData)
+        });
+  
+        if (!response.ok) throw new Error(await response.text());
+      }
+  
+      notifications.show({ 
+        title: 'Success ヾ(＠⌒ー⌒＠)ノ',
+        message: 'Volunteer opportunity created! Yay!',
+        color: 'green' 
+      });
+      setCreateModalOpen(false);
+      fetchOpportunities();
+    } catch (error) {
+      notifications.show({ 
+        title: 'Error (っ °Д °;)っ',
+        message: error.message,
+        color: 'red' 
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedOpportunity) return;
+  
+    try {
+      setLoading(true);
+  
+      if (volunteerForm.imageFile) {
+        const formData = new FormData();
+        formData.append('title', volunteerForm.title);
+        formData.append('description', volunteerForm.description);
+        formData.append('category', volunteerForm.category);
+        formData.append('location', volunteerForm.location);
+        formData.append('eventDate', volunteerForm.eventDate);
+        formData.append('contactPerson', volunteerForm.contactPerson);
+        formData.append('contactEmail', volunteerForm.contactEmail);
+        formData.append('status', volunteerForm.status);
+        formData.append('requirements', volunteerForm.requirements);
+        formData.append('registerLink', sanitizeLink(volunteerForm.registerLink));
+        formData.append('image', volunteerForm.imageFile);
+  
+        const response = await apiFetch(`/api/volunteers/updateVolunteer/with-image/${selectedOpportunity.id}`, {
+          method: 'PUT',
+          body: formData
+        });
+  
+        if (!response.ok) throw new Error(await response.text());
+      } else {
+        const volunteerData = {
+          title: volunteerForm.title,
+          description: volunteerForm.description,
+          category: volunteerForm.category,
+          location: volunteerForm.location,
+          eventDate: volunteerForm.eventDate,
+          contactPerson: volunteerForm.contactPerson,
+          contactEmail: volunteerForm.contactEmail,
+          status: volunteerForm.status,
+          requirements: volunteerForm.requirements,
+          registerLink: sanitizeLink(volunteerForm.registerLink)
+        };
+  
+        const response = await apiFetch(`/api/volunteers/updateVolunteer/${selectedOpportunity.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(volunteerData)
+        });
+  
+        if (!response.ok) throw new Error(await response.text());
+      }
+  
+      notifications.show({ 
+        title: 'Success (❁´◡`❁)',
+        message: 'Volunteer opportunity updated! Super kawaii~',
+        color: 'green' 
+      });
+      setEditModalOpen(false);
+      fetchOpportunities();
+    } catch (error) {
+      notifications.show({ 
+        title: 'Error ｡ﾟ(ﾟ´ω`ﾟ)ﾟ｡',
+        message: error.message,
+        color: 'red' 
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedOpportunity) return;
+    try {
+      setLoading(true);
+      const response = await apiFetch(`/api/volunteers/deleteVolunteer/${selectedOpportunity.id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error(await response.text());
+      notifications.show({ 
+        title: 'Deleted (´｡• ᵕ •｡`)',
+        message: 'Volunteer opportunity deleted!',
+        color: 'green' 
+      });
+      setDeleteModalOpen(false);
+      fetchOpportunities();
+    } catch (error) {
+      notifications.show({ 
+        title: 'Error (╥﹏╥)',
+        message: error.message,
+        color: 'red' 
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // // Filter opportunities based on search and status
+  // const filteredOpportunities = opportunities.filter(op => {
+  //   const matchesSearch = op.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  //                        op.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //                        op.category.toLowerCase().includes(searchQuery.toLowerCase());
+    
+  //   const matchesStatus = activeStatus === 'all' || op.status === activeStatus;
+    
+  //   return matchesSearch && matchesStatus;
+  // });
+
+  // // Handle volunteer sign-up
+  // const handleSignUp = (opportunity) => {
+  //   // This would normally call an API to register the user
+  //   const updatedOpportunities = opportunities.map(op => 
+  //     op.id === opportunity.id 
+  //       ? { ...op, volunteers: op.volunteers + 1 } 
+  //       : op
+  //   );
+  //   setOpportunities(updatedOpportunities);
+    
+  //   // Update selected opportunity if modal is open
+  //   if (selectedOpportunity && selectedOpportunity.id === opportunity.id) {
+  //     setSelectedOpportunity({ ...selectedOpportunity, volunteers: selectedOpportunity.volunteers + 1 });
+  //   }
+    
+  //   notifications.show({
+  //     title: 'Thank you for volunteering! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧',
+  //     message: `You have signed up for: ${opportunity.title}`,
+  //     color: 'green',
+  //   });
+  // };
 
   if (loading) {
     return (
@@ -224,6 +520,21 @@ const VolunteerHub = () => {
                   </Tabs.List>
                 </Tabs>
               </Grid.Col>
+              {isAdmin && (
+                <Grid.Col span={12} className="mt-4">
+                  <div className="flex justify-end">
+                    <Button
+                      leftSection={<IconPlus size={16} />}
+                      variant="gradient"
+                      gradient={{ from: 'pink', to: 'violet' }}
+                      onClick={handleCreateClick}
+                      radius="md"
+                    >
+                      Add New Opportunity ✧*。
+                    </Button>
+                  </div>
+                </Grid.Col>
+              )}
             </Grid>
           </Paper>
 
@@ -245,7 +556,7 @@ const VolunteerHub = () => {
                           alt={opportunity.title} 
                           className="w-full h-48 object-cover" 
                           onError={(e) => {
-                            e.target.src = "https://via.placeholder.com/400x200?text=Volunteer+Opportunity";
+                            e.target.src = "https://picsum.photos/400/200";
                           }}
                         />
                         <Badge 
@@ -265,6 +576,7 @@ const VolunteerHub = () => {
                           {opportunity.status === 'active' ? 'Active' : 'Upcoming' }
                         </Badge>
                       </div>
+                      
                     </Card.Section>
 
                     <div className="p-4 flex-grow">
@@ -315,7 +627,35 @@ const VolunteerHub = () => {
                           <Text size="xs" color="blue">View Details</Text>
                           <IconArrowRight size={14} className="text-blue-500" />
                         </Group>
+                        
+                        <Group spacing="xs ">
+                          {isAdmin && (
+                              <Group spacing={4}>
+                                <ActionIcon 
+                                  variant="light" 
+                                  color="yellow"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleEditClick(opportunity);
+                                  }}
+                                >
+                                  <IconEdit size={16} />
+                                </ActionIcon>
+                                <ActionIcon 
+                                  variant="light" 
+                                  color="red"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteClick(opportunity);
+                                  }}
+                                >
+                                  <IconTrash size={16} />
+                                </ActionIcon>
+                              </Group>
+                          )}
+                        </Group>
                       </Group>
+                      
                     </Card.Section>
                   </Card>
                 </Grid.Col>
@@ -334,7 +674,7 @@ const VolunteerHub = () => {
       <Modal
         opened={opened && !!selectedOpportunity}
         onClose={close}
-        size="4x1"
+        size="lg"
         centered
         withCloseButton={true}
         styles={{
@@ -490,6 +830,279 @@ const VolunteerHub = () => {
               </Button>
             </div>
           </div>
+        )}
+      </Modal>
+      {/* Create Opportunity Modal */}
+      <Modal
+        opened={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        title="Add New Volunteer Opportunity (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧"
+        size="lg"
+      >
+        <form onSubmit={handleCreateSubmit}>
+          <TextInput
+            label="Title"
+            required
+            placeholder="What's this kawaii opportunity called?"
+            value={volunteerForm.title}
+            onChange={(e) => setVolunteerForm({...volunteerForm, title: e.target.value})}
+            className="mb-3"
+          />
+          
+          <Select
+            label="Category"
+            data={[
+              { value: 'Community Service', label: 'Community Service' },
+              { value: 'Education', label: 'Education' },
+              { value: 'Environment', label: 'Environment' },
+              { value: 'Health', label: 'Health' },
+              { value: 'Other', label: 'Other' }
+            ]}
+            value={volunteerForm.category}
+            onChange={(value) => setVolunteerForm({...volunteerForm, category: value})}
+            className="mb-3"
+            required
+          />
+          
+          <TextInput
+            label="Location"
+            placeholder="Where will this happen?"
+            value={volunteerForm.location}
+            onChange={(e) => setVolunteerForm({...volunteerForm, location: e.target.value})}
+            className="mb-3"
+          />
+          
+          <TextInput
+            label="Event Date"
+            type="date"
+            placeholder="When will this happen?"
+            value={volunteerForm.eventDate}
+            onChange={(e) => setVolunteerForm({...volunteerForm, eventDate: e.target.value})}
+            className="mb-3"
+          />
+          
+          <Select
+            label="Status"
+            data={[
+              { value: 'active', label: 'Active' },
+              { value: 'upcoming', label: 'Upcoming' },
+              { value: 'completed', label: 'Completed' }
+            ]}
+            value={volunteerForm.status}
+            onChange={(value) => setVolunteerForm({...volunteerForm, status: value})}
+            className="mb-3"
+            required
+          />
+          
+          <Textarea
+            label="Description"
+            placeholder="Tell us about this super kawaii opportunity!"
+            required
+            minRows={3}
+            value={volunteerForm.description}
+            onChange={(e) => setVolunteerForm({...volunteerForm, description: e.target.value})}
+            className="mb-3"
+          />
+          
+          <Textarea
+            label="Requirements"
+            placeholder="Any special requirements? (◕‿◕✿)"
+            minRows={2}
+            value={volunteerForm.requirements}
+            onChange={(e) => setVolunteerForm({...volunteerForm, requirements: e.target.value})}
+            className="mb-3"
+          />
+          
+          <TextInput
+            label="Contact Person"
+            placeholder="Who's the friendly contact person?"
+            value={volunteerForm.contactPerson}
+            onChange={(e) => setVolunteerForm({...volunteerForm, contactPerson: e.target.value})}
+            className="mb-3"
+          />
+          
+          <TextInput
+            label="Contact Email"
+            placeholder="Email for inquiries"
+            value={volunteerForm.contactEmail}
+            onChange={(e) => setVolunteerForm({...volunteerForm, contactEmail: e.target.value})}
+            className="mb-3"
+          />
+          
+          <TextInput
+            label="Registration Link"
+            placeholder="https://example.com/register"
+            value={volunteerForm.registerLink}
+            onChange={(e) => setVolunteerForm({...volunteerForm, registerLink: e.target.value})}
+            className="mb-3"
+          />
+          
+          <FileInput
+            label="Event Image (Optional)"
+            placeholder="Upload a kawaii image!"
+            accept="image/*"
+            onChange={(file) => setVolunteerForm({...volunteerForm, imageFile: file})}
+            className="mb-4"
+          />
+          
+          <Group position="right" mt="md">
+            <Button variant="outline" onClick={() => setCreateModalOpen(false)}>Cancel</Button>
+            <Button 
+              type="submit" 
+              variant="gradient" 
+              gradient={{ from: 'pink', to: 'violet' }}
+            >
+              Create Opportunity ✨
+            </Button>
+          </Group>
+        </form>
+      </Modal>
+
+      {/* Edit Opportunity Modal */}
+      <Modal
+        opened={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        title="Edit Volunteer Opportunity (◠‿◠✿)"
+        size="lg"
+      >
+        <form onSubmit={handleEditSubmit}>
+          <TextInput
+            label="Title"
+            required
+            placeholder="What's this kawaii opportunity called?"
+            value={volunteerForm.title}
+            onChange={(e) => setVolunteerForm({...volunteerForm, title: e.target.value})}
+            className="mb-3"
+          />
+          
+          <Select
+            label="Category"
+            data={[
+              { value: 'Community Service', label: 'Community Service' },
+              { value: 'Education', label: 'Education' },
+              { value: 'Environment', label: 'Environment' },
+              { value: 'Health', label: 'Health' },
+              { value: 'Other', label: 'Other' }
+            ]}
+            value={volunteerForm.category}
+            onChange={(value) => setVolunteerForm({...volunteerForm, category: value})}
+            className="mb-3"
+            required
+          />
+          
+          <TextInput
+            label="Location"
+            placeholder="Where will this happen?"
+            value={volunteerForm.location}
+            onChange={(e) => setVolunteerForm({...volunteerForm, location: e.target.value})}
+            className="mb-3"
+          />
+          
+          <TextInput
+            label="Event Date"
+            type="date"
+            placeholder="When will this happen?"
+            value={volunteerForm.eventDate}
+            onChange={(e) => setVolunteerForm({...volunteerForm, eventDate: e.target.value})}
+            className="mb-3"
+          />
+          
+          <Select
+            label="Status"
+            data={[
+              { value: 'active', label: 'Active' },
+              { value: 'upcoming', label: 'Upcoming' },
+              { value: 'completed', label: 'Completed' }
+            ]}
+            value={volunteerForm.status}
+            onChange={(value) => setVolunteerForm({...volunteerForm, status: value})}
+            className="mb-3"
+            required
+          />
+          
+          <Textarea
+            label="Description"
+            placeholder="Tell us about this super kawaii opportunity!"
+            required
+            minRows={3}
+            value={volunteerForm.description}
+            onChange={(e) => setVolunteerForm({...volunteerForm, description: e.target.value})}
+            className="mb-3"
+          />
+          
+          <Textarea
+            label="Requirements"
+            placeholder="Any special requirements? (◕‿◕✿)"
+            minRows={2}
+            value={volunteerForm.requirements}
+            onChange={(e) => setVolunteerForm({...volunteerForm, requirements: e.target.value})}
+            className="mb-3"
+          />
+          
+          <TextInput
+            label="Contact Person"
+            placeholder="Who's the friendly contact person?"
+            value={volunteerForm.contactPerson}
+            onChange={(e) => setVolunteerForm({...volunteerForm, contactPerson: e.target.value})}
+            className="mb-3"
+          />
+          
+          <TextInput
+            label="Contact Email"
+            placeholder="Email for inquiries"
+            value={volunteerForm.contactEmail}
+            onChange={(e) => setVolunteerForm({...volunteerForm, contactEmail: e.target.value})}
+            className="mb-3"
+          />
+          
+          <TextInput
+            label="Registration Link"
+            placeholder="https://example.com/register"
+            value={volunteerForm.registerLink}
+            onChange={(e) => setVolunteerForm({...volunteerForm, registerLink: e.target.value})}
+            className="mb-3"
+          />
+          
+          <FileInput
+            label="Event Image (Optional)"
+            description="Leave empty to keep existing image ✧*。ヾ(｡>﹏<｡)ﾉﾞ✧*。"
+            placeholder="Upload a new kawaii image!"
+            accept="image/*"
+            onChange={(file) => setVolunteerForm({...volunteerForm, imageFile: file})}
+            className="mb-4"
+          />
+          
+          <Group position="right" mt="md">
+            <Button variant="outline" onClick={() => setEditModalOpen(false)}>Cancel</Button>
+            <Button 
+              type="submit" 
+              color="yellow"
+            >
+              Update Opportunity (❁´◡`❁)
+            </Button>
+          </Group>
+        </form>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        opened={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        title="Delete Volunteer Opportunity (⊙﹏⊙)"
+        size="sm"
+      >
+        {selectedOpportunity && (
+          <>
+            <Text>Are you sure you want to delete "{selectedOpportunity.title}"?</Text>
+            <Text size="sm" color="dimmed" className="mt-2">
+              This action cannot be undone. (｡•́︿•̀｡)
+            </Text>
+            
+            <Group position="right" className="mt-4">
+              <Button variant="outline" onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
+              <Button color="red" onClick={handleDeleteConfirm}>Delete</Button>
+            </Group>
+          </>
         )}
       </Modal>
     </>
