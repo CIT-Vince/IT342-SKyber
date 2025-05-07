@@ -27,7 +27,7 @@ import sample2 from '../../assets/announce/sample2.png';
 import sample3 from '../../assets/announce/sample3.png';
 import { useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { showNotification} from '@mantine/notifications';
+import { showNotification} from '../utils/notification';
 import { apiFetch } from '../utils/api';
 
 
@@ -64,10 +64,8 @@ const Announcements = () => {
     imageFile: null
   });
 
-  // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   
   useEffect(() => {
-    // Check if we have an ID in the URL (e.g., /announcements/123)
     if (params.id) {
       const fetchSpecificAnnouncement = async () => {
         try {
@@ -97,12 +95,12 @@ const Announcements = () => {
           open();
         } catch (error) {
           console.error("Error fetching announcement by ID:", error);
-          showNotification({
-            title: 'Announcement Not Found',
-            message: 'The announcement you tried to view could not be found',
-            color: 'red',
-            position: 'top-right'
-          });
+          // showNotification({
+          //   title: 'Announcement Not Found',
+          //   message: 'The announcement you tried to view could not be found',
+          //   color: 'red',
+          //   position: 'top-right'
+          // });
           // If announcement not found, redirect to main announcements page
           navigate('/announcements');
         } finally {
@@ -136,12 +134,12 @@ const Announcements = () => {
 
   const handleLikeToggle = (id) => {
     if (!currentUser) {
-      showNotification({
-        title: 'Login Required',
-        message: 'Please log in to like announcements',
-        color: 'blue',
-        position: 'top-left'
-      });
+      // showNotification({
+      //   title: 'Login Required',
+      //   message: 'Please log in to like announcements',
+      //   color: 'blue',
+      //   position: 'top-left'
+      // });
       return;
     }
     
@@ -242,21 +240,21 @@ const Announcements = () => {
         if (!response.ok) throw new Error('Failed to create announcement');
       }
       
-      showNotification({
-        title: 'Success',
-        message: 'Announcement created successfully',
-        color: 'green'
-      });
+      // showNotification({
+      //   title: 'Success',
+      //   message: 'Announcement created successfully',
+      //   color: 'green'
+      // });
       
       closeCreateModal();
       fetchAnnouncements();
     } catch (error) {
       console.error('Error creating announcement:', error);
-      showNotification({
-        title: 'Error',
-        message: 'Failed to create announcement',
-        color: 'red'
-      });
+      // showNotification({
+      //   title: 'Error',
+      //   message: 'Failed to create announcement',
+      //   color: 'red'
+      // });
     } finally {
       setLoading(false);
     }
@@ -282,11 +280,11 @@ const Announcements = () => {
       
       if (!response.ok) throw new Error('Failed to update announcement');
       
-      showNotification({
-        title: 'Success',
-        message: 'Announcement updated successfully',
-        color: 'green'
-      });
+      // showNotification({
+      //   title: 'Success',
+      //   message: 'Announcement updated successfully',
+      //   color: 'green'
+      // });
       
       closeEditModal();
       fetchAnnouncements(); 
@@ -302,7 +300,6 @@ const Announcements = () => {
     }
   };
 
-  
   // Clean implementation of fetchAnnouncements
   const fetchAnnouncements = async () => {
     try {
@@ -521,10 +518,10 @@ const Announcements = () => {
         <Navbar />
         <header className="text-left py-10 pl-10 pt-30">
           <Title className="text-5xl font-bold text-white">
-            Announcements
+            Announcements<span className="animate-bounce inline-block ml-2">📢</span>
           </Title>
           <Text color="white" className="mt-2 max-w-2xl">
-            Stay updated with the latest community updates and news! (◕‿◕✿)
+          Check out the latest updates, events, and important announcements for our community!
           </Text>
         </header>
       </div>
@@ -533,9 +530,9 @@ const Announcements = () => {
       <div className="min-h-screen pt-5 pb-10 px-4 relative bg-gradient-to-br from-blue-50 to-pink-50">
         <div className="max-w-7xl mx-auto">
           {/* Search and filter section */}
-          <Paper shadow="md" radius="lg" className="p-6 mb-8">
+          <Paper shadow="md" radius="lg" className="p-6 mb-7">
             <Grid>
-              <Grid.Col span={{ base: 12, md: 8 }}>
+              <Grid.Col span={{ base: 12, md: 7 }}>
                 <TextInput
                   icon={<IconSearch size={18} />}
                   placeholder="Search announcements..."
@@ -546,7 +543,7 @@ const Announcements = () => {
                   className="mb-4 md:mb-0"
                 />
               </Grid.Col>
-              <Grid.Col span={{ base: 12, md: 4 }}>
+              <Grid.Col span={{ base: 12, md: 5 }}>
                 <Tabs value={activeCategory} onChange={setActiveCategory} radius="xl" variant="pills">
                   <Tabs.List grow>
                     <Tabs.Tab value="All" leftSection={<IconBell size={16} />}>All</Tabs.Tab>
@@ -611,9 +608,7 @@ const Announcements = () => {
 
                     <div className="p-4 flex-grow">
                       <Group className="justify-between mb-2">
-                        <Text size="xs" c="dimmed" className="flex items-center">
-                          <IconCalendar size={14} className="mr-1" /> {item.date}
-                        </Text>
+                        
                       </Group>
                       
                       <Title order={3} className="mb-2">
@@ -628,9 +623,12 @@ const Announcements = () => {
                     <Card.Section className="p-3 bg-gradient-to-r from-blue-50 to-pink-50">
                       <Group position="apart">
                         <Group spacing="xs">
+                        <Text size="xs" c="dimmed" className="flex items-center">
+                          <IconCalendar size={14} className="mr-1" /> {item.date}
+                        </Text>
                         </Group>
                         <ActionIcon variant="subtle">
-                          <IconShare size={16} />
+                          
                         </ActionIcon>
                         {isAdmin && (
                             <>

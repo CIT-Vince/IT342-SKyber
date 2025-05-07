@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useMemo  } from 'react';
 import skyberLogo from '../assets/skyber.svg';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu } from '@mantine/core';
@@ -7,13 +7,15 @@ import { signOut } from 'firebase/auth';
 import { useAuth } from '../contexts/AuthContext';
 import { showNotification } from '@mantine/notifications';
 import defaultAvatar from '../assets/default-avatar.jpg'; // Add a default avatar image
+import { useLocation } from 'react-router-dom';
 
-const Navbar = () => {
+const Navbar = ({ lightBackground = false }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { currentUser } = useAuth(); 
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -76,17 +78,40 @@ const Navbar = () => {
       });
     }
   };
-
+  const isLightBackgroundPage = useMemo(() => {
+    const lightBackgroundPaths = [
+      '/profile',
+      '/sk', 
+      '/job',
+      '/scholarship',
+      '/volunteerHub'
+      // Add other paths with light backgrounds
+    ];
+    
+    return lightBackgroundPaths.some(path => 
+      location.pathname.startsWith(path)
+    );
+  }, [location.pathname]);
+  
+  const getNavBackground = () => {
+    if (scrolled) {
+      return 'bg-[#0134AA] shadow-lg';
+    } else if (lightBackground || isLightBackgroundPage) {
+      return 'bg-[#0134AA] bg-opacity-90'; // Blue with opacity when over light backgrounds
+    } else {
+      return 'bg-transparent'; // Transparent on dark backgrounds
+    }
+  };
   return (
     <nav
-  className={`navbar w-full flex flex-col md:flex-row items-center justify-between px-8 py-4 fixed top-0 left-0 z-50! transition-all duration-300 ${
-    scrolled ? 'bg-[#0134AA] shadow-lg' : 'bg-transparent'
-  }`}
-  style={{ position: 'fixed', top: 0 }}
->
+        className={`navbar w-full flex flex-col md:flex-row items-center justify-between px-8 py-4 fixed top-0 left-0 z-50! transition-all duration-300 ${getNavBackground()}`}
+        style={{ position: 'fixed', top: 0 }}
+      >
       <div className="flex items-center space-x-2 text-xl font-bold text-white">
+        <Link to="/" className="flex items-center gap-2" onClick={() => setMenuOpen(false)}>
         <img src={skyberLogo} alt="Skyber Logo" className="h-8 w-auto" />
         <span>SKYBER</span>
+        </Link>
       </div>
 
       {/* Hamburger Icon */}
@@ -153,28 +178,28 @@ const Navbar = () => {
           </Link>
         ) : (
           <Menu shadow="md" width={180} withinPortal withArrow>
-            <Menu.Target withArrow>
-              <button className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-full shadow hover:scale-105 transition">
-                <img 
-                  src={userData?.photoURL || defaultAvatar} 
-                  alt="avatar" 
-                  className="w-8 h-8 rounded-full object-cover"
-                  onError={(e) => { e.target.src = defaultAvatar }} 
-                />
-                <span className="hidden md:inline">
-                  {userData ? `${userData.firstName || ''}` : 'Loading...'}
-                </span>
-              </button>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item>
-                <Link to="/profile" className="block w-full h-full">Profile</Link>
-              </Menu.Item>
-              <Menu.Item onClick={handleLogout}>
-                Log out
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
+  <Menu.Target withArrow>
+    <button className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-full shadow hover:scale-105 transition">
+      <img 
+        src={userData?.photoURL || defaultAvatar} 
+        alt="avatar" 
+        className="w-8 h-8 rounded-full object-cover"
+        onError={(e) => { e.target.src = defaultAvatar }} 
+      />
+      <span className="inline truncate max-w-[100px]">
+        {userData ? `${userData.firstName || ''}` : 'Loading...'}
+      </span>
+    </button>
+  </Menu.Target>
+  <Menu.Dropdown>
+    <Menu.Item>
+      <Link to="/profile" className="block w-full h-full">Profile</Link>
+    </Menu.Item>
+    <Menu.Item onClick={handleLogout}>
+      Log out
+    </Menu.Item>
+  </Menu.Dropdown>
+</Menu>
         )}
       </div>
 

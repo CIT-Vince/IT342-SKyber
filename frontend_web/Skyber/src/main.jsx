@@ -10,6 +10,7 @@ import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 import '@mantine/notifications/styles.css'; 
 import App from './App.jsx'
+import './Pages/utils/notificationOverride'; // Import the notification override
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

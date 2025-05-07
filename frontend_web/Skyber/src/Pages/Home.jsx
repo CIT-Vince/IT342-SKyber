@@ -6,14 +6,13 @@ import tiktok from '../assets/icons/tiktok.png';
 import x from '../assets/icons/x.png';
 import Navbar from '../components/Navbar';
 import { Link } from 'react-router-dom';
-import { FaApple, FaGooglePlay } from 'react-icons/fa'; // Add this import
-
-// Import Atropos
+import { FaApple, FaGooglePlay } from 'react-icons/fa'; 
 import Atropos from 'atropos/react';
-// Import Atropos styles
 import 'atropos/css';
+import { useAuth } from '../contexts/AuthContext';
 
 const Home = () => { 
+  const { currentUser } = useAuth(); 
   return (
     <>
       <Navbar/>
@@ -28,13 +27,16 @@ const Home = () => {
               <span className="text-blue-600">Securing</span> the <span className="text-yellow-500">Future.</span>
             </h1>
             <p className="text-gray-600 max-w-md text-white mb-6">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sit venenatis...
+              Transform your community with SKyber — an AI-powered security platform bringing safety and efficiency to neighborhoods and campuses. From visitor management to threat detection, SKyber delivers comprehensive protection with intuitive simplicity.
             </p>
             <div className="flex items-center gap-4 mb-6 justify-center md:justify-start">
               {/* Social icons */}
             </div>
-            <Link to="/register"className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-6 py-2 rounded-full shadow hover:scale-105 transition w-full md:w-auto">
-              Get Started
+            <Link 
+              to={currentUser ? "/announcements" : "/register"}
+              className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-6 py-2 rounded-full shadow hover:scale-105 transition w-full md:w-auto"
+            >
+              {currentUser ? "View Announcements" : "Get Started"}
             </Link>
           </div>
           

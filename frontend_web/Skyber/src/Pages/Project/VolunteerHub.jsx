@@ -485,10 +485,10 @@ const VolunteerHub = () => {
         <Navbar />
         <header className="text-left py-10 pl-10">
           <Title className="text-5xl font-bold text-white">
-            Volunteer Hub
+            Volunteer Hub<span className="animate-bounce inline-block ml-2">🤝</span>
           </Title>
           <Text color="white" className="mt-2 max-w-2xl">
-            Find opportunities to help your community and earn rewards! (๑˃ᴗ˂)ﻭ
+            Find opportunities to help your community and earn rewards! 
           </Text>
         </header>
       </div>
@@ -526,11 +526,11 @@ const VolunteerHub = () => {
                     <Button
                       leftSection={<IconPlus size={16} />}
                       variant="gradient"
-                      gradient={{ from: 'pink', to: 'violet' }}
+                      gradient={{ from: 'cyan', to: 'blue' }}
                       onClick={handleCreateClick}
                       radius="md"
                     >
-                      Add New Opportunity ✧*。
+                      Add New Opportunity 
                     </Button>
                   </div>
                 </Grid.Col>

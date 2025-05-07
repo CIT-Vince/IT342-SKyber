@@ -40,7 +40,7 @@ import {
 import sample1 from '../../assets/proj/sample1.png';
 import sample2 from '../../assets/proj/sample2.png';
 import sample3 from '../../assets/proj/sample3.png';
-import { showNotification } from '@mantine/notifications';
+import { showNotification} from '../utils/notification';
 import { useAuth } from '../../contexts/AuthContext';
 import { DateInput } from '@mantine/dates';
 import { apiFetch } from '../utils/api';
@@ -628,10 +628,10 @@ useEffect(() => {
         <Navbar />
         <header className="text-left py-10 pl-10 pt-30">
           <Title className="text-5xl font-bold text-white">
-            Projects
+            Projects<span className="animate-bounce inline-block ml-2">🗂️</span>
           </Title>
           <Text color="white" className="mt-2 max-w-2xl">
-            Explore our ongoing and completed community projects! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
+          Discover ongoing and completed projects shaping our community's future!
           </Text>
         </header>
       </div>
@@ -642,7 +642,7 @@ useEffect(() => {
           {/* Search and filter section */}
           <Paper shadow="md" radius="lg" className="p-6 mb-8">
             <Grid>
-              <Grid.Col span={{ base: 12, md: 8 }}>
+              <Grid.Col span={{ base: 12, md: 7 }}>
                 <TextInput
                   icon={<IconSearch size={18} />}
                   placeholder="Search projects..."
@@ -653,7 +653,7 @@ useEffect(() => {
                   className="mb-4 md:mb-0"
                 />
               </Grid.Col>
-              <Grid.Col span={{ base: 12, md: 4 }}>
+              <Grid.Col span={{ base: 12, md: 5 }}>
                 <Tabs value={activeStatus} onChange={setActiveStatus} radius="xl" variant="pills">
                   <Tabs.List grow>
                     <Tabs.Tab value="All">All</Tabs.Tab>
