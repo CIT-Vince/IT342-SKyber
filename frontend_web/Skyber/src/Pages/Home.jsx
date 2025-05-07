@@ -10,6 +10,8 @@ import { FaApple, FaGooglePlay } from 'react-icons/fa';
 import Atropos from 'atropos/react';
 import 'atropos/css';
 import { useAuth } from '../contexts/AuthContext';
+import { Button } from '@mantine/core';
+import { IconDownload } from '@tabler/icons-react';
 
 const Home = () => { 
   const { currentUser } = useAuth(); 
@@ -91,30 +93,20 @@ const Home = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                <a 
-                  href="#" 
-                  className="flex items-center justify-center gap-2 bg-black text-white px-6 py-3 rounded-xl hover:bg-gray-900 transition"
-                >
-                  <FaApple size={24} />
-                  <div className="text-left">
-                    <div className="text-xs">Download on the</div>
-                    <div className="font-semibold">App Store</div>
-                  </div>
+              <a href="/release/my-app.apk" download>
+                  <Button
+                    leftSection={<IconDownload size={18} />}
+                    variant="gradient"
+                    gradient={{ from: 'blue', to: 'cyan' }}
+                    size="lg"
+                  >
+                    SKyber APK
+                  </Button>
                 </a>
                 
-                <a 
-                  href="#" 
-                  className="flex items-center justify-center gap-2 bg-black text-white px-6 py-3 rounded-xl hover:bg-gray-900 transition"
-                >
-                  <FaGooglePlay size={20} />
-                  <div className="text-left">
-                    <div className="text-xs">GET IT ON</div>
-                    <div className="font-semibold">Google Play</div>
-                  </div>
-                </a>
               </div>
               
-              <div className="mt-8 flex items-center justify-center md:justify-start gap-6">
+              {/* <div className="mt-8 flex items-center justify-center md:justify-start gap-6">
                 <div className="flex items-center">
                   <div className="flex">
                     {[1, 2, 3, 4, 5].map(star => (
@@ -126,7 +118,7 @@ const Home = () => {
                   <span className="ml-2 text-white text-sm">4.9/5</span>
                 </div>
                 <div className="text-white text-sm">10K+ Downloads</div>
-              </div>
+              </div> */}
             </div>
             
             {/* Right: Phone Mockup */}
@@ -187,6 +179,7 @@ const Home = () => {
               </Atropos>
             </div>
           </div>
+          
           
           {/* App Features */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-20">
