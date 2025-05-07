@@ -16,6 +16,7 @@ const Navbar = ({ lightBackground = false }) => {
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,23 +62,24 @@ const Navbar = ({ lightBackground = false }) => {
     }
   }, [currentUser]);
 
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      showNotification({
-        title: 'Logged Out',
-        message: 'You have been successfully logged out',
-        color: 'blue',
-      });
-      navigate('/');
-    } catch (error) {
-      showNotification({
-        title: 'Error',
-        message: 'Failed to log out',
-        color: 'red',
-      });
-    }
-  };
+  // Use the more thorough logout from context
+const handleLogout = async () => {
+  try {
+    await logout();  // Use this instead of signOut(auth)
+    showNotification({
+      title: 'Logged Out',
+      message: 'You have been successfully logged out',
+      color: 'blue',
+    });
+    navigate('/');
+  } catch (error) {
+    showNotification({
+      title: 'Error',
+      message: 'Failed to log out',
+      color: 'red',
+    });
+  }
+};
   const isLightBackgroundPage = useMemo(() => {
     const lightBackgroundPaths = [
       '/profile',
