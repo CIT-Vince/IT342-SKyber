@@ -8,6 +8,8 @@ import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 
 import { auth } from '../../firebase/firebase';
 import { getDatabase, ref, get, set } from 'firebase/database'; // Add database imports
 import { showNotification } from '@mantine/notifications';
+import { getRedirectLocation } from '../utils/locationHelper'; // Import the function to get redirect location
+
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,7 +28,6 @@ const Login = () => {
         title: 'Error',
         message: 'Please fill in all fields',
         color: 'red',
-        position: 'top-left'
       });
       return;
     }
@@ -47,11 +48,10 @@ const Login = () => {
         title: 'Success',
         message: 'Login successful! Redirecting...',
         color: 'green',
-        position: 'top-left'
       });
 
       // Redirect to home page after successful login
-      navigate('/');
+      navigate(getRedirectLocation());
     } catch (error) {
       console.error('Login error:', error.message);
       
@@ -66,7 +66,6 @@ const Login = () => {
         title: 'Error',
         message: errorMessage,
         color: 'red',
-        position: 'top-left'
       });
     } finally {
       setLoading(false);
@@ -129,7 +128,6 @@ const Login = () => {
           title: 'Account Created!',
           message: 'Welcome to Skyber! Your account has been created automatically.',
           color: 'green',
-          position: 'top-left'
         });
       } else {
         // Existing user, show login success
@@ -149,7 +147,7 @@ const Login = () => {
       }
       
       // Redirect to home page or dashboard
-      navigate('/');
+      navigate(getRedirectLocation());
       
     } catch (error) {
       console.error('Google sign-in error:', error);
@@ -158,7 +156,6 @@ const Login = () => {
         title: 'Sign-in Failed',
         message: error.message || 'Could not sign in with Google',
         color: 'red',
-        position: 'top-left'
       });
     } finally {
       setLoading(false);

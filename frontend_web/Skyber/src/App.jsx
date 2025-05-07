@@ -20,6 +20,8 @@ import Sk from './Pages/Project/Sk.Profile';
 import LoadingScreen from './components/Loading';
 import { LoadingProvider, useLoading  } from './components/LoadingProvider';
 import ProtectedRoute from './components/ProtectedRoute';
+import { useEffect } from 'react';
+import { saveLastLocation } from './Pages/utils/locationHelper';
 
 
 
@@ -31,6 +33,9 @@ const AdminDashboard = lazy(() => import('./Pages/Announcement/AdminDashboard'))
 function App() {
   const location = useLocation();
   const { loading, loadingMessage, logoSrc } = useLoading();
+  useEffect(() => {
+    saveLastLocation(location);
+  }, [location]);
 
   return (
       <div className="min-h-screen relative">

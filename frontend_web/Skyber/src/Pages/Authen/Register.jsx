@@ -73,7 +73,6 @@ const Register = () => {
         title: 'Success!',
         message: 'You have successfully signed in with Google',
         color: 'green',
-        position: 'top-left'
       });
       
       // Redirect to home page or dashboard
@@ -86,7 +85,6 @@ const Register = () => {
         title: 'Sign-in Failed',
         message: error.message || 'Could not sign in with Google',
         color: 'red',
-        position: 'top-left'
       });
     }
   };
@@ -97,7 +95,6 @@ const Register = () => {
       title: 'Coming Soon',
       message: 'Facebook login will be available soon!',
       color: 'blue',
-      position: 'top-left'
     });
   };
 

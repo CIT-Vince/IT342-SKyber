@@ -381,10 +381,10 @@ const SkProfile = () => {
         <Navbar />
         <header className="text-left py-10 pl-10 pt-30">
           <Title className="text-5xl font-bold text-white">
-            Sangguniang Kabataan Officials
+            Sangguniang Kabataan Officials<span className="animate-bounce inline-block ml-2">👨🏻‍💼</span>
           </Title>
           <Text color="white" className="mt-2 max-w-2xl">
-            Meet our elected SK officials who are working hard to serve the youth in our community! (｡•̀ᴗ-)✧
+            Meet our elected SK officials who are working hard to serve the youth in our community! 
           </Text>
         </header>
       </div>
@@ -599,7 +599,7 @@ const SkProfile = () => {
             )}
             
             <div className="mt-8 text-center text-xs text-gray-400">
-              Working together for a better community for our youth! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
+              Working together for a better community for our youth!
             </div>
           </div>
         )}

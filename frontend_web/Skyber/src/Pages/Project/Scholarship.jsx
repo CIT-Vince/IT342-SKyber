@@ -29,7 +29,8 @@ import {
   IconCalendarEvent,
   IconCoin ,
   IconEdit ,
-  IconTrash
+  IconTrash,
+  IconArrowLeft 
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import Navbar from '../../components/Navbar';
@@ -431,10 +432,10 @@ const Scholarship = () => {
         <Navbar />
         <header className="text-left py-10 pl-10">
           <Title className="text-5xl font-bold text-white">
-            Scholarships & Opportunities
+            Scholarships & Opportunities<span className="animate-bounce inline-block ml-2">🎓</span>
           </Title>
           <Text color="white" className="mt-2 max-w-2xl">
-            Find financial support for your studies and make your dreams come true with these amazing scholarship opportunities! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
+            Find financial support for your studies and make your dreams come true with these amazing scholarship opportunities! 
           </Text>
         </header>
       </div>
@@ -535,7 +536,7 @@ const Scholarship = () => {
                       <Title order={3} className="mb-2">
                         {scholarship.title}
                       </Title>
-                      <Text color="dimmed" size="sm" className="mb-3" lineClamp={2}>
+                      <Text color="dimmed" size="sm" className="mb-3" lineClamp={2} style={{ whiteSpace: 'pre-line' }}>
                         {scholarship.description}
                       </Text>
 
@@ -560,11 +561,7 @@ const Scholarship = () => {
                           <ActionIcon variant="subtle" color="pink">
                             <IconHeart size={16} />
                           </ActionIcon>
-                          <Text size="xs" color="dimmed">24 Students Applied</Text>
                         </Group>
-                        <ActionIcon variant="subtle">
-                          <IconShare size={16} />
-                        </ActionIcon>
                       </Group>
                     </Card.Section>
                   </Card>
@@ -582,46 +579,109 @@ const Scholarship = () => {
       
       {/* Scholarship Details Modal */}
       <Modal
-        opened={modalOpened}
-        onClose={() => setModalOpened(false)}
-        size="lg"
-        centered
-        title={<Text size="lg" weight={600}>Scholarship Details</Text>}
-      >
-        {selectedScholarship && (
-          <div>
-            {selectedScholarship.scholarImage && (
-              <div className="text-center mb-4">
-                <img 
-                  src={`data:image/jpeg;base64,${selectedScholarship.scholarImage}`} 
+      opened={modalOpened}
+      onClose={() => setModalOpened(false)}
+      size="lg"
+      centered
+      withCloseButton={false}
+      styles={{
+        body: { padding: 0 },
+        content: { background: 'linear-gradient(to bottom, #f0f4ff, #fff1f9)' }
+      }}
+    >
+      {selectedScholarship && (
+        <div className="min-h-[50vh] flex flex-col">
+          {/* Header with close button */}
+          <div className="sticky top-0 z-50 bg-gradient-to-r from-blue-600 to-indigo-800 text-white p-4 flex items-center">
+            <Button 
+              variant="subtle" 
+              color="white" 
+              leftSection={<IconArrowLeft size={18} />}
+              onClick={() => setModalOpened(false)}
+            >
+              Back
+            </Button>
+            <Title order={3} className="mx-auto pr-10">Scholarship Details</Title>
+          </div>
+
+          {/* Image section with background effect */}
+          <div className="relative h-[250px]">
+            <div
+              className="absolute inset-0 z-0 overflow-hidden"
+              style={{
+                backgroundImage: selectedScholarship.scholarImage 
+                  ? `url(data:image/jpeg;base64,${selectedScholarship.scholarImage})` 
+                  : 'linear-gradient(135deg, #0134AA 0%, #7F52FF 100%)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                filter: 'blur(20px) brightness(0.6)',
+                transform: 'scale(1.1)',
+              }}
+            ></div>
+            <div className="relative z-10 flex justify-center items-center h-full">
+              {selectedScholarship.scholarImage ? (
+                <img
+                  src={`data:image/jpeg;base64,${selectedScholarship.scholarImage}`}
                   alt={selectedScholarship.title}
-                  className="max-h-[200px] rounded-lg shadow-md" 
+                  className="max-h-[200px] rounded-lg shadow-lg object-contain"
                 />
-              </div>
-            )}
+              ) : (
+                <div className="bg-white/10 backdrop-blur-md p-8 rounded-lg shadow-lg flex items-center">
+                  <IconCoin size={40} className="text-yellow-300 mr-4" />
+                  <Text size="xl" fw={700} className="text-white">Financial Opportunity</Text>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Content card */}
+          <Paper radius="lg" className="mx-4 -mt-10 relative z-20 p-6 shadow-lg">
+            <div className="flex flex-wrap justify-between items-start mb-3">
+              <Badge 
+                variant="gradient" 
+                gradient={{ from: selectedScholarship.category === 'public' ? 'blue' : 'pink', to: 'cyan' }}
+                size="lg"
+                radius="md"
+                className="mb-2"
+              >
+                {selectedScholarship.category.charAt(0).toUpperCase() + selectedScholarship.category.slice(1)}
+              </Badge>
+              
+            </div>
             
-            <Title order={2} className="mb-2 text-blue-700">
+            <Title order={2} className="mb-4 text-blue-700">
               {selectedScholarship.title}
             </Title>
             
-            <Badge 
-              variant="gradient" 
-              gradient={{ from: selectedScholarship.category === 'public' ? 'blue' : 'pink', to: 'cyan' }}
-              size="lg"
-              className="mb-4"
-            >
-              {selectedScholarship.category.charAt(0).toUpperCase() + selectedScholarship.category.slice(1)}
-            </Badge>
+            <Divider className="my-4" label="Details" labelPosition="center" />
             
-            <Text className="mb-4">
+            <div className="space-y-4 mb-6">
+              <div className="flex items-start gap-3">
+                <IconCalendarEvent size={20} className="text-blue-500 mt-1" />
+                <div>
+                  <Text fw={600} size="sm" className="text-gray-700">Application Deadline</Text>
+                  <Text>{selectedScholarship.deadline || "Contact for deadline"}</Text>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <IconCoin size={20} className="text-blue-500 mt-1" />
+                <div>
+                  <Text fw={600} size="sm" className="text-gray-700">Amount</Text>
+                  <Text>{selectedScholarship.amount || "Varies based on qualification"}</Text>
+                </div>
+              </div>
+            </div>
+            
+            <Text className="mb-6 leading-relaxed" style={{ whiteSpace: 'pre-line' }}>
               {selectedScholarship.description}
             </Text>
             
-            <Divider className="my-3" />
+            <Divider className="my-4" label="Contact & Apply" labelPosition="center" />
             
-            <Group position="apart" className="mb-4">
+            <Group className="mt-4">
               <Button 
-                leftIcon={<IconMail size={16} />}
+                leftSection={<IconMail size={16} />}
                 variant="outline" 
                 component="a" 
                 href={`mailto:${selectedScholarship.contactEmail}`}
@@ -630,18 +690,33 @@ const Scholarship = () => {
               </Button>
               
               <Button
-                leftIcon={<IconExternalLink size={16} />}
+                leftSection={<IconExternalLink size={16} />}
                 component="a"
                 href={selectedScholarship.link}
                 target="_blank"
+                variant="gradient"
+                gradient={{ from: 'blue', to: 'cyan' }}
               >
                 Apply Now
               </Button>
+              
             </Group>
+          </Paper>
+
+          <div className="flex justify-center w-full">
+            <Button 
+              variant="subtle"
+              color="gray"
+              className="mt-6 mb-4" 
+              onClick={() => setModalOpened(false)}
+            >
+              Close
+            </Button>
           </div>
-        )}
+        </div>
+      )}
       </Modal>
-      
+            
     {/* Create Scholarship Modal */}
     <Modal
       opened={createModalOpen}

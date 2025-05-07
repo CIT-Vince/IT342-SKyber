@@ -155,7 +155,7 @@ const Profile = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen pt-20 pb-10 px-4 relative bg-gradient-to-br from-blue-50 to-pink-50">
+      <div className="min-h-screen pt-20 pb-10 px-4 relative bg-gradient-to-br from-blue-50 to-pink-50 pt-30!">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-6">
           
           {/* Profile sidebar */}
@@ -191,7 +191,7 @@ const Profile = () => {
                   </svg>
                 </button>
                 
-                <button 
+                {/* <button 
                   className={`w-full flex items-center justify-between p-3 rounded-md ${activeTab === "volunteers" ? "bg-blue-50 text-blue-500" : "hover:bg-gray-100"}`}
                   onClick={() => setActiveTab("volunteers")}
                 >
@@ -204,14 +204,13 @@ const Profile = () => {
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
-                </button>
+                </button> */}
               </div>
             </div>
           </Paper>
           
           {/* Main content */}
           <Paper shadow="md" radius="lg" className="flex-1 p-6">
-          {activeTab === "profile" ? (
             <>
               <div className="flex justify-between items-center mb-6">
                 <Title order={2}>Personal Information</Title>
@@ -361,10 +360,6 @@ const Profile = () => {
                 )}
               </form>
             </>
-            ) : (
-              // Show Volunteers component when activeTab is "volunteers"
-              <Volunteers />
-            )}
           </Paper>
         </div>
       </div>

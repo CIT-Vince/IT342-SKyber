@@ -323,10 +323,10 @@ const JobListings = () => {
       <Navbar />
       <header className="text-left py-10 pl-10">
             <Title className="text-5xl font-bold text-white">
-              Job Opportunities
+              Job Opportunities<span className="animate-bounce inline-block ml-2">💼</span>
             </Title>
             <Text color="white" className="mt-2 max-w-2xl">
-              Find your dream job and start building your career with these amazing opportunities! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧
+              Find your dream job and start building your career with these amazing opportunities!
             </Text>
         </header>
       </div>

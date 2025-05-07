@@ -18,7 +18,7 @@ import {
   Textarea ,
   FileInput  
 } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
+import { showNotification } from '../utils/notification';
 import { IconSearch, IconShare, IconArrowLeft,IconPlus,
   IconEdit,
   IconTrash,
@@ -111,7 +111,7 @@ const CandidatesList = () => {
         setCandidates(transformedData);
         setError(null);
         
-        notifications.show({
+        showNotification({
           title: 'Candidates Loaded (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧',
           message: `Successfully loaded ${transformedData.length} candidates!`,
           color: 'green',
@@ -124,7 +124,7 @@ const CandidatesList = () => {
       console.error("Error fetching candidates:", error);
       setError(error.message);
       
-      notifications.show({
+      showNotification({
         title: 'Error Loading Candidates (╥﹏╥)',
         message: 'Please try again later or contact support',
         color: 'red',
@@ -208,7 +208,7 @@ const CandidatesList = () => {
     e.preventDefault();
     
     if (!candidateForm.firstName || !candidateForm.lastName) {
-      notifications.show({
+      showNotification({
         title: 'Validation Error (⊙△⊙✿)',
         message: 'Name fields are required! Please fill them in~',
         color: 'pink'
@@ -263,7 +263,7 @@ const CandidatesList = () => {
         }
       }
   
-      notifications.show({
+      showNotification({
         title: 'Success (ﾉ´ヮ`)ﾉ*:･ﾟ✧',
         message: 'Candidate created successfully!',
         color: 'green'
@@ -274,7 +274,7 @@ const CandidatesList = () => {
       
     } catch (error) {
       console.error('Error creating candidate:', error);
-      notifications.show({
+      showNotification({
         title: 'Error (｡•́︿•̀｡)',
         message: 'Failed to create candidate: ' + error.message,
         color: 'red'
@@ -328,7 +328,7 @@ const CandidatesList = () => {
         }
       }
       
-      notifications.show({
+      showNotification({
         title: 'Success (っ◔◡◔)っ ♥',
         message: 'Candidate updated successfully!',
         color: 'green'
@@ -339,7 +339,7 @@ const CandidatesList = () => {
       
     } catch (error) {
       console.error('Error updating candidate:', error);
-      notifications.show({
+      showNotification({
         title: 'Error (｡•́︿•̀｡)',
         message: 'Failed to update candidate: ' + error.message,
         color: 'red'
@@ -361,7 +361,7 @@ const CandidatesList = () => {
         throw new Error(`Server responded with ${response.status}`);
       }
       
-      notifications.show({
+      showNotification({
         title: 'Success (づ￣ ³￣)づ',
         message: 'Candidate deleted successfully',
         color: 'green'
@@ -372,7 +372,7 @@ const CandidatesList = () => {
       
     } catch (error) {
       console.error('Error deleting candidate:', error);
-      notifications.show({
+      showNotification({
         title: 'Error (｡ŏ﹏ŏ)',
         message: 'Failed to delete candidate: ' + error.message,
         color: 'red'
@@ -426,10 +426,10 @@ const CandidatesList = () => {
         <Navbar />
         <header className="text-left py-10 pl-10 pt-30!">
           <Title className="text-5xl font-bold text-white">
-            Candidates
+            Candidates<span className="animate-bounce inline-block ml-2">👨‍💼</span>
           </Title>
           <Text color="white" className="mt-2 max-w-2xl">
-            Meet your aspiring leaders! Discover their dreams, platforms, and choose who will make our community shine brighter~ (｡•̀ᴗ-)✧
+            Meet your aspiring leaders! Discover their dreams, platforms, and choose who will make our community shine brighter
           </Text>
         </header>
       </div>
@@ -446,7 +446,6 @@ const CandidatesList = () => {
               className="w-full md:w-1/2"
             />
             <Select
-              label="Filter by partylist"
               value={activePartylist}
               onChange={setActivePartylist}
               data={partylistOptions}
@@ -566,7 +565,7 @@ const CandidatesList = () => {
           )}
           
           <div className="mt-8 text-center text-xs text-gray-400">
-            Stay kawaii and informed! (づ｡◕‿‿◕｡)づ
+            Stay informed!
           </div>
         </div>
       </div>
