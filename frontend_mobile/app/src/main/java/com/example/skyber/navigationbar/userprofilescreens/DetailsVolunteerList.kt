@@ -16,22 +16,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.skyber.Screens
-import com.example.skyber.dataclass.VolunteerPost
 import com.example.skyber.ModularFunctions.headerbar.HeaderBar
 import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
+import com.example.skyber.dataclass.VolunteerPost
 import com.example.skyber.ui.theme.BoxGreen
 import com.example.skyber.ui.theme.BoxRed
 import com.example.skyber.ui.theme.BoxTextGreen
@@ -40,7 +37,6 @@ import com.example.skyber.ui.theme.SKyberDarkBlue
 import com.example.skyber.ui.theme.SKyberRed
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.White
-import com.example.skyber.navigationbar.volunteerhubscreens.applyToVolunteerEvent
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

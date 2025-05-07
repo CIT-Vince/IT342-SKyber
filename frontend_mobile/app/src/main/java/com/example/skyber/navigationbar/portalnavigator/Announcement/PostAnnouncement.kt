@@ -33,10 +33,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -57,13 +55,13 @@ import com.example.skyber.FirebaseHelper
 import com.example.skyber.ModularFunctions.Base64Image
 import com.example.skyber.ModularFunctions.CustomOutlinedTextField
 import com.example.skyber.ModularFunctions.ImageUtils
+import com.example.skyber.ModularFunctions.ParticleSystem
+import com.example.skyber.ModularFunctions.headerbar.HeaderBar
+import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.Announcement
 import com.example.skyber.dataclass.User
 import com.example.skyber.dataclass.getCurrentDateTime
-import com.example.skyber.ModularFunctions.headerbar.HeaderBar
-import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
-import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberYellow

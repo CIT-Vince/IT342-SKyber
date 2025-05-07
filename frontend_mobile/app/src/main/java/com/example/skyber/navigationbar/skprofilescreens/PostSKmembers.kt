@@ -57,11 +57,11 @@ import com.example.skyber.ModularFunctions.CustomOutlinedTextField
 import com.example.skyber.ModularFunctions.ImageUtils
 import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ModularFunctions.TransparentSimpleDatePickerField
+import com.example.skyber.ModularFunctions.headerbar.HeaderBar
+import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.SKProfile
 import com.example.skyber.dataclass.User
-import com.example.skyber.ModularFunctions.headerbar.HeaderBar
-import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberYellow

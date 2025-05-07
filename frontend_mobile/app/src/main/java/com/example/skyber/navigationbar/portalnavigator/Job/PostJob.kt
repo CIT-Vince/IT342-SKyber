@@ -61,13 +61,13 @@ import com.example.skyber.FirebaseHelper
 import com.example.skyber.ModularFunctions.Base64Image
 import com.example.skyber.ModularFunctions.CustomOutlinedTextField
 import com.example.skyber.ModularFunctions.ImageUtils
+import com.example.skyber.ModularFunctions.ParticleSystem
+import com.example.skyber.ModularFunctions.headerbar.HeaderBar
+import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.JobListing
 import com.example.skyber.dataclass.User
-import com.example.skyber.ModularFunctions.headerbar.HeaderBar
-import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.navigationbar.portalnavigator.ProjectTransparency.showToast
-import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberYellow

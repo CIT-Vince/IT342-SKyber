@@ -34,8 +34,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -65,9 +63,9 @@ import com.example.skyber.ModularFunctions.CustomOutlinedTextField
 import com.example.skyber.ModularFunctions.ImageUtils
 import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ModularFunctions.SimpleDatePickerField
-import com.example.skyber.dataclass.SKProfile
 import com.example.skyber.ModularFunctions.headerbar.HeaderBar
 import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
+import com.example.skyber.dataclass.SKProfile
 import com.example.skyber.dataclass.User
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
@@ -503,13 +501,7 @@ fun DetailsSKmembers(navController: NavHostController, userProfile: MutableState
 
                                         Spacer(modifier = Modifier.height(24.dp))
 
-                                        Card(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            shape = RoundedCornerShape(12.dp),
-                                            elevation = CardDefaults.cardElevation(4.dp),
-                                            colors = CardDefaults.cardColors(containerColor = Color.White)
-                                        ) {
-                                            Column(modifier = Modifier.padding(10.dp)) {
+                                            Column(modifier = Modifier.padding(4.dp)) {
                                                 Text(
                                                     "Platforms",
                                                     fontWeight = FontWeight.SemiBold,
@@ -518,7 +510,7 @@ fun DetailsSKmembers(navController: NavHostController, userProfile: MutableState
                                                 )
                                                 Text(
                                                     skProfile.platform ?: "",
-                                                    fontSize = 24.sp,
+                                                    fontSize = 18.sp,
                                                     color = Color.DarkGray
                                                 )
 
@@ -526,33 +518,34 @@ fun DetailsSKmembers(navController: NavHostController, userProfile: MutableState
 
                                                 Text(
                                                     "Born ${skProfile.birthdate}, Age ${skProfile.age}",
-                                                    fontSize = 20.sp,
+                                                    fontSize = 18.sp,
                                                     color = Color.DarkGray
                                                 )
 
                                                 Spacer(modifier = Modifier.height(8.dp))
+
                                                 Text(
                                                     text = skProfile.email ?: "",
-                                                    fontSize = 20.sp,
+                                                    fontSize = 18.sp,
                                                     color = Color.DarkGray
                                                 )
                                                 Text(
                                                     text = skProfile.phoneNumber ?: "",
-                                                    fontSize = 20.sp,
+                                                    fontSize = 18.sp,
                                                     color = Color.DarkGray
                                                 )
                                                 Text(
                                                     text = skProfile.address ?: "",
-                                                    fontSize = 20.sp,
+                                                    fontSize = 18.sp,
                                                     color = Color.DarkGray
                                                 )
                                                 Text(
                                                     text = skProfile.gender ?: "",
-                                                    fontSize = 20.sp,
+                                                    fontSize = 18.sp,
                                                     color = Color.DarkGray
                                                 )
                                             }
-                                        }
+
 
                                         Spacer(modifier = Modifier.height(24.dp))
 
