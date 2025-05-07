@@ -1,12 +1,11 @@
 package com.example.skyber.dataclass
 
-import android.os.Build
 import android.os.Parcelable
+import com.google.firebase.database.IgnoreExtraProperties
+import kotlinx.parcelize.Parcelize
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import com.google.firebase.database.IgnoreExtraProperties
-import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @IgnoreExtraProperties

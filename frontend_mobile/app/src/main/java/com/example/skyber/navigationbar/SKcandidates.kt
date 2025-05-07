@@ -57,11 +57,11 @@ import com.example.skyber.ModularFunctions.CandidateCard
 import com.example.skyber.ModularFunctions.CustomSearchOTF
 import com.example.skyber.ModularFunctions.MemberCard
 import com.example.skyber.ModularFunctions.ParticleSystem
+import com.example.skyber.ModularFunctions.headerbar.HeaderBar
+import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.CandidateProfile
 import com.example.skyber.dataclass.SKProfile
-import com.example.skyber.ModularFunctions.headerbar.HeaderBar
-import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.dataclass.User
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient

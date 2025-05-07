@@ -13,11 +13,11 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.content.MediaType.Companion.PlainText
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,11 +26,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.Button
@@ -54,7 +51,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -65,9 +61,9 @@ import com.example.skyber.ModularFunctions.Base64Image
 import com.example.skyber.ModularFunctions.CustomOutlinedTextField
 import com.example.skyber.ModularFunctions.ImageUtils
 import com.example.skyber.ModularFunctions.ParticleSystem
-import com.example.skyber.dataclass.Scholarship
 import com.example.skyber.ModularFunctions.headerbar.HeaderBar
 import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
+import com.example.skyber.dataclass.Scholarship
 import com.example.skyber.dataclass.User
 import com.example.skyber.ui.theme.BoxGreen
 import com.example.skyber.ui.theme.BoxTextGreen
@@ -402,19 +398,19 @@ fun DetailsScholarship(navController: NavHostController, userProfile: MutableSta
                                         modifier = Modifier
                                             .fillMaxSize()
                                     ) {
-                                        // Content at the top
                                         Column(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .align(Alignment.TopStart),
-                                            horizontalAlignment = Alignment.CenterHorizontally
+                                                .padding(horizontal = 16.dp),
+                                            horizontalAlignment = Alignment.Start
                                         ) {
+                                            // Centered Image
                                             Box(
                                                 modifier = Modifier
-                                                    .height(200.dp)
                                                     .fillMaxWidth()
-                                                    .clip(RoundedCornerShape(16.dp)),
-                                                    //.background(Color.Gray.copy(alpha = 0.1f)),
+                                                    .height(200.dp)
+                                                    .clip(RoundedCornerShape(16.dp))
+                                                    .background(Color.LightGray),
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 if (!scholarship.scholarImage.isNullOrEmpty()) {
@@ -433,43 +429,52 @@ fun DetailsScholarship(navController: NavHostController, userProfile: MutableSta
                                                 }
                                             }
 
-                                            Spacer(modifier = Modifier.height(12.dp))
-                                            
-                                            Text(
-                                                text = scholarship.title,
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 28.sp,
-                                                color = SKyberBlue
-                                            )
+                                            Spacer(modifier = Modifier.height(16.dp))
 
-                                            Spacer(modifier = Modifier.height(12.dp))
-
-                                            Box(
-                                                modifier = Modifier
-                                                    .clip(RoundedCornerShape(22.dp))
-                                                    .background(statusColor)
-                                                    .padding(horizontal = 8.dp)
-                                                    .wrapContentWidth()
-
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.SpaceBetween
                                             ) {
+                                                // Title
                                                 Text(
-                                                    text = scholarship.type,
-                                                    fontSize = 20.sp,
-                                                    color = textColor,
-                                                    fontWeight = FontWeight.SemiBold
+                                                    text = scholarship.title,
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 28.sp,
+                                                    color = SKyberBlue,
+                                                    modifier = Modifier.weight(1f)
                                                 )
+
+                                                Spacer(modifier = Modifier.width(8.dp))
+
+                                                // Type Box
+                                                Box(
+                                                    modifier = Modifier
+                                                        .clip(RoundedCornerShape(22.dp))
+                                                        .background(statusColor)
+                                                        .padding(horizontal = 8.dp)
+                                                ) {
+                                                    Text(
+                                                        text = scholarship.type,
+                                                        fontSize = 20.sp,
+                                                        color = textColor,
+                                                        fontWeight = FontWeight.SemiBold
+                                                    )
+                                                }
                                             }
 
-                                            Spacer(modifier = Modifier.height(12.dp))
+                                            Spacer(modifier = Modifier.height(8.dp))
 
+                                            // Contact Email
                                             Text(
                                                 text = "Contact Email: ${scholarship.contactEmail}",
                                                 fontSize = 14.sp,
                                                 color = SKyberBlue
                                             )
 
-                                            Spacer(modifier = Modifier.height(10.dp))
+                                            Spacer(modifier = Modifier.height(8.dp))
 
+                                            // Apply Link
                                             Text(
                                                 text = "Apply at: ${scholarship.link}",
                                                 color = SKyberBlue,
@@ -481,18 +486,20 @@ fun DetailsScholarship(navController: NavHostController, userProfile: MutableSta
                                                 }
                                             )
 
-                                            Spacer(modifier = Modifier.height(10.dp))
+                                            Spacer(modifier = Modifier.height(8.dp))
 
+                                            // Job Description
                                             Text(
                                                 text = "Job Description",
                                                 fontWeight = FontWeight.SemiBold,
                                                 fontSize = 14.sp,
                                                 color = SKyberBlue
                                             )
-                                            Spacer(modifier = Modifier.height(10.dp))
+
+                                            Spacer(modifier = Modifier.height(8.dp))
 
                                             Box(
-                                                modifier = Modifier.heightIn(min = 100.dp) //Caveman custom height setter
+                                                modifier = Modifier.heightIn(min = 100.dp)
                                             ) {
                                                 Text(
                                                     text = scholarship.description,
@@ -500,6 +507,8 @@ fun DetailsScholarship(navController: NavHostController, userProfile: MutableSta
                                                     color = SKyberBlue
                                                 )
                                             }
+                                        }
+                                    }
 
                                             Spacer(modifier = Modifier.height(10.dp))
 
@@ -534,7 +543,6 @@ fun DetailsScholarship(navController: NavHostController, userProfile: MutableSta
                                                     null
                                                 }
                                             }
-
                                         }
                                     }
                                 }
@@ -544,5 +552,4 @@ fun DetailsScholarship(navController: NavHostController, userProfile: MutableSta
                 }
             }
         }
-    }
-}
+

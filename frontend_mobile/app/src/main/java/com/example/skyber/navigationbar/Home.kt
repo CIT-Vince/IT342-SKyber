@@ -1,7 +1,6 @@
 package com.example.skyber.navigationbar
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -12,14 +11,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonPin
 import androidx.compose.material.icons.filled.PinDrop
@@ -45,18 +42,17 @@ import androidx.navigation.NavHostController
 import com.example.skyber.FirebaseHelper
 import com.example.skyber.ModularFunctions.AnnouncementCard
 import com.example.skyber.ModularFunctions.CandidateCard
+import com.example.skyber.ModularFunctions.ParticleSystem
+import com.example.skyber.ModularFunctions.headerbar.HeaderBar
+import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.Announcement
 import com.example.skyber.dataclass.CandidateProfile
 import com.example.skyber.dataclass.User
-import com.example.skyber.ModularFunctions.headerbar.HeaderBar
-import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
-import com.example.skyber.ModularFunctions.ParticleSystem
-import com.example.skyber.ui.theme.White
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberYellow
-import com.example.skyber.ui.theme.SoftCardContainerBlue
 import com.example.skyber.ui.theme.SoftCardFontBlue
+import com.example.skyber.ui.theme.White
 import kotlinx.coroutines.async
 import kotlinx.coroutines.tasks.await
 

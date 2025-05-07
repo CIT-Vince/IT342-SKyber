@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +34,7 @@ import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -54,7 +54,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -63,16 +62,14 @@ import com.example.skyber.ModularFunctions.Base64Image
 import com.example.skyber.ModularFunctions.CustomOutlinedTextField
 import com.example.skyber.ModularFunctions.ImageUtils
 import com.example.skyber.ModularFunctions.ParticleSystem
-import com.example.skyber.dataclass.CandidateProfile
 import com.example.skyber.ModularFunctions.headerbar.HeaderBar
 import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
+import com.example.skyber.dataclass.CandidateProfile
 import com.example.skyber.dataclass.User
 import com.example.skyber.ui.theme.SKyberBlue
-import com.example.skyber.ui.theme.SKyberDarkBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberRed
 import com.example.skyber.ui.theme.SKyberYellow
-import com.example.skyber.ui.theme.White
 import com.example.skyber.ui.theme.gradientBrush
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -381,130 +378,133 @@ fun DetailsSKcandidates(navController: NavHostController, userProfile: MutableSt
                             } else {// Display project details
                                 LazyColumn(
                                     modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(horizontal = 24.dp, vertical = 16.dp),
+                                        .fillMaxHeight()
+                                        .weight(1f)
+                                        .padding(horizontal = 2.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center
+                                    contentPadding = PaddingValues(vertical = 6.dp)
                                 ) {
                                     item {
-                                        // Profile Image Section
-                                        Box(
+                                        Column(
                                             modifier = Modifier
-                                                .size(220.dp)
-                                                .clip(CircleShape)
-                                                .background(Color.Gray.copy(alpha = 0.1f)),
-                                            contentAlignment = Alignment.Center
+                                                .fillMaxSize()
+                                                .weight(1f)
+                                                .padding(horizontal = 6.dp)
+                                                .padding(top = 20.dp, bottom = 20.dp)
+                                                .background(Color.White, RoundedCornerShape(24.dp))
+                                                .padding(16.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally
                                         ) {
-                                            if (!candidateProfile.candidateImage.isNullOrEmpty()) {
-                                                Base64Image(
-                                                    base64String = candidateProfile.candidateImage,
-                                                    modifier = Modifier
-                                                        .size(200.dp)
-                                                        .clip(CircleShape)
-                                                )
-                                            } else {
-                                                Text(
-                                                    text = "No image available",
-                                                    color = Color.Gray,
-                                                    fontWeight = FontWeight.Medium
-                                                )
-                                            }
-                                        }
-
-                                        Spacer(modifier = Modifier.height(20.dp))
-
-                                        // Candidate Name
-                                        Text(
-                                            text = "${candidateProfile.firstName} ${candidateProfile.lastName}",
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 26.sp,
-                                            color = SKyberBlue
-                                        )
-
-                                        Spacer(modifier = Modifier.height(12.dp))
-
-                                        // Age
-                                        Text(
-                                            text = "Age: ${candidateProfile.age}",
-                                            fontSize = 16.sp,
-                                            color = SKyberBlue
-                                        )
-
-                                        Spacer(modifier = Modifier.height(12.dp))
-
-                                        // Address
-                                        Text(
-                                            text = "${candidateProfile.address}",
-                                            fontWeight = FontWeight.Medium,
-                                            fontSize = 18.sp,
-                                            color = SKyberBlue
-                                        )
-
-                                        Spacer(modifier = Modifier.height(12.dp))
-
-                                        // Partylist
-                                        Text(
-                                            text = "${candidateProfile.partylist}",
-                                            fontWeight = FontWeight.Medium,
-                                            fontSize = 18.sp,
-                                            color = SKyberBlue
-                                        )
-
-                                        Spacer(modifier = Modifier.height(20.dp))
-
-                                        // Platforms Title
-                                        Text(
-                                            text = "Platforms",
-                                            fontWeight = FontWeight.SemiBold,
-                                            fontSize = 18.sp,
-                                            color = SKyberBlue
-                                        )
-
-                                        Spacer(modifier = Modifier.height(4.dp))
-
-                                        // Platform Description
-                                        Text(
-                                            text = "${candidateProfile.platform}",
-                                            fontSize = 14.sp,
-                                            color = SKyberBlue,
-                                            textAlign = TextAlign.Center,
-                                            modifier = Modifier.padding(horizontal = 12.dp)
-                                        )
-
-                                        Spacer(modifier = Modifier.height(24.dp))
-
-                                        if(user != null){// Update Button
-                                            if(user.role == "ADMIN"){
-
-                                                Button(
-                                                    onClick = { isEditMode = true },
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .height(54.dp),
-                                                    shape = RoundedCornerShape(28.dp),
-                                                    contentPadding = PaddingValues(0.dp),
-                                                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                                                ) {
-                                                    Box(
+                                            // Profile Image Section
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(220.dp)
+                                                    .clip(CircleShape)
+                                                    .background(Color.Gray.copy(alpha = 0.1f)),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                if (!candidateProfile.candidateImage.isNullOrEmpty()) {
+                                                    Base64Image(
+                                                        base64String = candidateProfile.candidateImage,
                                                         modifier = Modifier
-                                                            .fillMaxSize()
-                                                            .background(gradientBrush),
-                                                        contentAlignment = Alignment.Center
-                                                    ) {
-                                                        Text(
-                                                            text = "Update",
-                                                            fontSize = 16.sp,
-                                                            fontWeight = FontWeight.SemiBold,
-                                                            color = Color.White
-                                                        )
-                                                    }
+                                                            .size(200.dp)
+                                                            .clip(CircleShape)
+                                                    )
+                                                } else {
+                                                    Text(
+                                                        text = "No image available",
+                                                        color = Color.Gray,
+                                                        fontWeight = FontWeight.Medium
+                                                    )
                                                 }
-                                            }else{
-                                                null
                                             }
-                                        }
 
-                                        Spacer(modifier = Modifier.height(24.dp))
+                                            Spacer(modifier = Modifier.height(16.dp))
+
+                                            Text(
+                                                text = "${candidateProfile.firstName} ${candidateProfile.lastName}",
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 30.sp,
+                                                color = SKyberBlue
+                                            )
+
+                                            Text(
+                                                text = "${candidateProfile.partylist}",
+                                                fontWeight = FontWeight.Medium,
+                                                fontSize = 24.sp,
+                                                color = Color.Gray
+                                            )
+
+                                            Spacer(modifier = Modifier.height(24.dp))
+
+                                            Column(modifier = Modifier.padding(4.dp)) {
+                                                Text(
+                                                    "Platforms",
+                                                    fontWeight = FontWeight.SemiBold,
+                                                    fontSize = 18.sp,
+                                                    color = SKyberBlue
+                                                )
+                                                Text(
+                                                    candidateProfile.platform ?: "",
+                                                    fontSize = 18.sp,
+                                                    color = Color.DarkGray
+                                                )
+
+                                                Divider(modifier = Modifier.padding(vertical = 12.dp))
+
+                                                Text(
+                                                    "Age ${candidateProfile.age}",
+                                                    fontSize = 18.sp,
+                                                    color = Color.DarkGray
+                                                )
+
+                                                Spacer(modifier = Modifier.height(8.dp))
+
+                                                Text(
+                                                    text = candidateProfile.address ?: "",
+                                                    fontSize = 18.sp,
+                                                    color = Color.DarkGray
+                                                )
+
+                                            }
+
+                                            Spacer(modifier = Modifier.height(24.dp))
+
+                                            if (user != null) {// Update Button
+                                                if (user.role == "ADMIN") {
+
+                                                    Button(
+                                                        onClick = { isEditMode = true },
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .height(54.dp),
+                                                        shape = RoundedCornerShape(28.dp),
+                                                        contentPadding = PaddingValues(0.dp),
+                                                        colors = ButtonDefaults.buttonColors(
+                                                            containerColor = Color.Transparent
+                                                        )
+                                                    ) {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .fillMaxSize()
+                                                                .background(gradientBrush),
+                                                            contentAlignment = Alignment.Center
+                                                        ) {
+                                                            Text(
+                                                                text = "Update",
+                                                                fontSize = 16.sp,
+                                                                fontWeight = FontWeight.SemiBold,
+                                                                color = Color.White
+                                                            )
+                                                        }
+                                                    }
+                                                } else {
+                                                    null
+                                                }
+                                            }
+
+                                            Spacer(modifier = Modifier.height(24.dp))
+                                        }
                                     }
                                 }
                             }

@@ -31,11 +31,30 @@ import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.skyber.dataclass.*
-import com.example.skyber.ui.theme.*
+import com.example.skyber.dataclass.Announcement
+import com.example.skyber.dataclass.CandidateProfile
+import com.example.skyber.dataclass.JobListing
+import com.example.skyber.dataclass.Project
+import com.example.skyber.dataclass.SKProfile
+import com.example.skyber.dataclass.Scholarship
+import com.example.skyber.dataclass.VolunteerPost
+import com.example.skyber.ui.theme.BoxGreen
+import com.example.skyber.ui.theme.BoxTextGreen
+import com.example.skyber.ui.theme.NewspaperFont
+import com.example.skyber.ui.theme.SKyberBlue
+import com.example.skyber.ui.theme.SKyberDarkBlue
+import com.example.skyber.ui.theme.SKyberYellow
+import com.example.skyber.ui.theme.SoftCardContainerBlue
+import com.example.skyber.ui.theme.SoftCardContainerGreen
+import com.example.skyber.ui.theme.SoftCardContainerLavender
+import com.example.skyber.ui.theme.SoftCardContainerMaroon
+import com.example.skyber.ui.theme.SoftCardFontBlue
+import com.example.skyber.ui.theme.SoftCardFontGold
+import com.example.skyber.ui.theme.SoftCardFontGreen
+import com.example.skyber.ui.theme.SoftCardFontLavender
+import com.example.skyber.ui.theme.White
 
 @Composable
 fun AnnouncementCard(backgroundColor: Color = White,

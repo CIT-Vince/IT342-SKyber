@@ -47,14 +47,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.skyber.FirebaseHelper
 import com.example.skyber.ModularFunctions.DatePickerField
+import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ModularFunctions.convertMillisToDate
+import com.example.skyber.ModularFunctions.headerbar.HeaderBar
+import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.User
 import com.example.skyber.dataclass.VolunteerPost
-import com.example.skyber.ModularFunctions.headerbar.HeaderBar
-import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.navigationbar.portalnavigator.ProjectTransparency.showToast
-import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.gradientBrush

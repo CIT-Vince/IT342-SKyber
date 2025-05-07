@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.UploadFile
@@ -35,10 +34,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -61,10 +58,10 @@ import com.example.skyber.FirebaseHelper
 import com.example.skyber.ModularFunctions.Base64Image
 import com.example.skyber.ModularFunctions.CustomOutlinedTextField
 import com.example.skyber.ModularFunctions.ImageUtils
-import com.example.skyber.dataclass.Announcement
+import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ModularFunctions.headerbar.HeaderBar
 import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
-import com.example.skyber.ModularFunctions.ParticleSystem
+import com.example.skyber.dataclass.Announcement
 import com.example.skyber.dataclass.User
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
@@ -377,27 +374,28 @@ fun DetailsAnnouncement(navController: NavHostController, userProfile: MutableSt
                                     Box(
                                         modifier = Modifier
                                             .fillMaxSize()
+                                            .padding(16.dp) // Added padding for better layout
                                     ) {
-                                        // Content at the top
                                         Column(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .align(Alignment.TopStart),
-                                            horizontalAlignment = Alignment.CenterHorizontally
+                                            horizontalAlignment = Alignment.Start // Changed to align content to the start
                                         ) {
+                                            // Image Section
                                             Box(
                                                 modifier = Modifier
-                                                    .height(200.dp)
                                                     .fillMaxWidth()
-                                                    .clip(RoundedCornerShape(16.dp)),
-                                                    //.background(Color.Gray.copy(alpha = 0.1f)),
+                                                    .height(200.dp)
+                                                    .clip(RoundedCornerShape(16.dp))
+                                                    .background(Color.LightGray), // Added background for better visibility
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 if (!announcement.imageData.isNullOrEmpty()) {
                                                     Base64Image(
                                                         base64String = announcement.imageData,
                                                         modifier = Modifier
-                                                            .size(200.dp)
+                                                            .fillMaxSize()
                                                             .clip(RoundedCornerShape(16.dp))
                                                     )
                                                 } else {
@@ -409,33 +407,42 @@ fun DetailsAnnouncement(navController: NavHostController, userProfile: MutableSt
                                                 }
                                             }
 
-                                            Spacer(modifier = Modifier.height(12.dp))
+                                            Spacer(modifier = Modifier.height(16.dp))
 
                                             // Title
                                             Text(
                                                 text = announcement.title,
                                                 fontWeight = FontWeight.Bold,
                                                 fontSize = 27.sp,
-                                                color = SKyberBlue
+                                                color = SKyberBlue,
+                                                //maxLines = 2, // Added maxLines for better layout
+                                                //overflow = TextOverflow.Ellipsis
                                             )
 
                                             Spacer(modifier = Modifier.height(12.dp))
 
-                                            // Metadata
-                                            listOf(
-                                                "Posted on ${announcement.postedAt}" to 18.sp,
-                                                "Barangay ${announcement.barangay}" to 18.sp,
-                                                announcement.category to 18.sp
-                                            ).forEach { (text, fontSize) ->
+                                            // Metadata Section
+                                            Column {
                                                 Text(
-                                                    text = text,
-                                                    fontSize = fontSize,
+                                                    text = "Posted on ${announcement.postedAt}",
+                                                    fontSize = 18.sp,
                                                     color = SKyberBlue
                                                 )
-                                                Spacer(modifier = Modifier.height(10.dp))
+                                                Spacer(modifier = Modifier.height(8.dp))
+                                                Text(
+                                                    text = "Barangay ${announcement.barangay}",
+                                                    fontSize = 18.sp,
+                                                    color = SKyberBlue
+                                                )
+                                                Spacer(modifier = Modifier.height(8.dp))
+                                                Text(
+                                                    text = announcement.category,
+                                                    fontSize = 18.sp,
+                                                    color = SKyberBlue
+                                                )
                                             }
 
-                                            Spacer(modifier = Modifier.height(14.dp))
+                                            Spacer(modifier = Modifier.height(16.dp))
 
                                             // Section Header
                                             Text(
@@ -447,9 +454,14 @@ fun DetailsAnnouncement(navController: NavHostController, userProfile: MutableSt
 
                                             Spacer(modifier = Modifier.height(8.dp))
 
-                                            // Content
+                                            // Content Section
                                             Box(
-                                                modifier = Modifier.heightIn(min = 230.dp)
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .heightIn(min = 230.dp)
+                                                    .clip(RoundedCornerShape(8.dp))
+                                                    //.background(Color(0xFFF5F5F5)) // Added background for content readability
+                                                    .padding(12.dp)
                                             ) {
                                                 Text(
                                                     text = announcement.content,
@@ -458,6 +470,8 @@ fun DetailsAnnouncement(navController: NavHostController, userProfile: MutableSt
                                                     color = SKyberBlue
                                                 )
                                             }
+                                        }
+                                    }
 
                                             Spacer(modifier = Modifier.height(24.dp))
 
@@ -501,6 +515,4 @@ fun DetailsAnnouncement(navController: NavHostController, userProfile: MutableSt
                 }
             }
         }
-    }
-}
 

@@ -1,7 +1,6 @@
 package com.example.skyber.navigationbar.portalnavigator.Scholarships
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,12 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,13 +45,16 @@ import com.example.skyber.FirebaseHelper
 import com.example.skyber.ModularFunctions.CustomSearchOTF
 import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ModularFunctions.ScholarshipCard
-import com.example.skyber.Screens
-import com.example.skyber.dataclass.Scholarship
 import com.example.skyber.ModularFunctions.headerbar.HeaderBar
 import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
-import com.example.skyber.navigationbar.portalnavigator.PortalNav
-import com.example.skyber.navigationbar.portalnavigator.PortalNavHandler
-import com.example.skyber.ui.theme.*
+import com.example.skyber.Screens
+import com.example.skyber.dataclass.Scholarship
+import com.example.skyber.ui.theme.SKyberDarkBlueGradient
+import com.example.skyber.ui.theme.SKyberRed
+import com.example.skyber.ui.theme.SKyberYellow
+import com.example.skyber.ui.theme.SoftCardContainerPast
+import com.example.skyber.ui.theme.SoftCardFontPast
+import com.example.skyber.ui.theme.White
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

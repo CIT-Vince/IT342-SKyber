@@ -11,7 +11,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,8 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -41,13 +38,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.skyber.FirebaseHelper
 import com.example.skyber.ModularFunctions.ParticleSystem
-import com.example.skyber.Screens
-import com.example.skyber.dataclass.User
-import com.example.skyber.dataclass.VolunteerPost
 import com.example.skyber.ModularFunctions.headerbar.HeaderBar
 import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
+import com.example.skyber.dataclass.User
+import com.example.skyber.dataclass.VolunteerPost
 import com.example.skyber.navigationbar.portalnavigator.Announcement.showToast
-import com.example.skyber.ui.theme.*
+import com.example.skyber.ui.theme.BoxGreen
+import com.example.skyber.ui.theme.BoxRed
+import com.example.skyber.ui.theme.BoxTextGreen
+import com.example.skyber.ui.theme.SKyberBlue
+import com.example.skyber.ui.theme.SKyberDarkBlueGradient
+import com.example.skyber.ui.theme.SKyberRed
+import com.example.skyber.ui.theme.SKyberYellow
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

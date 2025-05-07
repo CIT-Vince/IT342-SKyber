@@ -15,16 +15,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -42,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -50,24 +45,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.skyber.FirebaseHelper
-import com.example.skyber.ModularFunctions.Base64Image
 import com.example.skyber.ModularFunctions.CustomOutlinedTextField
 import com.example.skyber.ModularFunctions.ParticleSystem
-import com.example.skyber.dataclass.Project
 import com.example.skyber.ModularFunctions.headerbar.HeaderBar
 import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
+import com.example.skyber.dataclass.Project
 import com.example.skyber.dataclass.User
 import com.example.skyber.ui.theme.BoxGreen
 import com.example.skyber.ui.theme.BoxRed
 import com.example.skyber.ui.theme.BoxTextGreen
 import com.example.skyber.ui.theme.SKyberBlue
-import com.example.skyber.ui.theme.SKyberDarkBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberRed
 import com.example.skyber.ui.theme.SKyberYellow
-import com.example.skyber.ui.theme.White
 import com.example.skyber.ui.theme.gradientBrush
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -87,6 +78,28 @@ fun DetailsProject(navController: NavHostController, userProfile: MutableState<U
     var newStakeholders by rememberSaveable { mutableStateOf("") }
     var newSustainabilityGoals by rememberSaveable { mutableStateOf("") }
     val context = LocalContext.current
+
+    // Animations
+    val infiniteTransition = rememberInfiniteTransition(label = "floating animation")
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale animation"
+    )
+
+    val topLeftPosition by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 10f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "floating top left"
+    )
 
     LaunchedEffect(isEditMode) {
         if (isEditMode && project != null) {
@@ -120,10 +133,27 @@ fun DetailsProject(navController: NavHostController, userProfile: MutableState<U
                     .fillMaxSize()
                     .background(SKyberDarkBlueGradient)
             ) {
+                // Particle background
+                ParticleSystem(
+                    modifier = Modifier.fillMaxSize(),
+                    particleColor = Color.White,
+                    particleCount = 80,
+                    backgroundColor = Color(0xFF0D47A1)
+                )
+
+                // Decorative elements
+                Text(
+                    text = "💠",
+                    fontSize = 26.sp,
+                    modifier = Modifier
+                        .padding(start = topLeftPosition.dp + 10.dp, top = 20.dp)
+                        .graphicsLayer(alpha = 0.3f) // Adjust opacity
+                )
+
                 Column(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(),
+                        .fillMaxSize(),
+                    //.padding(),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -322,16 +352,14 @@ fun DetailsProject(navController: NavHostController, userProfile: MutableState<U
                                         modifier = Modifier
                                             .fillMaxSize()
                                     ) {
-                                        // Content at the top
                                         Column(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .align(Alignment.TopStart),
-                                            horizontalAlignment = Alignment.CenterHorizontally
+                                                .align(Alignment.TopStart)
+                                                .padding(horizontal = 16.dp, vertical = 16.dp),
+                                            horizontalAlignment = Alignment.Start
                                         ) {
-
-                                            Spacer(modifier = Modifier.height(16.dp))
-
+                                            // Project Name and Status
                                             Row(
                                                 modifier = Modifier.fillMaxWidth(),
                                                 verticalAlignment = Alignment.CenterVertically
@@ -353,7 +381,6 @@ fun DetailsProject(navController: NavHostController, userProfile: MutableState<U
                                                         .clip(RoundedCornerShape(22.dp))
                                                         .background(if (project.status.lowercase() == "ongoing") BoxGreen else BoxRed)
                                                         .padding(horizontal = 8.dp, vertical = 4.dp)
-                                                        .wrapContentSize()
                                                 ) {
                                                     Text(
                                                         text = project.status,
@@ -368,88 +395,103 @@ fun DetailsProject(navController: NavHostController, userProfile: MutableState<U
 
                                             Spacer(modifier = Modifier.height(16.dp))
 
-                                            Text(
-                                                "Project Manager: ${project.projectManager}",
-                                                fontSize = 16.sp,
-                                                color = SKyberBlue
-                                            )
+                                            // Project Manager and Budget
+                                            Column {
+                                                Text(
+                                                    text = "Project Manager: ${project.projectManager}",
+                                                    fontSize = 16.sp,
+                                                    color = SKyberBlue
+                                                )
 
-                                            Spacer(modifier = Modifier.height(8.dp))
+                                                Spacer(modifier = Modifier.height(8.dp))
 
-                                            Text(
-                                                "Budget: ${project.budget}",
-                                                fontSize = 16.sp,
-                                                color = SKyberBlue
-                                            )
+                                                Text(
+                                                    text = "Budget: ${project.budget}",
+                                                    fontSize = 16.sp,
+                                                    color = SKyberBlue
+                                                )
+                                            }
 
                                             Spacer(modifier = Modifier.height(16.dp))
 
+                                            // Start and End Dates
                                             Row(
                                                 modifier = Modifier.fillMaxWidth(),
                                                 horizontalArrangement = Arrangement.SpaceEvenly
                                             ) {
                                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                                     Text(
-                                                        "Start Date",
+                                                        text = "Start Date",
                                                         fontWeight = FontWeight.SemiBold,
                                                         color = SKyberBlue
                                                     )
-                                                    Text(project.startDate, color = SKyberBlue)
+                                                    Text(text = project.startDate, color = SKyberBlue)
                                                 }
                                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                                     Text(
-                                                        "End Date",
+                                                        text = "End Date",
                                                         fontWeight = FontWeight.SemiBold,
                                                         color = SKyberBlue
                                                     )
-                                                    Text(project.endDate, color = SKyberBlue)
+                                                    Text(text = project.endDate, color = SKyberBlue)
                                                 }
                                             }
 
                                             Spacer(modifier = Modifier.height(24.dp))
 
-                                            Text(
-                                                "Description",
-                                                fontWeight = FontWeight.SemiBold,
-                                                fontSize = 18.sp,
-                                                color = SKyberBlue
-                                            )
+                                            // Description
+                                            Column {
+                                                Text(
+                                                    text = "Description",
+                                                    fontWeight = FontWeight.SemiBold,
+                                                    fontSize = 18.sp,
+                                                    color = SKyberBlue
+                                                )
 
-                                            Text(
-                                                project.description,
-                                                fontSize = 14.sp,
-                                                color = SKyberBlue
-                                            )
+                                                Text(
+                                                    text = project.description,
+                                                    fontSize = 14.sp,
+                                                    color = SKyberBlue
+                                                )
+                                            }
 
                                             Spacer(modifier = Modifier.height(24.dp))
 
-                                            Text(
-                                                "Stakeholders",
-                                                fontWeight = FontWeight.SemiBold,
-                                                fontSize = 18.sp,
-                                                color = SKyberBlue
-                                            )
+                                            // Stakeholders
+                                            Column {
+                                                Text(
+                                                    text = "Stakeholders",
+                                                    fontWeight = FontWeight.SemiBold,
+                                                    fontSize = 18.sp,
+                                                    color = SKyberBlue
+                                                )
 
-                                            Text(
-                                                project.stakeholders,
-                                                fontSize = 14.sp,
-                                                color = SKyberBlue
-                                            )
+                                                Text(
+                                                    text = project.stakeholders,
+                                                    fontSize = 14.sp,
+                                                    color = SKyberBlue
+                                                )
+                                            }
 
                                             Spacer(modifier = Modifier.height(16.dp))
 
-                                            Text(
-                                                "Project Members",
-                                                fontWeight = FontWeight.SemiBold,
-                                                fontSize = 18.sp,
-                                                color = SKyberBlue
-                                            )
+                                            // Project Members
+                                            Column {
+                                                Text(
+                                                    text = "Project Members",
+                                                    fontWeight = FontWeight.SemiBold,
+                                                    fontSize = 18.sp,
+                                                    color = SKyberBlue
+                                                )
 
-                                            Text(
-                                                project.teamMembers,
-                                                fontSize = 14.sp,
-                                                color = SKyberBlue
-                                            )
+                                                Text(
+                                                    text = project.teamMembers,
+                                                    fontSize = 14.sp,
+                                                    color = SKyberBlue
+                                                )
+                                            }
+                                        }
+                                    }
 
                                             Spacer(modifier = Modifier.height(24.dp))
 
@@ -491,8 +533,7 @@ fun DetailsProject(navController: NavHostController, userProfile: MutableState<U
                 }
             }
         }
-    }
-}
+
 
 /*Box(
     modifier = Modifier
