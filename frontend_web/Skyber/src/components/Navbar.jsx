@@ -129,10 +129,10 @@ const Navbar = ({ lightBackground = false }) => {
 
       {/* Nav Links */}
       <ul
-        className={`${
-          menuOpen ? 'flex' : 'hidden'
-        } flex-col md:flex md:flex-row gap-2 md:gap-8 text-white font-medium w-full md:w-auto items-center bg-[#0134AA] md:bg-transparent absolute md:static top-16 left-0 md:top-auto md:left-auto z-40 md:z-auto`}
-      >
+  className={`${
+    menuOpen ? 'flex' : 'hidden'
+  } flex-col md:flex md:flex-row gap-2 md:gap-8 text-white font-medium w-full md:w-auto items-center bg-[#0134AA] md:bg-transparent absolute md:static top-16 left-0 md:top-auto md:left-auto z-40 md:z-auto pb-4 pt-2 px-4`}
+>
         <li><Link to="/" className="hover:text-blue-600" onClick={() => setMenuOpen(false)}>Home</Link></li>
         <li><Link to="/announcements" className="hover:text-blue-600" onClick={() => setMenuOpen(false)}>Announcements</Link></li>
         <li><Link to="/projects" className="hover:text-blue-600" onClick={() => setMenuOpen(false)}>Projects</Link></li>
@@ -168,7 +168,8 @@ const Navbar = ({ lightBackground = false }) => {
       </ul>
 
       {/* User Button */}
-      <div className="w-full md:w-auto flex justify-center mt-2 md:mt-0">
+      <div className={`w-full md:w-auto flex justify-center ${menuOpen ? 'mt-[200px]' : 'mt-2'} md:mt-0`}>
+
         {!currentUser ? (
           <Link
             to="/login"
@@ -178,28 +179,28 @@ const Navbar = ({ lightBackground = false }) => {
           </Link>
         ) : (
           <Menu shadow="md" width={180} withinPortal withArrow>
-  <Menu.Target withArrow>
-    <button className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-full shadow hover:scale-105 transition">
-      <img 
-        src={userData?.photoURL || defaultAvatar} 
-        alt="avatar" 
-        className="w-8 h-8 rounded-full object-cover"
-        onError={(e) => { e.target.src = defaultAvatar }} 
-      />
-      <span className="inline truncate max-w-[100px]">
-        {userData ? `${userData.firstName || ''}` : 'Loading...'}
-      </span>
-    </button>
-  </Menu.Target>
-  <Menu.Dropdown>
-    <Menu.Item>
-      <Link to="/profile" className="block w-full h-full">Profile</Link>
-    </Menu.Item>
-    <Menu.Item onClick={handleLogout}>
-      Log out
-    </Menu.Item>
-  </Menu.Dropdown>
-</Menu>
+            <Menu.Target withArrow>
+              <button className="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-full shadow hover:scale-105 transition">
+                <img 
+                  src={userData?.photoURL || defaultAvatar} 
+                  alt="avatar" 
+                  className="w-8 h-8 rounded-full object-cover"
+                  onError={(e) => { e.target.src = defaultAvatar }} 
+                />
+                <span className="inline truncate max-w-[100px]">
+                  {userData ? `${userData.firstName || ''}` : 'Loading...'}
+                </span>
+              </button>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item>
+                <Link to="/profile" className="block w-full h-full">Profile</Link>
+              </Menu.Item>
+              <Menu.Item onClick={handleLogout}>
+                Log out
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
         )}
       </div>
 
