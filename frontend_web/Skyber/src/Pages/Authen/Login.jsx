@@ -9,7 +9,7 @@ import { auth } from '../../firebase/firebase';
 import { getDatabase, ref, get, set } from 'firebase/database'; // Add database imports
 import { showNotification } from '@mantine/notifications';
 import { getRedirectLocation } from '../utils/locationHelper'; // Import the function to get redirect location
-
+import { apiFetch } from '../utils/api';
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -36,13 +36,21 @@ const Login = () => {
       setLoading(true);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+      const idToken = await user.getIdToken();
 
       // Save user token if "remember me" is checked
-      if (rememberMe) {
-        localStorage.setItem('userToken', await user.getIdToken());
-      } else {
-        sessionStorage.setItem('userToken', await user.getIdToken());
+    if (rememberMe) {
+      localStorage.setItem('userToken', idToken);
+    } else {
+      sessionStorage.setItem('userToken', idToken);
+    }
+    await apiFetch('api/users/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${idToken}`
       }
+    });
 
       showNotification({
         title: 'Success',
@@ -81,6 +89,7 @@ const Login = () => {
       
       // Get the user from the result
       const user = result.user;
+      const idToken = await user.getIdToken();
       
       // Check if this user already exists in your Realtime Database
       const database = getDatabase();
@@ -105,7 +114,7 @@ const Login = () => {
         // Save to Spring Boot backend
         try {
           const idToken = await user.getIdToken();
-          const response = await fetch('http://localhost:8080/api/users/register', {
+          const response = await apiFetch('api/users/register', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -123,6 +132,13 @@ const Login = () => {
           console.error('Backend registration error:', backendError);
           // Continue anyway since Firebase Auth succeeded
         }
+        await apiFetch('api/users/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`
+          }
+        });
         
         showNotification({
           title: 'Account Created!',

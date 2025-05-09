@@ -9,5 +9,15 @@ export const saveLastLocation = (location) => {
   
   // Get the stored location or default to announcements
   export const getRedirectLocation = () => {
-    return sessionStorage.getItem('lastLocation') || '/announcements';
+    // Check if there's a saved location in sessionStorage
+    const savedLocation = sessionStorage.getItem('redirectAfterLogin');
+    
+    if (savedLocation) {
+      // Clear it so it's used only once
+      sessionStorage.removeItem('redirectAfterLogin');
+      return savedLocation;
+    }
+    
+    // Default to home if no saved location
+    return '/';
   };
