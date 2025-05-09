@@ -22,19 +22,58 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7a619c32-a54b-4a6f-81c1-f9cc23d05a8a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/checksums/md5-checksums.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/checksums/sha1-checksums.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/resourceHashesCache.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Controller/AnnouncementController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Controller/AnnouncementController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Controller/CandidateController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Controller/CandidateController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Entity/Announcement.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Entity/Announcement.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Service/AnnouncementService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/Service/AnnouncementService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/java/edu/cit/SKyber/WebConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/firebase-service-account.json" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/SKyber/src/main/resources/firebase-service-account.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/release/app-release.aab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/example/skyber/ExampleInstrumentedTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/com/example/skyber/ExampleInstrumentedTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ModularFunctions/CardFile.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ModularFunctions/CardFile.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ModularFunctions/Helpers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ModularFunctions/Helpers.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ModularFunctions/ParticleSystem.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ModularFunctions/ParticleSystem.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ModularFunctions/SimpleDatePicker.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ModularFunctions/SimpleDatePicker.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ModularFunctions/headerbar/HeaderBar.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ModularFunctions/headerbar/HeaderBar.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/api/CandidateApi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/api/CandidateApi.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/dataclass/Announcement.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/dataclass/Announcement.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/Home.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/Home.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/Portal.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/Portal.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/SKcandidates.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/SKcandidates.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/UserProfile.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/UserProfile.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/VolunteerHub.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/VolunteerHub.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Announcement/Announcements.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Announcement/Announcements.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/local.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Announcement/DetailsAnnouncement.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Announcement/DetailsAnnouncement.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Announcement/PostAnnouncement.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Announcement/PostAnnouncement.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Job/DetailsJob.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Job/DetailsJob.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Job/Job.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Job/Job.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Job/PostJob.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Job/PostJob.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/ProjectTransparency/DetailsProject.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/ProjectTransparency/DetailsProject.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/ProjectTransparency/PostProject.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/ProjectTransparency/PostProject.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/ProjectTransparency/Projects.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/ProjectTransparency/Projects.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Scholarships/DetailsScholarship.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Scholarships/DetailsScholarship.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Scholarships/PostScholarship.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Scholarships/PostScholarship.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Scholarships/Scholarships.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/Scholarships/Scholarships.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/portalnav.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/portalnavigator/portalnav.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/skprofilescreens/DetailsSKcandidates.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/skprofilescreens/DetailsSKcandidates.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/skprofilescreens/DetailsSKmembers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/skprofilescreens/DetailsSKmembers.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/skprofilescreens/PostSKcandidates.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/skprofilescreens/PostSKcandidates.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/skprofilescreens/PostSKmembers.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/skprofilescreens/PostSKmembers.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/userprofilescreens/DetailsVolunteerList.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/userprofilescreens/DetailsVolunteerList.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/userprofilescreens/EditProfile.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/userprofilescreens/EditProfile.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/userprofilescreens/VolunteerList.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/userprofilescreens/VolunteerList.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/volunteerhubscreens/DetailsVolunteerHub.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/volunteerhubscreens/DetailsVolunteerHub.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/volunteerhubscreens/PostVolunteerHub.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/navigationbar/volunteerhubscreens/PostVolunteerHub.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/screens/CandidateTestScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/screens/CandidateTestScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ui/theme/Color.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ui/theme/Color.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ui/theme/Theme.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/ui/theme/Theme.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/userauth/Login.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/userauth/Login.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/userauth/Signup.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/skyber/userauth/Signup.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/test/java/com/example/skyber/ExampleUnitTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/test/java/com/example/skyber/ExampleUnitTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend_web/Skyber/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend_web/Skyber/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend_web/Skyber/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend_web/Skyber/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +83,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\Jea Bayona\.android\avd\Medium_Phone.avd)]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\ethan\.android\avd\Medium_Phone.avd)]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -70,11 +109,10 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$/.." value="mobileUI" />
+        <entry key="$PROJECT_DIR$/.." value="feature_frontend_mobile_Portal" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
-    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -82,12 +120,12 @@
     &quot;assignee&quot;: &quot;CIT-Ethan&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/CIT-Vince/IT342-SKyber.git",
-    "accountId": "2bb4290a-a721-43f4-b2dc-733ca6e021b3"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/CIT-Vince/IT342-SKyber.git&quot;,
+    &quot;accountId&quot;: &quot;94dfc8f7-901d-4f69-991d-7261112bebc7&quot;
   }
-}]]></component>
+}</component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -115,7 +153,7 @@
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "feature__frontend__mobile__refactor",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/ethan/OneDrive/Documents/3rd Year 2nd sem projects/FitQuest",

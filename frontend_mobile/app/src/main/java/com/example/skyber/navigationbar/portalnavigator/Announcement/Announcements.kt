@@ -104,6 +104,7 @@ fun Announcements(navController: NavHostController) {
                     isLoading = false
                 }
             .addOnFailureListener {
+                //Log.e("AnnouncementFetch", "Failed to load projects", it)
                 isLoading = true
             }
             kotlinx.coroutines.delay(5000)
@@ -209,7 +210,7 @@ fun Announcements(navController: NavHostController) {
                                 } else {
                                     items(filteredAnnouncements.reversed()) { announcement ->
                                         AnnouncementCard(
-                                            backgroundColor = White,
+                                            backgroundColor = SoftCardContainerBlue,
                                             fontColor = SoftCardFontBlue,
                                             announcement = announcement,
                                             onClick = {
