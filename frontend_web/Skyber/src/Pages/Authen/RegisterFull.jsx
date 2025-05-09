@@ -18,6 +18,7 @@ import { showNotification } from '@mantine/notifications';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../firebase/firebase';
 import { getDatabase, ref, set } from "firebase/database";
+import { apiFetch } from '../utils/api';
 
 const RegisterFull = () => {
   
@@ -122,7 +123,7 @@ const RegisterFull = () => {
       const idToken = await user.getIdToken();
       
       // Step 3: Send user details to Spring Boot backend
-      const response = await fetch('http://localhost:8080/api/users/register', {
+      const response = await apiFetch('api/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -420,22 +421,7 @@ const RegisterFull = () => {
                 })}
               />
             </div>
-            {/* Remember me */}
-            <div className="flex items-center">
-              <Checkbox 
-                checked={rememberMe}
-                onChange={(event) => setRememberMe(event.currentTarget.checked)}
-                label="Remember me"
-                classNames={{
-                  label: "text-sm text-gray-700"
-                }}
-              />
-              <div className="ml-auto">
-                <Link to="/forgot-password" className="text-red-500 text-sm hover:underline">
-                  Forgot Password?
-                </Link>
-              </div>
-            </div>
+            
             
             {/* Sign In Button */}
               <button

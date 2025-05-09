@@ -8,9 +8,11 @@ import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'; // Add thes
 import { auth } from '../../firebase/firebase';
 import { getDatabase, ref, get, set } from 'firebase/database'; // Add database imports
 import { showNotification } from '@mantine/notifications';
+import { apiFetch } from '../utils/api';
 
 const Register = () => {
   const navigate = useNavigate(); // Add this hook
+  
   
   // Add this function to handle Google sign-in
   const handleGoogleSignIn = async () => {
@@ -45,7 +47,7 @@ const Register = () => {
         const idToken = await user.getIdToken();
         
         try {
-          const response = await fetch('http://localhost:8080/api/users/register', {
+          const response = await apiFetch('api/users/register', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
