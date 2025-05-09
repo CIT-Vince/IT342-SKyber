@@ -81,6 +81,9 @@ import com.example.skyber.Screens
 import com.example.skyber.dataclass.User
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberRed
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -126,6 +129,23 @@ fun SignupScreen(navController: NavHostController) {
         ),
         label = "rotation"
     )
+    val calculateAge = { birthdate: String ->
+        try {
+            val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.US)
+            val birthdateDate = dateFormat.parse(birthdate)
+            val today = Calendar.getInstance()
+            val birthdateCalendar = Calendar.getInstance()
+            birthdateCalendar.time = birthdateDate
+
+            var age = today.get(Calendar.YEAR) - birthdateCalendar.get(Calendar.YEAR)
+            if (today.get(Calendar.DAY_OF_YEAR) < birthdateCalendar.get(Calendar.DAY_OF_YEAR)) {
+                age--
+            }
+            age
+        } catch (e: Exception) {
+            0 // Default age if parsing fails
+        }
+    }
 
     // Top-left emoji animation
     val topLeftPosition by infiniteTransition.animateFloat(
@@ -596,15 +616,16 @@ fun SignupScreen(navController: NavHostController) {
                                                 //2. user profile creation and save to Realtime DB using UID as key
                                                 val user = User(
                                                     id = uid,
-                                                    firstname = firstname,
-                                                    lastname = lastname,
+                                                    firstName = firstname,
+                                                    lastName = lastname,
                                                     email = email,
                                                     password = password,
                                                     birthdate = dob,
                                                     gender = gender,
                                                     role = role,
                                                     phoneNumber = phonenumber,
-                                                    address = address
+                                                    address = address,
+                                                    age = calculateAge(dob)
                                                 )
 
                                                 database.child("users").child(uid).setValue(user)

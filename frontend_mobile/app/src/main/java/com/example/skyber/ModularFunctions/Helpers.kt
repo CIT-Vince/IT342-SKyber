@@ -1,7 +1,9 @@
 package com.example.skyber.ModularFunctions
 
 import android.icu.text.SimpleDateFormat
+import android.os.Build
 import android.os.Parcelable
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -48,7 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.navigation.NavHostController
-import com.example.skyber.ui.theme.SKyberDarkBlueGradient
+import com.example.skyber.ui.theme.White
 import java.util.Date
 import java.util.Locale
 
@@ -57,13 +59,15 @@ import java.util.Locale
 fun DatePickerField(
     label: String = "",
     selectedDate: String,
-    onDateSelected: (Long) -> Unit
+    onDateSelected: (Long) -> Unit,
+    textColor: Color = Color.Black,
+    backgroundColor: Color = Color.White,
+    focusedLabelColor: Color = Color(0xFF0066FF),
+    unfocusedLabelColor: Color = Color.Gray,
+    cursorColor: Color = Color(0xFF0066FF)
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
-    /*val selectedDate = datePickerState.selectedDateMillis?.let {
-        convertMillisToDate(it)
-    } ?: ""*/
 
     OutlinedTextField(
         value = selectedDate,
@@ -79,9 +83,13 @@ fun DatePickerField(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
+            cursorColor = cursorColor,
             focusedBorderColor = Color(0xFF0066FF),
-            unfocusedBorderColor = Color(0xFFD1D5DB)
-        )
+            unfocusedBorderColor = Color(0xFFD1D5DB),
+            focusedLabelColor = focusedLabelColor,
+            unfocusedLabelColor = unfocusedLabelColor,
+            containerColor = backgroundColor
+        ),
     )
 
     if (showDatePicker) {
@@ -94,7 +102,7 @@ fun DatePickerField(
                     .fillMaxWidth()
                     .padding(16.dp)
                     .shadow(4.dp, RoundedCornerShape(8.dp))
-                    .background(SKyberDarkBlueGradient)
+                    .background(White)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     DatePicker(
@@ -117,6 +125,7 @@ fun DatePickerField(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.N)
 fun convertMillisToDate(millis: Long): String {
     val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     return formatter.format(Date(millis))
@@ -186,8 +195,14 @@ fun CustomOutlinedTextField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier.fillMaxWidth(),
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default, // Defaults to normal text input
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     maxLines: Int = 1,
+    singleLine: Boolean = true,
+    textColor: Color = Color.Black,
+    backgroundColor: Color = Color.White,
+    focusedLabelColor: Color = Color(0xFF0066FF),
+    unfocusedLabelColor: Color = Color.Gray,
+    cursorColor: Color = Color(0xFF0066FF)
 ) {
     OutlinedTextField(
         value = value,
@@ -195,10 +210,15 @@ fun CustomOutlinedTextField(
         label = { Text(label) },
         modifier = modifier,
         shape = RoundedCornerShape(8.dp),
-        keyboardOptions = keyboardOptions, // Uses default if not provided
+        keyboardOptions = keyboardOptions,
+        textStyle = androidx.compose.ui.text.TextStyle(color = textColor), // Set text color here
         colors = TextFieldDefaults.outlinedTextFieldColors(
+            cursorColor = cursorColor,
             focusedBorderColor = Color(0xFF0066FF),
-            unfocusedBorderColor = Color(0xFFD1D5DB)
+            unfocusedBorderColor = Color(0xFFD1D5DB),
+            focusedLabelColor = focusedLabelColor,
+            unfocusedLabelColor = unfocusedLabelColor,
+            containerColor = backgroundColor
         ),
         maxLines = maxLines,
     )

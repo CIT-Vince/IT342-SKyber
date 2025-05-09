@@ -1,7 +1,6 @@
 package com.example.skyber.navigationbar.portalnavigator.ProjectTransparency
 
 import android.annotation.SuppressLint
-import android.widget.Toast
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -12,20 +11,27 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.People
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,29 +43,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.skyber.FirebaseHelper
-import com.example.skyber.ModularFunctions.CustomOutlinedTextField
-import com.example.skyber.ModularFunctions.ParticleSystem
-import com.example.skyber.ModularFunctions.headerbar.HeaderBar
-import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.dataclass.Project
 import com.example.skyber.dataclass.User
-import com.example.skyber.ui.theme.BoxGreen
-import com.example.skyber.ui.theme.BoxRed
-import com.example.skyber.ui.theme.BoxTextGreen
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
-import com.example.skyber.ui.theme.SKyberRed
 import com.example.skyber.ui.theme.SKyberYellow
-import com.example.skyber.ui.theme.gradientBrush
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -126,404 +122,384 @@ fun DetailsProject(navController: NavHostController, userProfile: MutableState<U
             CircularProgressIndicator(color = SKyberYellow)
         }
         return
-    } else {
-        Scaffold { innerPadding ->
+    } else { // Display project details
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // Blue header with back button
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(SKyberDarkBlueGradient)
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .background(SKyberBlue)
+                    .align(Alignment.TopCenter)
             ) {
-                // Particle background
-                ParticleSystem(
-                    modifier = Modifier.fillMaxSize(),
-                    particleColor = Color.White,
-                    particleCount = 80,
-                    backgroundColor = Color(0xFF0D47A1)
-                )
-
-                // Decorative elements
-                Text(
-                    text = "💠",
-                    fontSize = 26.sp,
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .padding(start = topLeftPosition.dp + 10.dp, top = 20.dp)
-                        .graphicsLayer(alpha = 0.3f) // Adjust opacity
-                )
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    //.padding(),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp)
                 ) {
-                    HeaderBar(
-                        trailingContent = {
-                            NotificationHandler()
-                        }
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { navController.popBackStack() }
                     )
 
-                    Column(
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Text(
+                        text = "Project Details",
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            // Main content
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 56.dp) // Account for the header
+            ) {
+                // Banner image - could be a placeholder or project image
+                item {
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
-                            .padding(top = 40.dp, bottom = 40.dp)
-                            .background(Color.White, RoundedCornerShape(24.dp))
-                            .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .height(180.dp)
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(Color(0xFF1E88E5), Color(0xFF0D47A1)),
+                                    start = Offset(0f, 0f),
+                                    end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+                                )
+                            )
+                    )
+                }
+
+                // Main project info card
+                item {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        shape = RoundedCornerShape(0.dp), // Flat edges
+                        elevation = CardDefaults.cardElevation(4.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
                     ) {
-                        if (isEditMode) {
-                            LazyColumn(
-                                modifier = Modifier.fillMaxSize(),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                item {
-                                    CustomOutlinedTextField(
-                                        value = newProjectName,
-                                        onValueChange = { newProjectName = it },
-                                        label = "Project Name"
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newProjectDescription,
-                                        onValueChange = { newProjectDescription = it },
-                                        label = "Description"
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newStatus,
-                                        onValueChange = { newStatus = it },
-                                        label = "Status"
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newStartDate,
-                                        onValueChange = { newStartDate = it },
-                                        label = "Start Date"
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newEndDate,
-                                        onValueChange = { newEndDate = it },
-                                        label = "End Date"
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newBudget,
-                                        onValueChange = { newBudget = it },
-                                        label = "Budget"
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newProjectManager,
-                                        onValueChange = { newProjectManager = it },
-                                        label = "Project Manager"
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newProjectMembers,
-                                        onValueChange = { newProjectMembers = it },
-                                        label = "Project Members"
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newStakeholders,
-                                        onValueChange = { newStakeholders = it },
-                                        label = "Stakeholders"
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newSustainabilityGoals,
-                                        onValueChange = { newSustainabilityGoals = it },
-                                        label = "Sustainability Goals"
-                                    )
-
-                                    Spacer(modifier = Modifier.height(24.dp))
-
-                                    Button(
-                                        onClick = {
-                                            val database = FirebaseHelper.databaseReference
-                                            val projectId = project.id
-
-                                            val updatedProject = Project(
-                                                projectName = newProjectName.ifEmpty { project.projectName },
-                                                description = newProjectDescription.ifEmpty { project.description },
-                                                status = newStatus.ifEmpty { project.status },
-                                                startDate = newStartDate.ifEmpty { project.startDate },
-                                                endDate = newEndDate.ifEmpty { project.endDate },
-                                                budget = newBudget.ifEmpty { project.budget },
-                                                projectManager = newProjectManager.ifEmpty { project.projectManager },
-                                                teamMembers = newProjectMembers.ifEmpty { project.teamMembers },
-                                                stakeholders = newStakeholders.ifEmpty { project.stakeholders },
-                                                sustainabilityGoals = newSustainabilityGoals.ifEmpty { project.sustainabilityGoals }
-                                            )
-                                            // Save updated project to database
-                                            database.child("ProjectTransparency").child(projectId)
-                                                .setValue(updatedProject)
-                                                .addOnSuccessListener {
-                                                    Toast.makeText(
-                                                        context,
-                                                        "Project updated successfully",
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
-                                                    isEditMode = false
-                                                }
-                                                .addOnFailureListener {
-                                                    Toast.makeText(
-                                                        context,
-                                                        "Update unsuccessful",
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
-                                                }
-                                        },
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(60.dp),
-                                        shape = RoundedCornerShape(28.dp),
-                                        contentPadding = PaddingValues(0.dp),
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                                    ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .background(gradientBrush),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                text = "Edit",
-                                                fontSize = 16.sp,
-                                                fontWeight = FontWeight.SemiBold,
-                                                color = Color.White
-                                            )
-                                        }
-                                    }
-
-                                    Spacer(modifier = Modifier.height(14.dp))
-
-                                    Text(
-                                        text = "Delete",
-                                        fontSize = 14.sp,
-                                        color = SKyberRed,
-                                        fontWeight = FontWeight.Medium,
-                                        modifier = Modifier.clickable {
-                                            val database = FirebaseHelper.databaseReference
-                                            val projectId = project.id
-                                            database.child("ProjectTransparency").child(projectId)
-                                                .removeValue()
-                                                .addOnSuccessListener {
-                                                    Toast.makeText(
-                                                        context,
-                                                        "Deleted Successfully",
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
-                                                    isEditMode = false
-                                                }
-                                                .addOnFailureListener {
-                                                    Toast.makeText(
-                                                        context,
-                                                        "Deletion unsuccessful",
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
-                                                }
-                                        }
-                                    )
-
-                                }
-                            }
-                        } else {// Display project details
-                            LazyColumn(
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp)
+                        ) {
+                            // Status Badge
+                            Box(
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 2.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .background(
+                                        when (project.status.lowercase()) {
+                                            "complete", "completed" -> Color(0xFF4CAF50)
+                                            else -> SKyberBlue
+                                        }
+                                    )
+                                    .padding(horizontal = 16.dp, vertical = 6.dp)
                             ) {
-                                item {
+                                Text(
+                                    text = project.status.uppercase(),
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Project Name
+                            Text(
+                                text = project.projectName,
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Budget Row
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .background(Color(0xFF2196F3))
+                                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                                ) {
+                                    Text(
+                                        text = "BUDGET: ₱${project.budget}",
+                                        fontSize = 14.sp,
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.weight(1f))
+
+                                // Sustainability Goals Badge
+                                if (project.sustainabilityGoals.isNotEmpty()) {
                                     Box(
                                         modifier = Modifier
-                                            .fillMaxSize()
+                                            .clip(RoundedCornerShape(16.dp))
+                                            .background(Color(0xFF4CAF50))
+                                            .padding(horizontal = 12.dp, vertical = 6.dp)
                                     ) {
-                                        Column(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .align(Alignment.TopStart)
-                                                .padding(horizontal = 16.dp, vertical = 16.dp),
-                                            horizontalAlignment = Alignment.Start
-                                        ) {
-                                            // Project Name and Status
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Text(
-                                                    text = project.projectName,
-                                                    fontWeight = FontWeight.Bold,
-                                                    fontSize = 28.sp,
-                                                    color = SKyberBlue,
-                                                    maxLines = 1,
-                                                    overflow = TextOverflow.Ellipsis,
-                                                    modifier = Modifier.weight(1f)
-                                                )
-
-                                                Spacer(modifier = Modifier.width(12.dp))
-
-                                                Box(
-                                                    modifier = Modifier
-                                                        .clip(RoundedCornerShape(22.dp))
-                                                        .background(if (project.status.lowercase() == "ongoing") BoxGreen else BoxRed)
-                                                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                                                ) {
-                                                    Text(
-                                                        text = project.status,
-                                                        fontSize = 18.sp,
-                                                        color = if (project.status.lowercase() == "ongoing") BoxTextGreen else SKyberRed,
-                                                        fontWeight = FontWeight.SemiBold,
-                                                        maxLines = 1,
-                                                        overflow = TextOverflow.Ellipsis
-                                                    )
-                                                }
-                                            }
-
-                                            Spacer(modifier = Modifier.height(16.dp))
-
-                                            // Project Manager and Budget
-                                            Column {
-                                                Text(
-                                                    text = "Project Manager: ${project.projectManager}",
-                                                    fontSize = 16.sp,
-                                                    color = SKyberBlue
-                                                )
-
-                                                Spacer(modifier = Modifier.height(8.dp))
-
-                                                Text(
-                                                    text = "Budget: ${project.budget}",
-                                                    fontSize = 16.sp,
-                                                    color = SKyberBlue
-                                                )
-                                            }
-
-                                            Spacer(modifier = Modifier.height(16.dp))
-
-                                            // Start and End Dates
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.SpaceEvenly
-                                            ) {
-                                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                                    Text(
-                                                        text = "Start Date",
-                                                        fontWeight = FontWeight.SemiBold,
-                                                        color = SKyberBlue
-                                                    )
-                                                    Text(text = project.startDate, color = SKyberBlue)
-                                                }
-                                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                                    Text(
-                                                        text = "End Date",
-                                                        fontWeight = FontWeight.SemiBold,
-                                                        color = SKyberBlue
-                                                    )
-                                                    Text(text = project.endDate, color = SKyberBlue)
-                                                }
-                                            }
-
-                                            Spacer(modifier = Modifier.height(24.dp))
-
-                                            // Description
-                                            Column {
-                                                Text(
-                                                    text = "Description",
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    fontSize = 18.sp,
-                                                    color = SKyberBlue
-                                                )
-
-                                                Text(
-                                                    text = project.description,
-                                                    fontSize = 14.sp,
-                                                    color = SKyberBlue
-                                                )
-                                            }
-
-                                            Spacer(modifier = Modifier.height(24.dp))
-
-                                            // Stakeholders
-                                            Column {
-                                                Text(
-                                                    text = "Stakeholders",
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    fontSize = 18.sp,
-                                                    color = SKyberBlue
-                                                )
-
-                                                Text(
-                                                    text = project.stakeholders,
-                                                    fontSize = 14.sp,
-                                                    color = SKyberBlue
-                                                )
-                                            }
-
-                                            Spacer(modifier = Modifier.height(16.dp))
-
-                                            // Project Members
-                                            Column {
-                                                Text(
-                                                    text = "Project Members",
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    fontSize = 18.sp,
-                                                    color = SKyberBlue
-                                                )
-
-                                                Text(
-                                                    text = project.teamMembers,
-                                                    fontSize = 14.sp,
-                                                    color = SKyberBlue
-                                                )
-                                            }
-                                        }
+                                        Text(
+                                            text = "SUSTAINABILITY GOAL",
+                                            fontSize = 14.sp,
+                                            color = Color.White,
+                                            fontWeight = FontWeight.Medium
+                                        )
                                     }
+                                }
+                            }
 
-                                            Spacer(modifier = Modifier.height(24.dp))
+                            Spacer(modifier = Modifier.height(16.dp))
 
-                                            if(user != null){
-                                                if(user.role == "ADMIN"){
-                                                    Button(
-                                                        onClick = { isEditMode = true },
-                                                        modifier = Modifier
-                                                            .fillMaxWidth()
-                                                            .height(60.dp),
-                                                        shape = RoundedCornerShape(28.dp),
-                                                        contentPadding = PaddingValues(0.dp),
-                                                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                                                    ) {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .fillMaxSize()
-                                                                .background(gradientBrush),
-                                                            contentAlignment = Alignment.Center
-                                                        ) {
-                                                            Text(
-                                                                text = "Edit",
-                                                                fontSize = 16.sp,
-                                                                fontWeight = FontWeight.SemiBold,
-                                                                color = Color.White
-                                                            )
-                                                        }
-                                                    }
-                                                }else{
-                                                    null
-                                                }
+                            // Project Description
+                            Text(
+                                text = project.description,
+                                fontSize = 16.sp,
+                                color = Color.DarkGray,
+                                lineHeight = 24.sp
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Date Row with Icon
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.DateRange,
+                                    contentDescription = "Date",
+                                    tint = SKyberBlue,
+                                    modifier = Modifier.size(20.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Text(
+                                    text = "${project.startDate} - ${project.endDate}",
+                                    fontSize = 15.sp,
+                                    color = Color.DarkGray
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Progress Section
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Project Progress",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.Black
+                                )
+
+                                // Calculate completion percentage based on status
+                                val progressPercentage = when (project.status.lowercase()) {
+                                    "complete", "completed", "finished" -> 1f
+                                    "ongoing", "active", "in-progress" -> 0.5f
+                                    "planning", "upcoming" -> 0.1f
+                                    else -> 0f
+                                }
+
+                                Text(
+                                    text = "${(progressPercentage * 100).toInt()}%",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = SKyberBlue
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Progress Bar
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(8.dp)
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .background(Color.LightGray.copy(alpha = 0.5f))
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth(
+                                            when (project.status.lowercase()) {
+                                                "complete", "completed", "finished" -> 1f
+                                                "ongoing", "active", "in-progress" -> 0.5f
+                                                "planning", "upcoming" -> 0.1f
+                                                else -> 0f
                                             }
+                                        )
+                                        .height(8.dp)
+                                        .background(Color(0xFF4CAF50))
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Project Team Card
+                item {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = SKyberBlue),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(4.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp)
+                        ) {
+                            // Project Team Section Title
+                            Text(
+                                text = "Project Team",
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Project Manager Section
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Avatar placeholder (could be replaced with actual images)
+                                Box(
+                                    modifier = Modifier
+                                        .size(64.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.White.copy(alpha = 0.2f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = project.projectManager.firstOrNull()?.toString()
+                                            ?: "P",
+                                        color = Color.White,
+                                        fontSize = 24.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.width(16.dp))
+
+                                Column {
+                                    Text(
+                                        text = project.projectManager,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(top = 4.dp)
+                                            .clip(RoundedCornerShape(4.dp))
+                                            .background(Color.Red)
+                                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                                    ) {
+                                        Text(
+                                            text = "PROJECT MANAGER",
+                                            fontSize = 12.sp,
+                                            color = Color.White,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            // Team Members Section
+                            Column {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.People,
+                                        contentDescription = "Team Members",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+
+                                    Text(
+                                        text = "Team Members",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color.White
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Text(
+                                    text = project.teamMembers,
+                                    fontSize = 14.sp,
+                                    color = Color.White.copy(alpha = 0.8f),
+                                    lineHeight = 20.sp
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            // Stakeholders Section
+                            Column {
+                                Text(
+                                    text = "Stakeholders",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.White
+                                )
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                // Display stakeholders as a bulleted list
+                                project.stakeholders.split(",").forEach { stakeholder ->
+                                    if (stakeholder.trim().isNotEmpty()) {
+                                        Row(
+                                            verticalAlignment = Alignment.Top,
+                                            modifier = Modifier.padding(vertical = 4.dp)
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(6.dp)
+                                                    .clip(CircleShape)
+                                                    .background(Color.White)
+                                                    .align(Alignment.CenterVertically)
+                                            )
+
+                                            Spacer(modifier = Modifier.width(8.dp))
+
+                                            Text(
+                                                text = stakeholder.trim(),
+                                                fontSize = 14.sp,
+                                                color = Color.White.copy(alpha = 0.8f)
+                                            )
                                         }
                                     }
                                 }
@@ -531,8 +507,37 @@ fun DetailsProject(navController: NavHostController, userProfile: MutableState<U
                         }
                     }
                 }
+
+                // Spacer at bottom
+                item {
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // Edit button for admin
+                    if (user?.role == "ADMIN") {
+                        Button(
+                            onClick = { isEditMode = true },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .height(56.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = SKyberBlue)
+                        ) {
+                            Text(
+                                text = "Edit Project Details",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(32.dp))
+                    }
+                }
             }
         }
+    }
+    }
 
 
 /*Box(

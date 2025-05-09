@@ -2,12 +2,9 @@ package com.example.skyber.navigationbar.volunteerhubscreens
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,40 +14,42 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.FormatListBulleted
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.skyber.FirebaseHelper
-import com.example.skyber.ModularFunctions.ParticleSystem
-import com.example.skyber.ModularFunctions.headerbar.HeaderBar
-import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.dataclass.User
 import com.example.skyber.dataclass.VolunteerPost
 import com.example.skyber.navigationbar.portalnavigator.Announcement.showToast
-import com.example.skyber.ui.theme.BoxGreen
-import com.example.skyber.ui.theme.BoxRed
-import com.example.skyber.ui.theme.BoxTextGreen
 import com.example.skyber.ui.theme.SKyberBlue
-import com.example.skyber.ui.theme.SKyberDarkBlueGradient
-import com.example.skyber.ui.theme.SKyberRed
-import com.example.skyber.ui.theme.SKyberYellow
-
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -60,224 +59,364 @@ fun DetailsVolunteerHub(navController: NavHostController, userProfile: MutableSt
         navController.previousBackStackEntry?.savedStateHandle?.get<VolunteerPost>("volunteerPost")
     val context = LocalContext.current
 
-    // Animations
-    val infiniteTransition = rememberInfiniteTransition(label = "floating animation")
-    val scale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 1.2f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "scale animation"
-    )
-
-    val topLeftPosition by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 10f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1500),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "floating top left"
-    )
-
     if (volunteerPost == null) {
-        // Show a loading spinner while waiting for user data
+        // Show a loading spinner while waiting for data
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            CircularProgressIndicator(color = SKyberYellow)
+            CircularProgressIndicator(color = SKyberBlue)
         }
         return
     } else {
-        val isOngoing = volunteerPost.status.lowercase() == "ongoing"
-        val backgroundColor = if (isOngoing) BoxGreen else BoxRed
-        val textColor = if (isOngoing) BoxTextGreen else SKyberRed
+        val statusColor = when (volunteerPost.status.lowercase()) {
+            "ongoing", "active" -> Color(0xFF4CAF50)
+            "upcoming" -> Color(0xFF757575)
+            "complete", "completed" -> Color(0xFF2196F3)
+            else -> Color(0xFF9C27B0)
+        }
 
-        Scaffold { innerPadding ->
+        val statusTextColor = Color.White
+
+        Scaffold(
+            topBar = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .background(Color.White)
+                ) {
+                    IconButton(
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier.align(Alignment.CenterStart)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.Black
+                        )
+                    }
+
+                    Text(
+                        text = "Volunteer Opportunity",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+            }
+        ) { innerPadding ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(SKyberDarkBlueGradient)
+                    .background(Color(0xFFF8F9FA)) // Light gray background
             ) {
-                // Particle background
-                ParticleSystem(
-                    modifier = Modifier.fillMaxSize(),
-                    particleColor = Color.White,
-                    particleCount = 80,
-                    backgroundColor = Color(0xFF0D47A1)
-                )
-
-                // Decorative elements
-                Text(
-                    text = "💠",
-                    fontSize = 26.sp,
-                    modifier = Modifier
-                        .padding(start = topLeftPosition.dp + 10.dp, top = 20.dp)
-                        .graphicsLayer(alpha = 0.3f) // Adjust opacity
-                )
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    HeaderBar(
-                        trailingContent = {
-                            NotificationHandler()
-                        }
-                    )
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
-                            .padding(top = 40.dp, bottom = 40.dp)
-                            //.align(Alignment.Center)
-                            .background(Color.White, RoundedCornerShape(24.dp))
-                            .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        LazyColumn(
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    // Hero Image
+                    item {
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .weight(1f)
-                                .padding(8.dp)
+                                .height(220.dp)
+                                .background(Color(0xFFCCCCCC)) // Placeholder gray
                         ) {
-                            item {
-                                Spacer(modifier = Modifier.height(12.dp))
+                            // Gradient overlay for better text visibility
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        brush = Brush.verticalGradient(
+                                            colors = listOf(
+                                                Color.Transparent,
+                                                Color.Black.copy(alpha = 0.6f)
+                                            ),
+                                            startY = 0f,
+                                            endY = 600f
+                                        )
+                                    )
+                            )
 
-                                Row(
+                            // Category and Status badges
+                            Row(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                // Category Badge
+                                Box(
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(34.dp),
-                                    verticalAlignment = Alignment.Bottom,
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .background(SKyberBlue)
+                                        .padding(horizontal = 12.dp, vertical = 6.dp)
                                 ) {
                                     Text(
-                                        text = volunteerPost.title,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 28.sp,
-                                        color = SKyberBlue
+                                        text = volunteerPost.category.uppercase(),
+                                        color = Color.White,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold
                                     )
-                                    Spacer(modifier = Modifier.width(14.dp))
-                                    Box(
-                                        modifier = Modifier
-                                            .clip(RoundedCornerShape(22.dp))
-                                            .background(backgroundColor)
-                                            .padding(horizontal = 8.dp)
-                                            .width(80.dp)
-                                    ) {
-                                        Text(
-                                            text = volunteerPost.status,
-                                            fontSize = 18.sp,
-                                            color = textColor,
-                                            fontWeight = FontWeight.SemiBold
-                                        )
-                                    }
                                 }
 
-                                Spacer(modifier = Modifier.height(12.dp))
+                                // Status Badge
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .background(statusColor)
+                                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                                ) {
+                                    Text(
+                                        text = volunteerPost.status.uppercase(),
+                                        color = statusTextColor,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Title, Date, Location
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 16.dp)
+                        ) {
+                            // Event Title
+                            Text(
+                                text = volunteerPost.title,
+                                fontSize = 26.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
+                            )
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            // Date with icon
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.DateRange,
+                                    contentDescription = "Date",
+                                    tint = Color.Gray,
+                                    modifier = Modifier.size(20.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
 
                                 Text(
-                                    text = "Contact: ${volunteerPost.contactPerson}",
+                                    text = volunteerPost.eventDate,
                                     fontSize = 16.sp,
-                                    color = SKyberBlue
+                                    color = Color.DarkGray
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Location with icon
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.LocationOn,
+                                    contentDescription = "Location",
+                                    tint = Color.Gray,
+                                    modifier = Modifier.size(20.dp)
                                 )
 
-                                Spacer(modifier = Modifier.height(12.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
 
                                 Text(
-                                    text = "Email: ${volunteerPost.contactEmail}",
-                                    fontSize = 14.sp,
-                                    color = SKyberBlue
-                                )
-
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                Text(
-                                    text = "Event Details",
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = SKyberBlue
-                                )
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                Text(
-                                    text = volunteerPost.description,
+                                    text = volunteerPost.location,
                                     fontSize = 16.sp,
-                                    lineHeight = 22.sp,
-                                    color = SKyberBlue
+                                    color = Color.DarkGray
+                                )
+                            }
+                        }
+                    }
+
+                    // Description
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 24.dp)
+                        ) {
+                            Text(
+                                text = volunteerPost.description,
+                                fontSize = 16.sp,
+                                color = Color.DarkGray,
+                                lineHeight = 24.sp
+                            )
+                        }
+                    }
+
+                    // Requirements
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 24.dp)
+                                .border(
+                                    width = 1.dp,
+                                    color = Color.LightGray,
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(16.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.FormatListBulleted,
+                                    contentDescription = "Requirements",
+                                    tint = Color.Black,
+                                    modifier = Modifier.size(20.dp)
                                 )
 
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                Text(
-                                    text = "Location: ${volunteerPost.location}",
-                                    fontSize = 16.sp,
-                                    color = SKyberBlue
-                                )
-
-                                Text(
-                                    text = "Event Date: ${volunteerPost.eventDate}",
-                                    fontSize = 16.sp,
-                                    color = SKyberBlue
-                                )
-
-                                Spacer(modifier = Modifier.height(16.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
 
                                 Text(
                                     text = "Requirements",
                                     fontSize = 18.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = SKyberBlue
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.Black
                                 )
+                            }
 
-                                Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
+                            Text(
+                                text = volunteerPost.requirements ?: "No specific requirements",
+                                fontSize = 16.sp,
+                                color = Color.DarkGray,
+                                lineHeight = 24.sp
+                            )
+                        }
+                    }
+
+                    // Status Message
+                    item {
+                        if (volunteerPost.status.equals("upcoming", ignoreCase = true)) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                                    .padding(top = 24.dp)
+                                    .border(
+                                        width = 1.dp,
+                                        color = Color.LightGray,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
                                 Text(
-                                    text = volunteerPost.requirements,
+                                    text = "This opportunity is coming soon.",
                                     fontSize = 16.sp,
-                                    color = SKyberBlue
+                                    color = Color.Gray,
+                                    fontStyle = FontStyle.Italic
                                 )
+                            }
+                        }
+                    }
 
-                                Spacer(modifier = Modifier.height(16.dp))
+                    // Contact Person
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .padding(vertical = 24.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Avatar placeholder
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.LightGray),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = volunteerPost.contactPerson.firstOrNull()?.toString() ?: "C",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
 
-                                /*Box(){
-                                    Button(
-                                        onClick = {
-                                            applyToVolunteerEvent(volunteerPost.id, context)
-                                            navController.navigate(Screens.VolunteerHub.screen)
-                                        },
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(60.dp),
-                                        shape = RoundedCornerShape(28.dp),
-                                        contentPadding = PaddingValues(0.dp),
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                                    ){
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .background(gradientBrush),
-                                            contentAlignment = Alignment.Center
-                                        ){
+                                Spacer(modifier = Modifier.width(12.dp))
+
+                                Column {
+                                    Text(
+                                        text = volunteerPost.contactPerson,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Color.Black
+                                    )
+
+                                    if (volunteerPost.contactEmail.isNotEmpty()) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.clickable {
+                                                // Handle email click
+                                            }
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Email,
+                                                contentDescription = "Email",
+                                                tint = SKyberBlue,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+
+                                            Spacer(modifier = Modifier.width(4.dp))
+
                                             Text(
-                                                text = "Apply",
-                                                fontSize = 16.sp,
-                                                fontWeight = FontWeight.SemiBold,
-                                                color = Color.White
+                                                text = volunteerPost.contactEmail,
+                                                fontSize = 14.sp,
+                                                color = SKyberBlue
                                             )
                                         }
                                     }
-                                }*/
-
+                                }
                             }
+                        }
+                    }
 
+                    // Apply Button - Only show if the event is upcoming or active
+                    item {
+                        if (!volunteerPost.status.equals("completed", ignoreCase = true)) {
+                            Button(
+                                onClick = {
+                                    applyToVolunteerEvent(volunteerPost.id, context)
+                                    navController.popBackStack()
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                                    .padding(bottom = 32.dp)
+                                    .height(50.dp),
+                                shape = RoundedCornerShape(25.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = SKyberBlue
+                                )
+                            ) {
+                                Text(
+                                    text = "Apply Now",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
                 }
@@ -285,7 +424,6 @@ fun DetailsVolunteerHub(navController: NavHostController, userProfile: MutableSt
         }
     }
 }
-
 
 fun applyToVolunteerEvent(eventId: String, context: Context) {
     val userId = FirebaseHelper.auth.currentUser?.uid ?: return

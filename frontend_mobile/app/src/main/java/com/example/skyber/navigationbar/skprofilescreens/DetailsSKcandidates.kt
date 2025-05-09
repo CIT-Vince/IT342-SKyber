@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -71,6 +72,7 @@ import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberRed
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.gradientBrush
+import androidx.compose.ui.tooling.preview.Preview
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -142,76 +144,281 @@ fun DetailsSKcandidates(navController: NavHostController, userProfile: MutableSt
             CircularProgressIndicator(color = SKyberYellow)
         }
         return
-    }else{
-            Scaffold { innerPadding ->
-                Box(
+    } else {
+        Scaffold { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFF5F5F5))  // Light background for better contrast
+            ) {
+                // Main content layout
+                Column(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(SKyberDarkBlueGradient)
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Particle system as the background
-                    ParticleSystem(
-                        modifier = Modifier.fillMaxSize(),
-                        particleColor = Color.White,
-                        particleCount = 50,
-                        backgroundColor = Color(0xFF0D47A1)
-                    )
-                    Text(
-                        text = "💠",
-                        fontSize = 26.sp,
+                    // Custom Header similar to web UI
+                    Box(
                         modifier = Modifier
-                            .padding(start = topLeftPosition.dp + 10.dp, top = 20.dp)
-                            .graphicsLayer(alpha = 0.5f)
-                    )
-
-                    // Main content on top of the particle system
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(),
-                        verticalArrangement = Arrangement.Top,
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .background(SKyberBlue)
                     ) {
-                        HeaderBar(
-                            trailingContent = {
-                                NotificationHandler()
-                            }
-                        )
-
-                        Column(
+                        Row(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 24.dp)
-                                .padding(top = 40.dp, bottom = 40.dp)
-                                .background(Color.White, RoundedCornerShape(24.dp))
-                                .padding(14.dp),
+                                .fillMaxSize()
+                                .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "← Back",
+                                color = Color.White,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.clickable {
+                                    navController.popBackStack()
+                                }
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = "Candidate Profile",
+                                color = Color.White,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                    }
+
+                    if (isEditMode) {
+                        // Edit Mode Content
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
-                        ){
-                            if (isEditMode) {
-                                LazyColumn(
-                                    modifier = Modifier.fillMaxSize(),
-                                    horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            item {
+                                // Keep existing Edit mode UI
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(220.dp)
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .background(Color.LightGray),
+                                    contentAlignment = Alignment.Center
                                 ) {
-                                    item {
-                                        // Image Preview
+                                    if (newBase64Image != null) {
+                                        Base64Image(
+                                            base64String = newBase64Image,
+                                            modifier = Modifier
+                                                .size(200.dp)
+                                                .clip(RoundedCornerShape(16.dp))
+                                        )
+                                    } else {
+                                        Text(
+                                            text = "No image selected",
+                                            color = Color.Gray,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                Button(
+                                    onClick = { launcher.launch("image/*") },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(56.dp)
+                                        .clip(RoundedCornerShape(12.dp)),
+                                    colors = ButtonDefaults.buttonColors(containerColor = SKyberBlue)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.UploadFile,
+                                        contentDescription = "Upload",
+                                        tint = Color.White
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "Upload Candidate Image",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                CustomOutlinedTextField(
+                                    value = newFirstname,
+                                    onValueChange = { newFirstname = it },
+                                    label = "First Name"
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                CustomOutlinedTextField(
+                                    value = newLastname,
+                                    onValueChange = { newLastname = it },
+                                    label = "Last Name"
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                CustomOutlinedTextField(
+                                    value = newAge,
+                                    onValueChange = { newAge = it },
+                                    label = "Age",
+                                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                CustomOutlinedTextField(
+                                    value = newPlatform,
+                                    onValueChange = { newPlatform = it },
+                                    label = "Platform",
+                                    maxLines = 5
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                CustomOutlinedTextField(
+                                    value = newPartylist,
+                                    onValueChange = { newPartylist = it },
+                                    label = "Party List"
+                                )
+
+                                Spacer(modifier = Modifier.height(24.dp))
+
+                                Button(
+                                    onClick = {
+                                        val database = FirebaseHelper.databaseReference
+                                        val candidateId = candidateProfile.id
+                                        if(candidateId != null){
+                                            val updatedCandidateProfile = CandidateProfile(
+                                                id = candidateId,
+                                                firstName = newFirstname.ifEmpty { candidateProfile.firstName },
+                                                lastName = newLastname.ifEmpty { candidateProfile.lastName },
+                                                age = newAge.ifEmpty { candidateProfile.age },
+                                                partylist = newPartylist.ifEmpty { candidateProfile.partylist },
+                                                platform = newPlatform.ifEmpty { candidateProfile.platform },
+                                                address = newAddress.ifEmpty{ candidateProfile.address},
+                                                candidateImage = newBase64Image ?: candidateProfile.candidateImage,
+                                            )
+                                            // Save updated project to database
+                                            database.child("Candidates").child(candidateId)
+                                                .setValue(updatedCandidateProfile)
+                                                .addOnSuccessListener {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Updated successfully",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                    isEditMode = false
+                                                }
+                                                .addOnFailureListener {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Update unsuccessful",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(56.dp),
+                                    shape = RoundedCornerShape(28.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = SKyberBlue)
+                                ) {
+                                    Text(
+                                        text = "Save Changes",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color.White
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(14.dp))
+
+                                // Delete button
+                                Button(
+                                    onClick = {
+                                        val database = FirebaseHelper.databaseReference
+                                        val candidateId = candidateProfile.id
+                                        if(candidateId != null){
+                                            database.child("Candidates").child(candidateId)
+                                                .removeValue()
+                                                .addOnSuccessListener {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Deleted Successfully",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                    navController.popBackStack()
+                                                }
+                                                .addOnFailureListener {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Deletion unsuccessful",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(56.dp),
+                                    shape = RoundedCornerShape(28.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = SKyberRed)
+                                ) {
+                                    Text(
+                                        text = "Delete Candidate",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color.White
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        // Display Mode - Similar to Web UI
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            item {
+                                // Profile card
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 24.dp, bottom = 16.dp)
+                                        .background(Color.White, RoundedCornerShape(16.dp))
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        // Profile Image - Circular as in web UI
                                         Box(
                                             modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(220.dp)
-                                                .clip(RoundedCornerShape(16.dp))
-                                                .background(Color.LightGray),
+                                                .size(180.dp)
+                                                .clip(CircleShape)
+                                                .background(Color.Gray.copy(alpha = 0.1f)),
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            if (newBase64Image != null) {
+                                            if (!candidateProfile.candidateImage.isNullOrEmpty()) {
                                                 Base64Image(
-                                                    base64String = newBase64Image,
+                                                    base64String = candidateProfile.candidateImage,
                                                     modifier = Modifier
-                                                        .size(200.dp)
-                                                        .clip(RoundedCornerShape(16.dp))
+                                                        .size(170.dp)
+                                                        .clip(CircleShape)
                                                 )
                                             } else {
                                                 Text(
-                                                    text = "No image selected",
+                                                    text = "No image",
                                                     color = Color.Gray,
                                                     fontWeight = FontWeight.Medium
                                                 )
@@ -220,291 +427,143 @@ fun DetailsSKcandidates(navController: NavHostController, userProfile: MutableSt
 
                                         Spacer(modifier = Modifier.height(16.dp))
 
-                                        // Upload Button
-                                        Button(
-                                            onClick = { launcher.launch("image/*") },
+                                        // Candidate Name - Larger font like in web UI
+                                        Text(
+                                            text = "${candidateProfile.firstName} ${candidateProfile.lastName}",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 28.sp,
+                                            color = SKyberBlue
+                                        )
+
+                                        Spacer(modifier = Modifier.height(8.dp))
+
+                                        // Party list badge
+                                        Box(
                                             modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(56.dp)
-                                                .clip(RoundedCornerShape(12.dp)),
-                                            colors = ButtonDefaults.buttonColors(containerColor = SKyberBlue)
+                                                .clip(RoundedCornerShape(16.dp))
+                                                .background(SKyberBlue.copy(alpha = 0.2f))
+                                                .padding(horizontal = 16.dp, vertical = 6.dp),
+                                            contentAlignment = Alignment.Center
                                         ) {
-                                            Icon(
-                                                imageVector = Icons.Default.UploadFile,
-                                                contentDescription = "Upload",
-                                                tint = Color.White
-                                            )
-                                            Spacer(modifier = Modifier.width(8.dp))
                                             Text(
-                                                text = "Upload Candidate Image",
-                                                color = Color.White,
-                                                fontWeight = FontWeight.Bold
+                                                text = candidateProfile.partylist ?: "",
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 16.sp,
+                                                color = SKyberBlue
                                             )
                                         }
-
-                                        Spacer(modifier = Modifier.height(16.dp))
-
-                                        CustomOutlinedTextField(
-                                            value = newFirstname,
-                                            onValueChange = { newFirstname = it },
-                                            label = "First Name"
-                                        )
-
-                                        Spacer(modifier = Modifier.height(16.dp))
-
-                                        CustomOutlinedTextField(
-                                            value = newLastname,
-                                            onValueChange = { newLastname = it },
-                                            label = "Description"
-                                        )
-                                        Spacer(modifier = Modifier.height(16.dp))
-
-                                        CustomOutlinedTextField(
-                                            value = newAge,
-                                            onValueChange = { newAge = it },
-                                            label = "Age",
-                                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-                                        )
-
-                                        Spacer(modifier = Modifier.height(16.dp))
-
-                                        CustomOutlinedTextField(
-                                            value = newPlatform,
-                                            onValueChange = { newPlatform = it },
-                                            label = "Platform",
-                                            maxLines = 5
-                                        )
-                                        Spacer(modifier = Modifier.height(16.dp))
-
-                                        CustomOutlinedTextField(
-                                            value = newPartylist,
-                                            onValueChange = { newPartylist = it },
-                                            label = "Party List"
-                                        )
 
                                         Spacer(modifier = Modifier.height(24.dp))
 
-
-                                            Button(
-                                                onClick = {
-                                                    val database = FirebaseHelper.databaseReference
-                                                    val candidateId = candidateProfile.id
-                                                    if(candidateId != null){
-                                                        val updatedCandidateProfile = CandidateProfile(
-                                                            firstName = newFirstname.ifEmpty { candidateProfile.firstName },
-                                                            lastName = newLastname.ifEmpty { candidateProfile.lastName },
-                                                            age = newAge.ifEmpty { candidateProfile.age },
-                                                            partylist = newPartylist.ifEmpty { candidateProfile.partylist },
-                                                            platform = newPlatform.ifEmpty { candidateProfile.platform },
-                                                            address = newAddress.ifEmpty{ candidateProfile.address},
-                                                            candidateImage = newBase64Image?.ifEmpty { candidateProfile.candidateImage },
-                                                        )
-                                                        // Save updated project to database
-                                                        database.child("Candidates").child(candidateId)
-                                                            .setValue(updatedCandidateProfile)
-                                                            .addOnSuccessListener {
-                                                                Toast.makeText(
-                                                                    context,
-                                                                    "updated successfully",
-                                                                    Toast.LENGTH_SHORT
-                                                                ).show()
-                                                                isEditMode = false
-                                                            }
-                                                            .addOnFailureListener {
-                                                                Toast.makeText(
-                                                                    context,
-                                                                    "Update unsuccessful",
-                                                                    Toast.LENGTH_SHORT
-                                                                ).show()
-                                                            }
-                                                    }
-
-                                                },
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(60.dp),
-                                                shape = RoundedCornerShape(28.dp),
-                                                contentPadding = PaddingValues(0.dp),
-                                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                                            ) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .fillMaxSize()
-                                                        .background(gradientBrush),
-                                                    contentAlignment = Alignment.Center
-                                                ) {
-                                                    Text(
-                                                        text = "Edit",
-                                                        fontSize = 16.sp,
-                                                        fontWeight = FontWeight.SemiBold,
-                                                        color = Color.White
-                                                    )
-                                                }
-                                            }
-
-                                            Spacer(modifier = Modifier.height(14.dp))
-
-                                            Text(
-                                                text = "Delete",
-                                                fontSize = 14.sp,
-                                                color = SKyberRed,
-                                                fontWeight = FontWeight.Medium,
-                                                modifier = Modifier.clickable {
-                                                    val database = FirebaseHelper.databaseReference
-                                                    val candidateId = candidateProfile.id
-                                                    if(candidateId != null){
-                                                        database.child("Candidates").child(candidateId)
-                                                            .removeValue()
-                                                            .addOnSuccessListener {
-                                                                Toast.makeText(
-                                                                    context,
-                                                                    "Deleted Successfully",
-                                                                    Toast.LENGTH_SHORT
-                                                                ).show()
-                                                                isEditMode = false
-                                                            }
-                                                            .addOnFailureListener {
-                                                                Toast.makeText(
-                                                                    context,
-                                                                    "Deletion unsuccessful",
-                                                                    Toast.LENGTH_SHORT
-                                                                ).show()
-                                                            }
-                                                    }
-                                                }
-                                            )
-                                    }
-                                }
-                            } else {// Display project details
-                                LazyColumn(
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .weight(1f)
-                                        .padding(horizontal = 2.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    contentPadding = PaddingValues(vertical = 6.dp)
-                                ) {
-                                    item {
+                                        // Age and Address like in web UI
                                         Column(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .weight(1f)
-                                                .padding(horizontal = 6.dp)
-                                                .padding(top = 20.dp, bottom = 20.dp)
-                                                .background(Color.White, RoundedCornerShape(24.dp))
-                                                .padding(16.dp),
-                                            horizontalAlignment = Alignment.CenterHorizontally
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalAlignment = Alignment.Start
                                         ) {
-                                            // Profile Image Section
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(220.dp)
-                                                    .clip(CircleShape)
-                                                    .background(Color.Gray.copy(alpha = 0.1f)),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                if (!candidateProfile.candidateImage.isNullOrEmpty()) {
-                                                    Base64Image(
-                                                        base64String = candidateProfile.candidateImage,
-                                                        modifier = Modifier
-                                                            .size(200.dp)
-                                                            .clip(CircleShape)
-                                                    )
-                                                } else {
-                                                    Text(
-                                                        text = "No image available",
-                                                        color = Color.Gray,
-                                                        fontWeight = FontWeight.Medium
-                                                    )
-                                                }
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Text(
+                                                    text = "Age: ",
+                                                    fontWeight = FontWeight.SemiBold,
+                                                    fontSize = 16.sp,
+                                                    color = Color.Gray
+                                                )
+                                                Text(
+                                                    text = candidateProfile.age ?: "",
+                                                    fontSize = 16.sp,
+                                                    color = Color.DarkGray
+                                                )
                                             }
 
-                                            Spacer(modifier = Modifier.height(16.dp))
+                                            Spacer(modifier = Modifier.height(8.dp))
 
-                                            Text(
-                                                text = "${candidateProfile.firstName} ${candidateProfile.lastName}",
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 30.sp,
-                                                color = SKyberBlue
-                                            )
-
-                                            Text(
-                                                text = "${candidateProfile.partylist}",
-                                                fontWeight = FontWeight.Medium,
-                                                fontSize = 24.sp,
-                                                color = Color.Gray
-                                            )
-
-                                            Spacer(modifier = Modifier.height(24.dp))
-
-                                            Column(modifier = Modifier.padding(4.dp)) {
+                                            Row(
+                                                verticalAlignment = Alignment.Top
+                                            ) {
                                                 Text(
-                                                    "Platforms",
+                                                    text = "Address: ",
                                                     fontWeight = FontWeight.SemiBold,
-                                                    fontSize = 18.sp,
-                                                    color = SKyberBlue
+                                                    fontSize = 16.sp,
+                                                    color = Color.Gray
                                                 )
-                                                Text(
-                                                    candidateProfile.platform ?: "",
-                                                    fontSize = 18.sp,
-                                                    color = Color.DarkGray
-                                                )
-
-                                                Divider(modifier = Modifier.padding(vertical = 12.dp))
-
-                                                Text(
-                                                    "Age ${candidateProfile.age}",
-                                                    fontSize = 18.sp,
-                                                    color = Color.DarkGray
-                                                )
-
-                                                Spacer(modifier = Modifier.height(8.dp))
-
                                                 Text(
                                                     text = candidateProfile.address ?: "",
-                                                    fontSize = 18.sp,
+                                                    fontSize = 16.sp,
                                                     color = Color.DarkGray
                                                 )
-
                                             }
+                                        }
+                                    }
+                                }
 
-                                            Spacer(modifier = Modifier.height(24.dp))
+                                // Platform section
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp)
+                                        .background(Color.White, RoundedCornerShape(16.dp))
+                                        .padding(16.dp)
+                                ) {
+                                    Column {
+                                        Text(
+                                            text = "Platform",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 20.sp,
+                                            color = SKyberBlue
+                                        )
 
-                                            if (user != null) {// Update Button
-                                                if (user.role == "ADMIN") {
+                                        Spacer(modifier = Modifier.height(8.dp))
 
-                                                    Button(
-                                                        onClick = { isEditMode = true },
-                                                        modifier = Modifier
-                                                            .fillMaxWidth()
-                                                            .height(54.dp),
-                                                        shape = RoundedCornerShape(28.dp),
-                                                        contentPadding = PaddingValues(0.dp),
-                                                        colors = ButtonDefaults.buttonColors(
-                                                            containerColor = Color.Transparent
-                                                        )
+                                        // Format platform text as bullet points if it contains line breaks
+                                        val platformText = candidateProfile.platform ?: ""
+                                        if (platformText.contains("\n")) {
+                                            val platforms = platformText.split("\n")
+                                            platforms.forEach { platform ->
+                                                if (platform.isNotBlank()) {
+                                                    Row(
+                                                        modifier = Modifier.padding(vertical = 4.dp),
+                                                        verticalAlignment = Alignment.Top
                                                     ) {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .fillMaxSize()
-                                                                .background(gradientBrush),
-                                                            contentAlignment = Alignment.Center
-                                                        ) {
-                                                            Text(
-                                                                text = "Update",
-                                                                fontSize = 16.sp,
-                                                                fontWeight = FontWeight.SemiBold,
-                                                                color = Color.White
-                                                            )
-                                                        }
+                                                        Text(
+                                                            text = "• ",
+                                                            fontSize = 16.sp,
+                                                            color = SKyberBlue
+                                                        )
+                                                        Text(
+                                                            text = platform.trim(),
+                                                            fontSize = 16.sp,
+                                                            color = Color.DarkGray
+                                                        )
                                                     }
-                                                } else {
-                                                    null
                                                 }
                                             }
-
-                                            Spacer(modifier = Modifier.height(24.dp))
+                                        } else {
+                                            // Single line platform
+                                            Text(
+                                                text = platformText,
+                                                fontSize = 16.sp,
+                                                color = Color.DarkGray
+                                            )
                                         }
+                                    }
+                                }
+
+                                // Admin Update Button
+                                if (user?.role == "ADMIN") {
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Button(
+                                        onClick = { isEditMode = true },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(56.dp),
+                                        shape = RoundedCornerShape(28.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = SKyberBlue)
+                                    ) {
+                                        Text(
+                                            text = "Update Candidate Information",
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = Color.White
+                                        )
                                     }
                                 }
                             }
@@ -512,6 +571,154 @@ fun DetailsSKcandidates(navController: NavHostController, userProfile: MutableSt
                     }
                 }
             }
+        }
     }
 }
+@Preview(showBackground = true)
+@Composable
+fun DetailsSKcandidatesPreview() {
+    // Create mock data for preview
+    val mockCandidateProfile = CandidateProfile(
+        id = "preview-id",
+        firstName = "John",
+        lastName = "Doe",
+        age = "35",
+        partylist = "Sample Party",
+        platform = "Sample platform focusing on education reform, healthcare accessibility, and environmental protection initiatives.",
+        address = "Manila, Philippines",
+        candidateImage = null
+    )
 
+    // Create a simple theme wrapper
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(SKyberDarkBlueGradient)
+    ) {
+        // Particle system as background (simplified for preview)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF0D47A1).copy(alpha = 0.5f))
+        )
+
+        // Main content
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Mock header
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .background(SKyberBlue),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("SKyber", color = Color.White, fontWeight = FontWeight.Bold)
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .padding(top = 40.dp, bottom = 40.dp)
+                    .background(Color.White, RoundedCornerShape(24.dp))
+                    .padding(14.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Profile Image Section
+                Box(
+                    modifier = Modifier
+                        .size(220.dp)
+                        .clip(CircleShape)
+                        .background(Color.Gray.copy(alpha = 0.1f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Preview Image",
+                        color = Color.Gray,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "John Doe",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 30.sp,
+                    color = SKyberBlue
+                )
+
+                Text(
+                    text = "Sample Party",
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 24.sp,
+                    color = Color.Gray
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Column(modifier = Modifier.padding(4.dp)) {
+                    Text(
+                        "Platforms",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp,
+                        color = SKyberBlue
+                    )
+                    Text(
+                        "Sample platform focusing on education reform, healthcare accessibility, and environmental protection initiatives.",
+                        fontSize = 18.sp,
+                        color = Color.DarkGray
+                    )
+
+                    Divider(modifier = Modifier.padding(vertical = 12.dp))
+
+                    Text(
+                        "Age 35",
+                        fontSize = 18.sp,
+                        color = Color.DarkGray
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Manila, Philippines",
+                        fontSize = 18.sp,
+                        color = Color.DarkGray
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = { },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp),
+                    shape = RoundedCornerShape(28.dp),
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(gradientBrush),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Update",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
+                        )
+                    }
+                }
+            }
+        }
+    }
+}

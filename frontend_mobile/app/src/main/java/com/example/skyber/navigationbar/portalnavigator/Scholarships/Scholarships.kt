@@ -1,12 +1,8 @@
 package com.example.skyber.navigationbar.portalnavigator.Scholarships
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,11 +14,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,57 +39,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.skyber.FirebaseHelper
-import com.example.skyber.ModularFunctions.CustomSearchOTF
-import com.example.skyber.ModularFunctions.ParticleSystem
-import com.example.skyber.ModularFunctions.ScholarshipCard
-import com.example.skyber.ModularFunctions.headerbar.HeaderBar
-import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.Screens
 import com.example.skyber.dataclass.Scholarship
-import com.example.skyber.ui.theme.SKyberDarkBlueGradient
-import com.example.skyber.ui.theme.SKyberRed
-import com.example.skyber.ui.theme.SKyberYellow
-import com.example.skyber.ui.theme.SoftCardContainerPast
-import com.example.skyber.ui.theme.SoftCardFontPast
-import com.example.skyber.ui.theme.White
+import com.example.skyber.ui.theme.SKyberBlue
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Scholarships(navController: NavHostController) {
     val allScholarships = remember { mutableStateListOf<Scholarship>() }
-    var isLoading by remember { mutableStateOf(true) }//Add this later to all lists
+    var isLoading by remember { mutableStateOf(true) }
     var selectedTab by remember { mutableStateOf("All") }
-    var searchVisible by remember { mutableStateOf(false) }
-    var searchQuery by remember { mutableStateOf("") }//search bar state management
-
-    // Animations
-    val infiniteTransition = rememberInfiniteTransition(label = "floating animation")
-    val scale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 1.2f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "scale animation"
-    )
-
-    val topLeftPosition by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 10f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1500),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "floating top left"
-    )
+    var searchQuery by remember { mutableStateOf("") }
 
     val filteredScholarship = remember(searchQuery, selectedTab) {
         val filteredByTab = when (selectedTab) {
@@ -97,7 +69,8 @@ fun Scholarships(navController: NavHostController) {
             filteredByTab
         } else {
             filteredByTab.filter {
-                it.title.contains(searchQuery, ignoreCase = true) // Filter by name
+                it.title.contains(searchQuery, ignoreCase = true) ||
+                        it.description.contains(searchQuery, ignoreCase = true)
             }
         }
     }
@@ -118,133 +91,148 @@ fun Scholarships(navController: NavHostController) {
             .addOnFailureListener {
                 isLoading = false
             }
-        kotlinx.coroutines.delay(5000)
-        isLoading = false
     }
 
-    if (isLoading) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize()
+    ) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(SKyberDarkBlueGradient),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxSize()
         ) {
-            CircularProgressIndicator(color = SKyberYellow)
-        }
-    } else {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-        ) { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(SKyberDarkBlueGradient)
+            // Content area with blue header and white content
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
-                // Particle system as the background
-                ParticleSystem(
-                    modifier = Modifier.fillMaxSize(),
-                    particleColor = Color.White,
-                    particleCount = 80,
-                    backgroundColor = Color(0xFF0D47A1)
-                )
-                Text(
-                    text = "💠",
-                    fontSize = 26.sp,
+                // Blue header with title and subtitle
+                Box(
                     modifier = Modifier
-                        .padding(start = topLeftPosition.dp + 10.dp, top = 20.dp)
-                        .graphicsLayer(alpha = 0.5f)
-                )
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = 12.dp, bottom = 12.dp),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .fillMaxWidth()
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(Color(0xFF0D47A1), Color(0xFF1976D2))
+                            )
+                        )
+                        .padding(start = 24.dp, end = 24.dp, top = 32.dp, bottom = 24.dp)
                 ) {
-                    HeaderBar(
-                        trailingContent = {
-                            NotificationHandler()
-                        }
-                    )
-
-                    if (searchVisible) {
-                        CustomSearchOTF(
-                            value = searchQuery,
-                            onValueChange = { searchQuery = it },
-                            onSearchClick = {
-                                // Optional: handle search action
-                            },
-                            onClearClick = {
-                                searchQuery = ""
-                                searchVisible = false
-                            },
-                            label = "Search Scholarships",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                        )
-                    } else {
-                        Text(
-                            text = "Scholarships",
-                            fontSize = 24.sp,
-                            color = White,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .padding(top = 8.dp)
-                                .clickable { searchVisible = true }
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .width(300.dp)
-                            .clip(RoundedCornerShape(22.dp))
-                            .padding(top = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        listOf("All", "Public", "Private").forEach { category ->
+                    Column {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
-                                text = category,
-                                fontSize = 24.sp,
-                                color = if (selectedTab == category) White else Color.Gray,
+                                text = "Scholarships & Opportunities",
+                                fontSize = 28.sp,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.clickable { selectedTab = category }
+                                color = Color.White
+                            )
+
+                            Spacer(modifier = Modifier.size(8.dp))
+
+                            // Graduation cap icon/emoji
+                            Text(
+                                text = "🎓",
+                                fontSize = 24.sp
                             )
                         }
+
+                        Text(
+                            text = "Find financial support for your studies and make your dreams come true with these amazing scholarship opportunities!",
+                            fontSize = 14.sp,
+                            color = Color.White.copy(alpha = 0.9f),
+                            lineHeight = 20.sp,
+                            modifier = Modifier.padding(top = 8.dp, end = 64.dp)
+                        )
                     }
+                }
 
-                    Spacer(modifier = Modifier.height(14.dp))
+                // White search and content area
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0xFFF5F7FA))
+                ) {
+                    Column {
+                        // Search and filter card
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(4.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            ) {
+                                // Search bar
+                                OutlinedTextField(
+                                    value = searchQuery,
+                                    onValueChange = { searchQuery = it },
+                                    placeholder = { Text("Search scholarships...") },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(56.dp),
+                                    shape = RoundedCornerShape(28.dp),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        unfocusedBorderColor = Color.LightGray,
+                                        focusedBorderColor = SKyberBlue
+                                    ),
+                                    leadingIcon = {
+                                        Icon(
+                                            Icons.Default.Search,
+                                            contentDescription = "Search",
+                                            tint = Color.Gray
+                                        )
+                                    },
+                                    singleLine = true
+                                )
 
-                    when {
-                        isLoading -> {
-                            Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                                CircularProgressIndicator(color = SKyberYellow)
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // Filter tabs
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    listOf("All", "Public", "Private").forEach { tab ->
+                                        FilterTab(
+                                            text = tab,
+                                            selected = selectedTab == tab,
+                                            onClick = { selectedTab = tab },
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
+                                }
                             }
                         }
-                        filteredScholarship.isEmpty() -> {
-                            Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+
+                        // Scholarships content area
+                        if (isLoading) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(color = SKyberBlue)
+                            }
+                        } else if (filteredScholarship.isEmpty()) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
                                 Text(
-                                    "No Scholarships available",
-                                    color = SKyberRed,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 24.sp
+                                    text = "No scholarships available",
+                                    fontSize = 18.sp,
+                                    color = Color.Gray
                                 )
                             }
-                        }
-                        else -> {
+                        } else {
                             LazyColumn(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxWidth(),
-                                contentPadding = PaddingValues(12.dp)
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
-                                items(filteredScholarship.reversed()) { scholarship ->
-                                    ScholarshipCard(
-                                        backgroundColor = SoftCardContainerPast,
-                                        fontColor = SoftCardFontPast,
+                                items(filteredScholarship) { scholarship ->
+                                    ScholarshipItem(
                                         scholarship = scholarship,
                                         onClick = {
                                             navController.currentBackStackEntry?.savedStateHandle?.set(
@@ -254,12 +242,167 @@ fun Scholarships(navController: NavHostController) {
                                             navController.navigate(Screens.DetailsScholarship.screen)
                                         }
                                     )
-                                    Spacer(modifier = Modifier.height(8.dp))
+                                }
+
+                                // Add some padding at the bottom
+                                item {
+                                    Spacer(modifier = Modifier.height(16.dp))
                                 }
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
 
+@Composable
+fun FilterTab(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(24.dp))
+            .background(if (selected) SKyberBlue else Color.White)
+            .border(
+                width = 1.dp,
+                color = if (selected) SKyberBlue else Color.LightGray,
+                shape = RoundedCornerShape(24.dp)
+            )
+            .clickable { onClick() }
+            .padding(vertical = 12.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            color = if (selected) Color.White else Color.Gray,
+            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+            fontSize = 16.sp
+        )
+    }
+}
+
+@Composable
+fun ScholarshipItem(
+    scholarship: Scholarship,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(2.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            // Colored header based on type
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .background(
+                        Color(
+                            if (scholarship.type.equals("Public", ignoreCase = true))
+                                0xFF03A9F4
+                            else
+                                0xFFE91E63
+                        ).copy(alpha = 0.2f)
+                    )
+            ) {
+                // Type badge
+                Box(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(
+                            if (scholarship.type.equals("Public", ignoreCase = true))
+                                Color(0xFF03A9F4)
+                            else
+                                Color(0xFFE91E63)
+                        )
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                        .align(Alignment.TopStart)
+                ) {
+                    Text(
+                        text = scholarship.type.uppercase(),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
+            }
+
+            // Content area
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                // Title
+                Text(
+                    text = scholarship.title,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Description
+                Text(
+                    text = scholarship.description,
+                    fontSize = 14.sp,
+                    color = Color.DarkGray,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                    lineHeight = 20.sp
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Contact and Apply buttons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    // Contact button
+                    Row(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .clickable { /* Handle contact action */ }
+                            .border(1.dp, Color.Gray, CircleShape)
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "✉️ Contact",
+                            fontSize = 14.sp,
+                            color = Color.DarkGray
+                        )
+                    }
+
+                    // Apply button
+                    Row(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .clickable { onClick() }
+                            .background(SKyberBlue)
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "🔗 Apply",
+                            fontSize = 14.sp,
+                            color = Color.White
+                        )
+                    }
                 }
             }
         }

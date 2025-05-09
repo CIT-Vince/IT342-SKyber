@@ -1,6 +1,7 @@
 package com.example.skyber.navigationbar.portalnavigator.Scholarships
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.widget.Toast
@@ -11,6 +12,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,11 +31,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,17 +49,16 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -65,31 +71,26 @@ import com.example.skyber.ModularFunctions.headerbar.HeaderBar
 import com.example.skyber.ModularFunctions.headerbar.NotificationHandler
 import com.example.skyber.dataclass.Scholarship
 import com.example.skyber.dataclass.User
-import com.example.skyber.ui.theme.BoxGreen
-import com.example.skyber.ui.theme.BoxTextGreen
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberRed
 import com.example.skyber.ui.theme.SKyberYellow
-import com.example.skyber.ui.theme.SoftCardContainerBlue
-import com.example.skyber.ui.theme.SoftCardContainerMaroon
-import com.example.skyber.ui.theme.SoftCardFontBlue
-import com.example.skyber.ui.theme.SoftCardFontGold
 import com.example.skyber.ui.theme.gradientBrush
+import android.content.ActivityNotFoundException
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun DetailsScholarship(navController: NavHostController, userProfile: MutableState<User?>) {
     val user = userProfile.value
     val scholarship = navController.previousBackStackEntry?.savedStateHandle?.get<Scholarship>("scholarship")
-    var newScholarshipTitle by remember { mutableStateOf("") }
-    var newDescription by remember { mutableStateOf("") }
-    var newLink by remember { mutableStateOf("") }
-    var newContactEmail by remember { mutableStateOf("") }
-    var newType by remember { mutableStateOf("") }
-    val clipboardManager = LocalClipboardManager.current
+    var isEditMode by rememberSaveable { mutableStateOf(false) }
+    var newTitle by rememberSaveable { mutableStateOf("") }
+    var newDescription by rememberSaveable { mutableStateOf("") }
+    var newLink by rememberSaveable { mutableStateOf("") }
+    var newContactEmail by rememberSaveable { mutableStateOf("") }
+    var newType by rememberSaveable { mutableStateOf("") }
     val context = LocalContext.current
-    var isEditMode by remember { mutableStateOf(false) }
     var newBase64Image by remember { mutableStateOf<String?>(null) }
 
     // Launch image picker
@@ -125,17 +126,17 @@ fun DetailsScholarship(navController: NavHostController, userProfile: MutableSta
 
     LaunchedEffect(isEditMode) {
         if (isEditMode && scholarship != null) {
-            newScholarshipTitle = scholarship.title
+            newTitle = scholarship.title
             newDescription = scholarship.description
-            newContactEmail = scholarship.contactEmail
             newLink = scholarship.link
+            newContactEmail = scholarship.contactEmail
             newType = scholarship.type
             newBase64Image = scholarship.scholarImage
         }
     }
 
-
-    if (scholarship == null) {  // Show a loading spinner while waiting for user data
+    if (scholarship == null) {
+        // Show a loading spinner while waiting for data
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -146,13 +147,6 @@ fun DetailsScholarship(navController: NavHostController, userProfile: MutableSta
         }
         return
     } else {
-        val category = scholarship.type.lowercase()
-        val (statusColor, textColor) = when (category) {
-            "all" -> BoxGreen to BoxTextGreen
-            "private" -> SoftCardContainerMaroon to SoftCardFontGold
-            "public" -> SoftCardContainerBlue to SoftCardFontBlue
-            else -> Color.LightGray to Color.DarkGray
-        }
         Scaffold { innerPadding ->
             Box(
                 modifier = Modifier
@@ -169,17 +163,17 @@ fun DetailsScholarship(navController: NavHostController, userProfile: MutableSta
 
                 // Decorative elements
                 Text(
-                    text = "💠",
+                    text = "📚",
                     fontSize = 26.sp,
                     modifier = Modifier
                         .padding(start = topLeftPosition.dp + 10.dp, top = 20.dp)
-                        .graphicsLayer(alpha = 0.3f) // Adjust opacity
+                        .graphicsLayer(alpha = 0.3f)
                 )
 
                 Column(
                     modifier = Modifier
-                        .fillMaxSize(),
-                    //.padding(),
+                        .fillMaxSize()
+                        .padding(),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -198,7 +192,8 @@ fun DetailsScholarship(navController: NavHostController, userProfile: MutableSta
                             .padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (isEditMode) {//Edit mode self explanatory
+                        if (isEditMode) {
+                            // Admin Edit Mode
                             LazyColumn(
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -250,22 +245,45 @@ fun DetailsScholarship(navController: NavHostController, userProfile: MutableSta
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
-                                            text = "Upload  Image",
+                                            text = "Upload Scholarship Image",
                                             color = Color.White,
                                             fontWeight = FontWeight.Bold
                                         )
                                     }
 
-                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Spacer(modifier = Modifier.height(16.dp))
 
-                                    //Text Fields here
                                     CustomOutlinedTextField(
-                                        value = newScholarshipTitle,
-                                        onValueChange = { newScholarshipTitle = it },
-                                        label = "Scholarship Title",
+                                        value = newTitle,
+                                        onValueChange = { newTitle = it },
+                                        label = "Scholarship Title"
                                     )
 
-                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Spacer(modifier = Modifier.height(16.dp))
+
+                                    CustomOutlinedTextField(
+                                        value = newType,
+                                        onValueChange = { newType = it },
+                                        label = "Type (Public or Private)"
+                                    )
+
+                                    Spacer(modifier = Modifier.height(16.dp))
+
+                                    CustomOutlinedTextField(
+                                        value = newContactEmail,
+                                        onValueChange = { newContactEmail = it },
+                                        label = "Contact Email"
+                                    )
+
+                                    Spacer(modifier = Modifier.height(16.dp))
+
+                                    CustomOutlinedTextField(
+                                        value = newLink,
+                                        onValueChange = { newLink = it },
+                                        label = "Application Link"
+                                    )
+
+                                    Spacer(modifier = Modifier.height(16.dp))
 
                                     CustomOutlinedTextField(
                                         value = newDescription,
@@ -274,45 +292,25 @@ fun DetailsScholarship(navController: NavHostController, userProfile: MutableSta
                                         maxLines = 5
                                     )
 
-                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Spacer(modifier = Modifier.height(24.dp))
 
-                                    CustomOutlinedTextField(
-                                        value = newLink,
-                                        onValueChange = { newLink = it },
-                                        label = "Apply Here",
-                                    )
-
-                                    Spacer(modifier = Modifier.height(12.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newContactEmail,
-                                        onValueChange = { newContactEmail = it },
-                                        label = "Contact Email",
-                                    )
-
-                                    Spacer(modifier = Modifier.height(12.dp))
-
-                                    ScholarshipCategoryDropdown(
-                                        selectedCategory = newType,
-                                        onCategorySelected = { newType = it }
-                                    )
-
-                                    Spacer(modifier = Modifier.height(12.dp))
-
+                                    // Update button
                                     Button(
                                         onClick = {
                                             val database = FirebaseHelper.databaseReference
                                             val scholarshipId = scholarship.id
-                                            // Build updated Scholarship
+
+                                            // Build updated scholarship
                                             val updatedScholarship = Scholarship(
                                                 id = scholarshipId,
-                                                title = newScholarshipTitle.ifEmpty { scholarship.title },
+                                                title = newTitle.ifEmpty { scholarship.title },
                                                 description = newDescription.ifEmpty { scholarship.description },
                                                 link = newLink.ifEmpty { scholarship.link },
                                                 contactEmail = newContactEmail.ifEmpty { scholarship.contactEmail },
                                                 type = newType.ifEmpty { scholarship.type },
-                                                scholarImage = newBase64Image?.ifEmpty { scholarship.scholarImage },
+                                                scholarImage = newBase64Image ?: scholarship.scholarImage
                                             )
+
                                             database.child("Scholarships").child(scholarshipId)
                                                 .setValue(updatedScholarship)
                                                 .addOnSuccessListener {
@@ -353,8 +351,9 @@ fun DetailsScholarship(navController: NavHostController, userProfile: MutableSta
                                         }
                                     }
 
-                                    Spacer(modifier = Modifier.height(18.dp))
+                                    Spacer(modifier = Modifier.height(8.dp))
 
+                                    // Delete option
                                     Text(
                                         text = "Delete",
                                         fontSize = 14.sp,
@@ -371,7 +370,7 @@ fun DetailsScholarship(navController: NavHostController, userProfile: MutableSta
                                                         "Deleted Successfully",
                                                         Toast.LENGTH_SHORT
                                                     ).show()
-                                                    isEditMode = false
+                                                    navController.popBackStack()
                                                 }
                                                 .addOnFailureListener {
                                                     Toast.makeText(
@@ -382,165 +381,266 @@ fun DetailsScholarship(navController: NavHostController, userProfile: MutableSta
                                                 }
                                         }
                                     )
-
-                                }//End of lazy Column content
-                            }//End of alzy column
-                        } else {//Details mode
+                                }
+                            }
+                        } else {
+                            // User view mode
                             LazyColumn(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .padding(horizontal = 2.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
+                                horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 item {
                                     Box(
                                         modifier = Modifier
                                             .fillMaxSize()
+                                            .padding(16.dp)
                                     ) {
                                         Column(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .padding(horizontal = 16.dp),
+                                                .align(Alignment.TopStart),
                                             horizontalAlignment = Alignment.Start
                                         ) {
-                                            // Centered Image
+                                            // Scholarship Type Badge
                                             Box(
                                                 modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .height(200.dp)
-                                                    .clip(RoundedCornerShape(16.dp))
-                                                    .background(Color.LightGray),
-                                                contentAlignment = Alignment.Center
+                                                    .padding(bottom = 16.dp)
+                                                    .background(
+                                                        if (scholarship.type.equals("Public", ignoreCase = true))
+                                                            SKyberBlue else SKyberYellow,
+                                                        RoundedCornerShape(8.dp)
+                                                    )
+                                                    .padding(horizontal = 12.dp, vertical = 6.dp)
                                             ) {
-                                                if (!scholarship.scholarImage.isNullOrEmpty()) {
+                                                Text(
+                                                    text = scholarship.type.uppercase(),
+                                                    color = if (scholarship.type.equals("Public", ignoreCase = true))
+                                                        Color.White else Color.Black,
+                                                    fontSize = 14.sp,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            }
+
+                                            // Scholarship Image
+                                            if (!scholarship.scholarImage.isNullOrEmpty()) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .height(200.dp)
+                                                        .clip(RoundedCornerShape(16.dp))
+                                                        .background(Color.LightGray),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
                                                     Base64Image(
                                                         base64String = scholarship.scholarImage,
                                                         modifier = Modifier
-                                                            .size(200.dp)
+                                                            .fillMaxSize()
                                                             .clip(RoundedCornerShape(16.dp))
                                                     )
-                                                } else {
-                                                    Text(
-                                                        text = "No image available",
-                                                        color = Color.Gray,
-                                                        fontWeight = FontWeight.Medium
-                                                    )
                                                 }
+
+                                                Spacer(modifier = Modifier.height(16.dp))
                                             }
+
+                                            // Scholarship Title
+                                            Text(
+                                                text = scholarship.title,
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 26.sp,
+                                                color = SKyberBlue
+                                            )
 
                                             Spacer(modifier = Modifier.height(16.dp))
 
+                                            // Contact Email
                                             Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.SpaceBetween
+                                                verticalAlignment = Alignment.CenterVertically
                                             ) {
-                                                // Title
-                                                Text(
-                                                    text = scholarship.title,
-                                                    fontWeight = FontWeight.Bold,
-                                                    fontSize = 28.sp,
-                                                    color = SKyberBlue,
-                                                    modifier = Modifier.weight(1f)
+                                                Icon(
+                                                    imageVector = Icons.Default.Email,
+                                                    contentDescription = "Contact Email",
+                                                    tint = SKyberBlue,
+                                                    modifier = Modifier.size(18.dp)
                                                 )
 
                                                 Spacer(modifier = Modifier.width(8.dp))
 
-                                                // Type Box
+                                                Text(
+                                                    text = scholarship.contactEmail,
+                                                    fontSize = 16.sp,
+                                                    color = SKyberBlue
+                                                )
+                                            }
+
+                                            Spacer(modifier = Modifier.height(8.dp))
+
+                                            // Institution Type
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.School,
+                                                    contentDescription = "Scholarship Type",
+                                                    tint = SKyberBlue,
+                                                    modifier = Modifier.size(18.dp)
+                                                )
+
+                                                Spacer(modifier = Modifier.width(8.dp))
+
+                                                Text(
+                                                    text = "${scholarship.type} Scholarship",
+                                                    fontSize = 16.sp,
+                                                    color = SKyberBlue
+                                                )
+                                            }
+
+                                            Spacer(modifier = Modifier.height(24.dp))
+
+                                            // Description Section
+                                            Text(
+                                                text = "Description",
+                                                fontSize = 20.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = SKyberBlue
+                                            )
+
+                                            Spacer(modifier = Modifier.height(8.dp))
+
+                                            // Content Section
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .heightIn(min = 180.dp)
+                                                    .clip(RoundedCornerShape(8.dp))
+                                                    .padding(vertical = 12.dp)
+                                            ) {
+                                                Text(
+                                                    text = scholarship.description,
+                                                    fontSize = 16.sp,
+                                                    lineHeight = 24.sp,
+                                                    color = Color(0xFF424242)
+                                                )
+                                            }
+
+                                            Spacer(modifier = Modifier.height(24.dp))
+
+                                            // Apply Now Button
+                                            Button(
+                                                onClick = {
+                                                    try {
+                                                        // Check if the link is empty
+                                                        if (scholarship.link.isEmpty()) {
+                                                            Toast.makeText(
+                                                                context,
+                                                                "No application link provided. Please contact via the email provided.",
+                                                                Toast.LENGTH_LONG
+                                                            ).show()
+                                                        } else {
+                                                            // Make sure the URL has a proper scheme
+                                                            val url = if (!scholarship.link.startsWith("http://") &&
+                                                                !scholarship.link.startsWith("https://")) {
+                                                                "https://${scholarship.link}"
+                                                            } else {
+                                                                scholarship.link
+                                                            }
+
+                                                            // Create and launch the intent directly without checking resolveActivity
+                                                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                                            context.startActivity(intent)
+                                                        }
+                                                    } catch (e: Exception) {
+                                                        Toast.makeText(
+                                                            context,
+                                                            "Error opening link: ${e.message}",
+                                                            Toast.LENGTH_LONG
+                                                        ).show()
+                                                    }
+                                                },
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(60.dp),
+                                                shape = RoundedCornerShape(28.dp),
+                                                contentPadding = PaddingValues(0.dp),
+                                                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                                            ) {
                                                 Box(
                                                     modifier = Modifier
-                                                        .clip(RoundedCornerShape(22.dp))
-                                                        .background(statusColor)
-                                                        .padding(horizontal = 8.dp)
+                                                        .fillMaxSize()
+                                                        .background(gradientBrush),
+                                                    contentAlignment = Alignment.Center
                                                 ) {
                                                     Text(
-                                                        text = scholarship.type,
-                                                        fontSize = 20.sp,
-                                                        color = textColor,
-                                                        fontWeight = FontWeight.SemiBold
+                                                        text = "Apply Now",
+                                                        fontSize = 16.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        color = Color.White
                                                     )
                                                 }
                                             }
 
-                                            Spacer(modifier = Modifier.height(8.dp))
+                                            // Contact via Email Button
+                                            Spacer(modifier = Modifier.height(16.dp))
 
-                                            // Contact Email
-                                            Text(
-                                                text = "Contact Email: ${scholarship.contactEmail}",
-                                                fontSize = 14.sp,
-                                                color = SKyberBlue
-                                            )
+                                            OutlinedButton(
+                                                onClick = {
+                                                    try {
+                                                        if (scholarship.contactEmail.isEmpty()) {
+                                                            Toast.makeText(
+                                                                context,
+                                                                "No contact email provided.",
+                                                                Toast.LENGTH_LONG
+                                                            ).show()
+                                                        } else {
+                                                            // Create email intent
+                                                            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                                                                data = Uri.parse("mailto:${scholarship.contactEmail}")
+                                                            }
 
-                                            Spacer(modifier = Modifier.height(8.dp))
-
-                                            // Apply Link
-                                            Text(
-                                                text = "Apply at: ${scholarship.link}",
-                                                color = SKyberBlue,
-                                                fontSize = 14.sp,
-                                                overflow = TextOverflow.Ellipsis,
-                                                modifier = Modifier.clickable {
-                                                    clipboardManager.setText(AnnotatedString(scholarship.link))
-                                                    Toast.makeText(context, "Link copied to clipboard", Toast.LENGTH_SHORT).show()
-                                                }
-                                            )
-
-                                            Spacer(modifier = Modifier.height(8.dp))
-
-                                            // Job Description
-                                            Text(
-                                                text = "Job Description",
-                                                fontWeight = FontWeight.SemiBold,
-                                                fontSize = 14.sp,
-                                                color = SKyberBlue
-                                            )
-
-                                            Spacer(modifier = Modifier.height(8.dp))
-
-                                            Box(
-                                                modifier = Modifier.heightIn(min = 100.dp)
+                                                            // Launch intent directly without checking resolveActivity
+                                                            context.startActivity(intent)
+                                                        }
+                                                    } catch (e: Exception) {
+                                                        Toast.makeText(
+                                                            context,
+                                                            "Error opening email: ${e.message}",
+                                                            Toast.LENGTH_LONG
+                                                        ).show()
+                                                    }
+                                                },
+                                                modifier = Modifier.fillMaxWidth(),
+                                                border = BorderStroke(1.dp, SKyberBlue),
+                                                shape = RoundedCornerShape(28.dp)
                                             ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Email,
+                                                    contentDescription = "Email",
+                                                    tint = SKyberBlue
+                                                )
+                                                Spacer(modifier = Modifier.width(8.dp))
                                                 Text(
-                                                    text = scholarship.description,
-                                                    fontSize = 14.sp,
-                                                    color = SKyberBlue
+                                                    text = "Contact via Email",
+                                                    color = SKyberBlue,
+                                                    fontWeight = FontWeight.Medium
                                                 )
                                             }
-                                        }
-                                    }
 
-                                            Spacer(modifier = Modifier.height(10.dp))
+                                            Spacer(modifier = Modifier.height(16.dp))
 
-                                            if(user != null){
-                                                if(user.role == "ADMIN"){
-                                                    Button(//Switch to edit mode screen
-                                                        onClick = {
-                                                            isEditMode = true
-                                                        },
-                                                        modifier = Modifier
-                                                            .fillMaxWidth()
-                                                            .height(60.dp),
-                                                        shape = RoundedCornerShape(28.dp),
-                                                        contentPadding = PaddingValues(0.dp),
-                                                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                                                    ) {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .fillMaxSize()
-                                                                .background(gradientBrush),
-                                                            contentAlignment = Alignment.Center
-                                                        ) {
-                                                            Text(
-                                                                text = "Edit",
-                                                                fontSize = 16.sp,
-                                                                fontWeight = FontWeight.SemiBold,
-                                                                color = Color.White
-                                                            )
-                                                        }
-                                                    }
-                                                }else{
-                                                    null
+                                            // Admin Edit Button
+                                            if (user?.role == "ADMIN") {
+                                                OutlinedButton(
+                                                    onClick = { isEditMode = true },
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    border = BorderStroke(1.dp, SKyberBlue),
+                                                    shape = RoundedCornerShape(28.dp)
+                                                ) {
+                                                    Text(
+                                                        text = "Edit Scholarship",
+                                                        color = SKyberBlue,
+                                                        fontWeight = FontWeight.Medium
+                                                    )
                                                 }
                                             }
                                         }
@@ -552,4 +652,215 @@ fun DetailsScholarship(navController: NavHostController, userProfile: MutableSta
                 }
             }
         }
+    }
+}
 
+@Preview(showBackground = true)
+@Composable
+fun DetailsScholarshipPreview() {
+    // Create a mock scholarship for preview
+    val mockScholarship = Scholarship(
+        id = "scholar1",
+        title = "DOST Scholarship Program",
+        description = "The DOST-SEI Undergraduate Scholarship program aims to support talented and deserving Filipino students who wish to pursue careers in the fields of science, technology, engineering and mathematics.",
+        link = "https://sei.dost.gov.ph/",
+        contactEmail = "info@sei.dost.gov.ph",
+        type = "Public",
+        scholarImage = null
+    )
+
+    MaterialTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(SKyberDarkBlueGradient)
+        ) {
+            // Preview doesn't support particle system, so we'll omit it
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Simple header for preview
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .background(SKyberBlue),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        text = "     Scholarship Details",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .padding(top = 40.dp, bottom = 40.dp)
+                        .background(Color.White, RoundedCornerShape(24.dp))
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.TopStart),
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            // Scholarship Type Badge
+                            Box(
+                                modifier = Modifier
+                                    .padding(bottom = 16.dp)
+                                    .background(
+                                        SKyberBlue,
+                                        RoundedCornerShape(8.dp)
+                                    )
+                                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                            ) {
+                                Text(
+                                    text = "PUBLIC",
+                                    color = Color.White,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            // Scholarship Title
+                            Text(
+                                text = mockScholarship.title,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 26.sp,
+                                color = SKyberBlue
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Contact Email
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Email,
+                                    contentDescription = "Contact Email",
+                                    tint = SKyberBlue,
+                                    modifier = Modifier.size(18.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Text(
+                                    text = mockScholarship.contactEmail,
+                                    fontSize = 16.sp,
+                                    color = SKyberBlue
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Institution Type
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.School,
+                                    contentDescription = "Scholarship Type",
+                                    tint = SKyberBlue,
+                                    modifier = Modifier.size(18.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Text(
+                                    text = "Public Scholarship",
+                                    fontSize = 16.sp,
+                                    color = SKyberBlue
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            // Description Section
+                            Text(
+                                text = "Description",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = SKyberBlue
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Content Section
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(min = 120.dp)
+                                    .padding(vertical = 12.dp)
+                            ) {
+                                Text(
+                                    text = mockScholarship.description,
+                                    fontSize = 16.sp,
+                                    lineHeight = 24.sp,
+                                    color = Color(0xFF424242)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            // Apply Now Button
+                            Button(
+                                onClick = { /* For preview only */ },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp),
+                                shape = RoundedCornerShape(28.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = SKyberBlue)
+                            ) {
+                                Text(
+                                    text = "Apply Now",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color.White
+                                )
+                            }
+
+                            // Contact via Email Button
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            OutlinedButton(
+                                onClick = { /* For preview only */ },
+                                modifier = Modifier.fillMaxWidth(),
+                                border = BorderStroke(1.dp, SKyberBlue),
+                                shape = RoundedCornerShape(28.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Email,
+                                    contentDescription = "Email",
+                                    tint = SKyberBlue
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Contact via Email",
+                                    color = SKyberBlue,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
