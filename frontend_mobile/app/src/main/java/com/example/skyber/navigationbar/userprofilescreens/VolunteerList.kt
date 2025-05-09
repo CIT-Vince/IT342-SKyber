@@ -48,7 +48,7 @@ import com.example.skyber.ui.theme.White
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Composable
+@Composable//way labot ni nga file
 fun VolunteerList(navController: NavHostController, userProfile: MutableState<User?>) {
     val appliedEvents = remember { mutableStateListOf<VolunteerPost>() }//User applied events
     val user = userProfile.value
@@ -56,7 +56,7 @@ fun VolunteerList(navController: NavHostController, userProfile: MutableState<Us
     var selectedTab by remember { mutableStateOf("Ongoing") }
     Log.d("VolunteerDebug", "userProfile: $user")
     val filteredAppliedEvents = when (selectedTab) {//Tab status same logic with volunteerHub
-        "Ongoing" -> appliedEvents.filter { it.status == "Ongoing" }
+        "Ongoing"  -> appliedEvents.filter { it.status == "Ongoing" }
         "Completed" -> appliedEvents.filter { it.status == "Completed" }
         else -> appliedEvents
     }

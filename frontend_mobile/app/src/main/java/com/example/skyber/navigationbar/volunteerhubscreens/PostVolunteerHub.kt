@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -25,10 +24,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -46,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.skyber.FirebaseHelper
+import com.example.skyber.ModularFunctions.CustomOutlinedTextField
 import com.example.skyber.ModularFunctions.DatePickerField
 import com.example.skyber.ModularFunctions.ParticleSystem
 import com.example.skyber.ModularFunctions.convertMillisToDate
@@ -155,48 +153,29 @@ fun PostVolunteerHub(navController: NavHostController, userProfile: MutableState
                         ) {
                             item {
                                 //Text Fields here
-                                OutlinedTextField(
+                                CustomOutlinedTextField(
                                     value = title,
                                     onValueChange = { title = it },
-                                    label = { Text("Title") },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(8.dp),
-                                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                                        focusedBorderColor = Color(0xFF0066FF),
-                                        unfocusedBorderColor = Color(0xFFD1D5DB)
-                                    )
+                                    label = "Title"
                                 )
 
                                 Spacer(modifier = Modifier.height(12.dp))
 
-                                OutlinedTextField(
+                                CustomOutlinedTextField(
                                     value = contactperson,
                                     onValueChange = { contactperson = it },
-                                    label = { Text("Contact Person") },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(8.dp),
-                                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                                        focusedBorderColor = Color(0xFF0066FF),
-                                        unfocusedBorderColor = Color(0xFFD1D5DB)
-                                    )
+                                    label = "Contact Person"
                                 )
 
                                 Spacer(modifier = Modifier.height(12.dp))
 
-                                OutlinedTextField(
+                                CustomOutlinedTextField(
                                     value = description,
                                     onValueChange = { description = it },
-                                    label = { Text("Event Description") },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(8.dp),
-                                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                                        focusedBorderColor = Color(0xFF0066FF),
-                                        unfocusedBorderColor = Color(0xFFD1D5DB)
-                                    ),
+                                    label = "Event Description",
                                     maxLines = 5,
                                     singleLine = false, // <- Add this
-                                    keyboardOptions = KeyboardOptions.Default.copy()
-                                )
+                                    )
 
                                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -211,59 +190,35 @@ fun PostVolunteerHub(navController: NavHostController, userProfile: MutableState
                                 Spacer(modifier = Modifier.height(16.dp))
 
 
-                                OutlinedTextField(
+                                CustomOutlinedTextField(
                                     value = category,
                                     onValueChange = { category = it },
-                                    label = { Text("Category") },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(8.dp),
-                                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                                        focusedBorderColor = Color(0xFF0066FF),
-                                        unfocusedBorderColor = Color(0xFFD1D5DB)
-                                    )
+                                    label = "Category"
                                 )
 
                                 Spacer(modifier = Modifier.height(12.dp))
 
-                                OutlinedTextField(
+                                CustomOutlinedTextField(
                                     value = email,
                                     onValueChange = { email = it },
-                                    label = { Text("Email") },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(8.dp),
-                                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                                        focusedBorderColor = Color(0xFF0066FF),
-                                        unfocusedBorderColor = Color(0xFFD1D5DB)
-                                    ),
+                                    label = "Email",
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                                 )
 
                                 Spacer(modifier = Modifier.height(12.dp))
 
-                                OutlinedTextField(
+                                CustomOutlinedTextField(
                                     value = location,
                                     onValueChange = { location = it },
-                                    label = { Text("Location") },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(8.dp),
-                                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                                        focusedBorderColor = Color(0xFF0066FF),
-                                        unfocusedBorderColor = Color(0xFFD1D5DB)
-                                    )
+                                    label = "Location"
                                 )
 
                                 Spacer(modifier = Modifier.height(12.dp))
 
-                                OutlinedTextField(
+                                CustomOutlinedTextField(
                                     value = requirements,
                                     onValueChange = { requirements = it },
-                                    label = { Text("Requirements") },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(8.dp),
-                                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                                        focusedBorderColor = Color(0xFF0066FF),
-                                        unfocusedBorderColor = Color(0xFFD1D5DB)
-                                    )
+                                    label = "Requirements"
                                 )
 
                                 Spacer(modifier = Modifier.height(12.dp))

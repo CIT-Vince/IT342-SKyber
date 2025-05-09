@@ -73,6 +73,8 @@ import com.example.skyber.ui.theme.SKyberRed
 import com.example.skyber.ui.theme.SKyberYellow
 import com.example.skyber.ui.theme.gradientBrush
 import com.example.skyber.userauth.RadioButtonGenders
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.layout.Row
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
@@ -96,28 +98,6 @@ fun DetailsSKmembers(navController: NavHostController, userProfile: MutableState
     // State to hold selected image in Base64
     var newBase64Image by remember { mutableStateOf<String?>(null) }
 
-    // Animations
-    val infiniteTransition = rememberInfiniteTransition(label = "floating animation")
-    val scale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 1.2f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "scale animation"
-    )
-
-    val topLeftPosition by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 10f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1500),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "floating top left"
-    )
-
     // Launch image picker
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
@@ -132,8 +112,8 @@ fun DetailsSKmembers(navController: NavHostController, userProfile: MutableState
             newFirstname = skProfile.firstName ?: ""
             newLastname = skProfile.lastName ?: ""
             newEmail = skProfile.email ?: ""
-            newPosition= skProfile.platform ?: ""
-            newTerm= skProfile.term ?: ""
+            newPosition = skProfile.position ?: ""
+            newTerm = skProfile.term ?: ""
             newPlatform = skProfile.platform ?: ""
             newBirthdate = skProfile.birthdate ?: ""
             newGender = skProfile.gender ?: ""
@@ -160,323 +140,329 @@ fun DetailsSKmembers(navController: NavHostController, userProfile: MutableState
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(SKyberDarkBlueGradient)
+                    .background(Color(0xFFF5F5F5))  // Light background for better contrast
             ) {
-                // Particle system as the background
-                ParticleSystem(
-                    modifier = Modifier.fillMaxSize(),
-                    particleColor = Color.White,
-                    particleCount = 50,
-                    backgroundColor = Color(0xFF0D47A1)
-                )
-                Text(
-                    text = "💠",
-                    fontSize = 26.sp,
-                    modifier = Modifier
-                        .padding(start = topLeftPosition.dp + 10.dp, top = 20.dp)
-                        .graphicsLayer(alpha = 0.5f)
-                )
-
-                // Main content on top of the particle system
+                // Main content layout
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(),
+                    modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    HeaderBar(
-                        trailingContent = {
-                            NotificationHandler()
-                        }
-                    )
-
-                    Column(
+                    // Custom Header similar to web UI
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 24.dp)
-                            .padding(top = 40.dp, bottom = 40.dp)
-                            .background(Color.White, RoundedCornerShape(24.dp))
-                            .padding(14.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .height(56.dp)
+                            .background(SKyberBlue)
                     ) {
-                        if (isEditMode) {
-                            LazyColumn(
-                                modifier = Modifier.fillMaxSize(),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                item {
-                                    // Image Preview
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(220.dp)
-                                            .clip(RoundedCornerShape(16.dp))
-                                            .background(Color.LightGray),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        if (newBase64Image != null) {
-                                            Base64Image(
-                                                base64String = newBase64Image,
-                                                modifier = Modifier
-                                                    .size(200.dp)
-                                                    .clip(RoundedCornerShape(16.dp))
-                                            )
-                                        } else {
-                                            Text(
-                                                text = "No image selected",
-                                                color = Color.Gray,
-                                                fontWeight = FontWeight.Medium
-                                            )
-                                        }
-                                    }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "← Back",
+                                color = Color.White,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.clickable {
+                                    navController.popBackStack()
+                                }
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = "SK Member Profile",
+                                color = Color.White,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                    }
 
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    // Upload Button
-                                    Button(
-                                        onClick = { launcher.launch("image/*") },
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(56.dp)
-                                            .clip(RoundedCornerShape(12.dp)),
-                                        colors = ButtonDefaults.buttonColors(containerColor = SKyberBlue)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.UploadFile,
-                                            contentDescription = "Upload",
-                                            tint = Color.White
-                                        )
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text(
-                                            text = "Upload Candidate Image",
-                                            color = Color.White,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newFirstname,
-                                        onValueChange = { newFirstname = it },
-                                        label = "First Name",
-                                    )
-
-                                    Spacer(modifier = Modifier.width(12.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newLastname,
-                                        onValueChange = { newLastname = it },
-                                        label = "Last Name",
-                                    )
-
-                                    Spacer(modifier = Modifier.height(12.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newEmail,
-                                        onValueChange = { newEmail = it },
-                                        label = "Email",
-                                    )
-
-                                    Spacer(modifier = Modifier.height(12.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newPosition,
-                                        onValueChange = { newPosition = it },
-                                        label = "Position",
-                                    )
-
-                                    Spacer(modifier = Modifier.height(12.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newTerm,
-                                        onValueChange = { newTerm = it },
-                                        label = "Term",
-                                    )
-
-                                    Spacer(modifier = Modifier.height(12.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newPlatform,
-                                        onValueChange = { newPlatform = it },
-                                        label = "Platforms",
-                                        maxLines = 5
-                                    )
-
-                                    Spacer(modifier = Modifier.height(12.dp))
-
-                                    SimpleDatePickerField(
-                                        selectedDate = newBirthdate,
-                                        onDateSelected = { newDate -> newBirthdate = newDate },
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
-
-                                    Spacer(modifier = Modifier.height(12.dp))
-
-                                    RadioButtonGenders(
-                                        gender = newGender,
-                                        onGenderSelected = { newGender = it },
-                                    )
-
-                                    Spacer(modifier = Modifier.height(12.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newAge,
-                                        onValueChange = { newAge = it },
-                                        label = "Age",
-                                    )
-
-                                    Spacer(modifier = Modifier.height(12.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newPhoneNumber,
-                                        onValueChange = { newPhoneNumber = it },
-                                        label = "Phone Number",
-                                    )
-                                    Spacer(modifier = Modifier.height(12.dp))
-
-                                    CustomOutlinedTextField(
-                                        value = newAddress,
-                                        onValueChange = { newAddress = it },
-                                        label = "Address",
-                                    )
-
-                                    Spacer(modifier = Modifier.height(24.dp))
-
-                                    Button(
-                                        onClick = {
-                                            val database = FirebaseHelper.databaseReference
-                                            val memberId = skProfile.uid
-                                            if(memberId != null){
-                                                val updatedMemberProfile = SKProfile(
-                                                    firstName = newFirstname,
-                                                    lastName = newLastname,
-                                                    position = newPosition,
-                                                    email = newEmail,
-                                                    platform = newPlatform,
-                                                    term = newTerm,
-                                                    birthdate = newBirthdate,
-                                                    gender = newGender,
-                                                    age = newAge.toInt(),
-                                                    phoneNumber = newPhoneNumber,
-                                                    address = newAddress,
-                                                    skImage = newBase64Image
-                                                )
-                                                // Save updated project to database
-                                                database.child("SKProfiles").child(memberId)
-                                                    .setValue(updatedMemberProfile)
-                                                    .addOnSuccessListener {
-                                                        Toast.makeText(
-                                                            context,
-                                                            "updated successfully",
-                                                            Toast.LENGTH_SHORT
-                                                        ).show()
-                                                        isEditMode = false
-                                                    }
-                                                    .addOnFailureListener {
-                                                        Toast.makeText(
-                                                            context,
-                                                            "Update unsuccessful",
-                                                            Toast.LENGTH_SHORT
-                                                        ).show()
-                                                    }
-                                            }
-
-                                        },
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(60.dp),
-                                        shape = RoundedCornerShape(28.dp),
-                                        contentPadding = PaddingValues(0.dp),
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                                    ) {
-                                        Box(
+                    if (isEditMode) {
+                        // Edit Mode Content
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            item {
+                                // Image Preview
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(220.dp)
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .background(Color.LightGray),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (newBase64Image != null) {
+                                        Base64Image(
+                                            base64String = newBase64Image,
                                             modifier = Modifier
-                                                .fillMaxSize()
-                                                .background(gradientBrush),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                text = "Edit",
-                                                fontSize = 16.sp,
-                                                fontWeight = FontWeight.SemiBold,
-                                                color = Color.White
-                                            )
-                                        }
+                                                .size(200.dp)
+                                                .clip(RoundedCornerShape(16.dp))
+                                        )
+                                    } else {
+                                        Text(
+                                            text = "No image selected",
+                                            color = Color.Gray,
+                                            fontWeight = FontWeight.Medium
+                                        )
                                     }
+                                }
 
-                                    Spacer(modifier = Modifier.height(14.dp))
+                                Spacer(modifier = Modifier.height(16.dp))
 
-                                    Text(
-                                        text = "Delete",
-                                        fontSize = 14.sp,
-                                        color = SKyberRed,
-                                        fontWeight = FontWeight.Medium,
-                                        modifier = Modifier.clickable {
-                                            val database = FirebaseHelper.databaseReference
-                                            val memberId = skProfile.uid
-                                            if(memberId != null){
-                                                database.child("SKProfiles").child(memberId)
-                                                    .removeValue()
-                                                    .addOnSuccessListener {
-                                                        Toast.makeText(
-                                                            context,
-                                                            "Deleted Successfully",
-                                                            Toast.LENGTH_SHORT
-                                                        ).show()
-                                                        isEditMode = false
-                                                    }
-                                                    .addOnFailureListener {
-                                                        Toast.makeText(
-                                                            context,
-                                                            "Deletion unsuccessful",
-                                                            Toast.LENGTH_SHORT
-                                                        ).show()
-                                                    }
-                                            }
-                                        }
+                                // Upload Button
+                                Button(
+                                    onClick = { launcher.launch("image/*") },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(56.dp)
+                                        .clip(RoundedCornerShape(12.dp)),
+                                    colors = ButtonDefaults.buttonColors(containerColor = SKyberBlue)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.UploadFile,
+                                        contentDescription = "Upload",
+                                        tint = Color.White
                                     )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "Upload Member Image",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
 
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                CustomOutlinedTextField(
+                                    value = newFirstname,
+                                    onValueChange = { newFirstname = it },
+                                    label = "First Name",
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                CustomOutlinedTextField(
+                                    value = newLastname,
+                                    onValueChange = { newLastname = it },
+                                    label = "Last Name",
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                CustomOutlinedTextField(
+                                    value = newEmail,
+                                    onValueChange = { newEmail = it },
+                                    label = "Email",
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                CustomOutlinedTextField(
+                                    value = newPosition,
+                                    onValueChange = { newPosition = it },
+                                    label = "Position",
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                CustomOutlinedTextField(
+                                    value = newTerm,
+                                    onValueChange = { newTerm = it },
+                                    label = "Term",
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                CustomOutlinedTextField(
+                                    value = newPlatform,
+                                    onValueChange = { newPlatform = it },
+                                    label = "Platforms",
+                                    maxLines = 5
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                SimpleDatePickerField(
+                                    selectedDate = newBirthdate,
+                                    onDateSelected = { newDate -> newBirthdate = newDate },
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                RadioButtonGenders(
+                                    gender = newGender,
+                                    onGenderSelected = { newGender = it },
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                CustomOutlinedTextField(
+                                    value = newAge,
+                                    onValueChange = { newAge = it },
+                                    label = "Age",
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                CustomOutlinedTextField(
+                                    value = newPhoneNumber,
+                                    onValueChange = { newPhoneNumber = it },
+                                    label = "Phone Number",
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                CustomOutlinedTextField(
+                                    value = newAddress,
+                                    onValueChange = { newAddress = it },
+                                    label = "Address",
+                                )
+
+                                Spacer(modifier = Modifier.height(24.dp))
+
+                                Button(
+                                    onClick = {
+                                        val database = FirebaseHelper.databaseReference
+                                        val memberId = skProfile.uid
+                                        if(memberId != null){
+                                            val updatedMemberProfile = SKProfile(
+                                                uid = memberId,
+                                                firstName = newFirstname,
+                                                lastName = newLastname,
+                                                position = newPosition,
+                                                email = newEmail,
+                                                platform = newPlatform,
+                                                term = newTerm,
+                                                birthdate = newBirthdate,
+                                                gender = newGender,
+                                                age = newAge.toIntOrNull() ?: 0,
+                                                phoneNumber = newPhoneNumber,
+                                                address = newAddress,
+                                                skImage = newBase64Image
+                                            )
+                                            // Save updated profile to database
+                                            database.child("SKProfiles").child(memberId)
+                                                .setValue(updatedMemberProfile)
+                                                .addOnSuccessListener {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Updated successfully",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                    isEditMode = false
+                                                }
+                                                .addOnFailureListener {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Update unsuccessful",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(56.dp),
+                                    shape = RoundedCornerShape(28.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = SKyberBlue)
+                                ) {
+                                    Text(
+                                        text = "Save Changes",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color.White
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(14.dp))
+
+                                // Delete button
+                                Button(
+                                    onClick = {
+                                        val database = FirebaseHelper.databaseReference
+                                        val memberId = skProfile.uid
+                                        if(memberId != null){
+                                            database.child("SKProfiles").child(memberId)
+                                                .removeValue()
+                                                .addOnSuccessListener {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Deleted Successfully",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                    navController.popBackStack()
+                                                }
+                                                .addOnFailureListener {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Deletion unsuccessful",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(56.dp),
+                                    shape = RoundedCornerShape(28.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = SKyberRed)
+                                ) {
+                                    Text(
+                                        text = "Delete Member",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color.White
+                                    )
                                 }
                             }
-                        } else {// Display project details
-                            LazyColumn(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .weight(1f)
-                                    .padding(horizontal = 2.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                contentPadding = PaddingValues(vertical = 6.dp)
-                            ) {
-                                item {
+                        }
+                    } else {
+                        // Display Mode - Similar to Web UI
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            item {
+                                // Profile card
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 24.dp, bottom = 16.dp)
+                                        .background(Color.White, RoundedCornerShape(16.dp))
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
                                     Column(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .weight(1f)
-                                            .padding(horizontal = 6.dp)
-                                            .padding(top = 20.dp, bottom = 20.dp)
-                                            .background(Color.White, RoundedCornerShape(24.dp))
-                                            .padding(16.dp),
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
+                                        // Profile Image - Circular as in web UI
                                         Box(
                                             modifier = Modifier
-                                                .size(220.dp)
+                                                .size(180.dp)
                                                 .clip(CircleShape)
                                                 .background(Color(0xFFE3F2FD)),
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            if (skProfile.skImage != null) {
+                                            if (!skProfile.skImage.isNullOrEmpty()) {
                                                 Base64Image(
                                                     base64String = skProfile.skImage,
                                                     modifier = Modifier
-                                                        .fillMaxSize()
+                                                        .size(170.dp)
                                                         .clip(CircleShape)
                                                 )
                                             } else {
                                                 Text(
-                                                    text = "No image available",
+                                                    text = "No image",
                                                     color = Color.Gray,
                                                     fontWeight = FontWeight.Medium
                                                 )
@@ -485,103 +471,223 @@ fun DetailsSKmembers(navController: NavHostController, userProfile: MutableState
 
                                         Spacer(modifier = Modifier.height(16.dp))
 
+                                        // Member Name - Larger font like in web UI
                                         Text(
                                             text = "${skProfile.firstName} ${skProfile.lastName}",
                                             fontWeight = FontWeight.Bold,
-                                            fontSize = 30.sp,
+                                            fontSize = 28.sp,
                                             color = SKyberBlue
                                         )
 
-                                        Text(
-                                            text = "${skProfile.position}, ${skProfile.term}",
-                                            fontWeight = FontWeight.Medium,
-                                            fontSize = 24.sp,
-                                            color = Color.Gray
-                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+
+                                        // Position badge
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(16.dp))
+                                                .background(Color(0xFFFFD700))
+                                                .padding(horizontal = 16.dp, vertical = 6.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = skProfile.position?.uppercase() ?: "",
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 16.sp,
+                                                color = Color.Black
+                                            )
+                                        }
 
                                         Spacer(modifier = Modifier.height(24.dp))
 
-                                            Column(modifier = Modifier.padding(4.dp)) {
+                                        // Contact information
+                                        Column(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalAlignment = Alignment.Start
+                                        ) {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier.padding(vertical = 4.dp)
+                                            ) {
                                                 Text(
-                                                    "Platforms",
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    fontSize = 24.sp,
-                                                    color = SKyberBlue
+                                                    text = "📧 ",
+                                                    fontSize = 16.sp
                                                 )
-                                                Text(
-                                                    skProfile.platform ?: "",
-                                                    fontSize = 18.sp,
-                                                    color = Color.DarkGray
-                                                )
-
-                                                Divider(modifier = Modifier.padding(vertical = 12.dp))
-
-                                                Text(
-                                                    "Born ${skProfile.birthdate}, Age ${skProfile.age}",
-                                                    fontSize = 18.sp,
-                                                    color = Color.DarkGray
-                                                )
-
-                                                Spacer(modifier = Modifier.height(8.dp))
-
                                                 Text(
                                                     text = skProfile.email ?: "",
-                                                    fontSize = 18.sp,
-                                                    color = Color.DarkGray
-                                                )
-                                                Text(
-                                                    text = skProfile.phoneNumber ?: "",
-                                                    fontSize = 18.sp,
-                                                    color = Color.DarkGray
-                                                )
-                                                Text(
-                                                    text = skProfile.address ?: "",
-                                                    fontSize = 18.sp,
-                                                    color = Color.DarkGray
-                                                )
-                                                Text(
-                                                    text = skProfile.gender ?: "",
-                                                    fontSize = 18.sp,
+                                                    fontSize = 16.sp,
                                                     color = Color.DarkGray
                                                 )
                                             }
 
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier.padding(vertical = 4.dp)
+                                            ) {
+                                                Text(
+                                                    text = "📱 ",
+                                                    fontSize = 16.sp
+                                                )
+                                                Text(
+                                                    text = skProfile.phoneNumber ?: "",
+                                                    fontSize = 16.sp,
+                                                    color = Color.DarkGray
+                                                )
+                                            }
 
-                                        Spacer(modifier = Modifier.height(24.dp))
+                                            Spacer(modifier = Modifier.height(8.dp))
 
-                                        if(user != null){
-                                            if (user.role == "ADMIN") {
-                                                // Your untouched button
-                                                Button(
-                                                    onClick = { isEditMode = true },
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .height(60.dp),
-                                                    shape = RoundedCornerShape(28.dp),
-                                                    contentPadding = PaddingValues(0.dp),
-                                                    colors = ButtonDefaults.buttonColors(
-                                                        containerColor = Color.Transparent
-                                                    )
-                                                ) {
-                                                    Box(
-                                                        modifier = Modifier
-                                                            .fillMaxSize()
-                                                            .background(gradientBrush),
-                                                        contentAlignment = Alignment.Center
+                                            Row(
+                                                verticalAlignment = Alignment.Top,
+                                                modifier = Modifier.padding(vertical = 4.dp)
+                                            ) {
+                                                Text(
+                                                    text = "📍 ",
+                                                    fontSize = 16.sp
+                                                )
+                                                Text(
+                                                    text = skProfile.address ?: "",
+                                                    fontSize = 16.sp,
+                                                    color = Color.DarkGray
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // Platform section
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp)
+                                        .background(Color.White, RoundedCornerShape(16.dp))
+                                        .padding(16.dp)
+                                ) {
+                                    Column {
+                                        Text(
+                                            text = "Platform",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 20.sp,
+                                            color = SKyberBlue
+                                        )
+
+                                        Spacer(modifier = Modifier.height(8.dp))
+
+                                        // Format platform text as bullet points if it contains line breaks
+                                        val platformText = skProfile.platform ?: ""
+                                        if (platformText.contains("\n")) {
+                                            val platforms = platformText.split("\n")
+                                            platforms.forEach { platform ->
+                                                if (platform.isNotBlank()) {
+                                                    Row(
+                                                        modifier = Modifier.padding(vertical = 4.dp),
+                                                        verticalAlignment = Alignment.Top
                                                     ) {
                                                         Text(
-                                                            text = "Update",
+                                                            text = "• ",
                                                             fontSize = 16.sp,
-                                                            fontWeight = FontWeight.SemiBold,
-                                                            color = Color.White
+                                                            color = SKyberBlue
+                                                        )
+                                                        Text(
+                                                            text = platform.trim(),
+                                                            fontSize = 16.sp,
+                                                            color = Color.DarkGray
                                                         )
                                                     }
                                                 }
                                             }
-                                            }else{
-                                                    null
-                                            }
+                                        } else {
+                                            // Single line platform
+                                            Text(
+                                                text = platformText,
+                                                fontSize = 16.sp,
+                                                color = Color.DarkGray
+                                            )
                                         }
+                                    }
+                                }
+
+                                // Personal info section
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp)
+                                        .background(Color.White, RoundedCornerShape(16.dp))
+                                        .padding(16.dp)
+                                ) {
+                                    Column {
+                                        Text(
+                                            text = "Personal Information",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 20.sp,
+                                            color = SKyberBlue
+                                        )
+
+                                        Spacer(modifier = Modifier.height(8.dp))
+
+                                        Row(
+                                            modifier = Modifier.padding(vertical = 4.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(
+                                                text = "Age: ",
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = Color.Gray
+                                            )
+                                            Text(
+                                                text = skProfile.age.toString(),
+                                                color = Color.DarkGray
+                                            )
+                                        }
+
+                                        Row(
+                                            modifier = Modifier.padding(vertical = 4.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(
+                                                text = "Gender: ",
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = Color.Gray
+                                            )
+                                            Text(
+                                                text = skProfile.gender ?: "",
+                                                color = Color.DarkGray
+                                            )
+                                        }
+
+                                        Row(
+                                            modifier = Modifier.padding(vertical = 4.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(
+                                                text = "Birthday: ",
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = Color.Gray
+                                            )
+                                            Text(
+                                                text = skProfile.birthdate ?: "",
+                                                color = Color.DarkGray
+                                            )
+                                        }
+                                    }
+                                }
+
+                                // Admin Update Button
+                                if (user?.role == "ADMIN") {
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Button(
+                                        onClick = { isEditMode = true },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(56.dp),
+                                        shape = RoundedCornerShape(28.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = SKyberBlue)
+                                    ) {
+                                        Text(
+                                            text = "Update Member Information",
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = Color.White
+                                        )
                                     }
                                 }
                             }
@@ -591,3 +697,241 @@ fun DetailsSKmembers(navController: NavHostController, userProfile: MutableState
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DetailsSKmembersPreview() {
+    // Create mock data for preview
+    val mockSkProfile = SKProfile(
+        uid = "preview-id",
+        firstName = "Vince Kimlo",
+        lastName = "Tan",
+        position = "Chairman",
+        email = "vincekimlo.tan@cit.edu",
+        platform = "**Education Assistance** - Provide financial aid and scholarships for deserving students.\n" +
+                "- Launch a community-based tutoring program for elementary and high school students.",
+        term = "2023-2026",
+        birthdate = "January 15, 2000",
+        gender = "Male",
+        age = 24,
+        phoneNumber = "09665566551",
+        address = "BLK 4 LOT 17 CHIVAS CABANCALAN I# BULACAO CEBU CITY",
+        skImage = null
+    )
+
+    // Simplified UI for preview
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Header
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .background(SKyberBlue),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Row(
+                    modifier = Modifier.padding(start = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "← Back",
+                        color = Color.White,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(
+                        text = "SK Member Profile",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                }
+            }
+
+            // Content
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                item {
+                    // Profile card
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 24.dp, bottom = 16.dp)
+                            .background(Color.White, RoundedCornerShape(16.dp))
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            // Profile Image placeholder
+                            Box(
+                                modifier = Modifier
+                                    .size(180.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFFE3F2FD)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "VT",
+                                    fontSize = 70.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = SKyberBlue
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Member Name
+                            Text(
+                                text = "${mockSkProfile.firstName} ${mockSkProfile.lastName}",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 28.sp,
+                                color = SKyberBlue
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Position badge
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(Color(0xFFFFD700))
+                                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = mockSkProfile.position?.uppercase() ?: "",
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 16.sp,
+                                    color = Color.Black
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            // Contact information
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                ) {
+                                    Text(
+                                        text = "📧 ",
+                                        fontSize = 16.sp
+                                    )
+                                    Text(
+                                        text = mockSkProfile.email ?: "",
+                                        fontSize = 16.sp,
+                                        color = Color.DarkGray
+                                    )
+                                }
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                ) {
+                                    Text(
+                                        text = "📱 ",
+                                        fontSize = 16.sp
+                                    )
+                                    Text(
+                                        text = mockSkProfile.phoneNumber ?: "",
+                                        fontSize = 16.sp,
+                                        color = Color.DarkGray
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Row(
+                                    verticalAlignment = Alignment.Top,
+                                    modifier = Modifier.padding(vertical = 4.dp)
+                                ) {
+                                    Text(
+                                        text = "📍 ",
+                                        fontSize = 16.sp
+                                    )
+                                    Text(
+                                        text = mockSkProfile.address ?: "",
+                                        fontSize = 16.sp,
+                                        color = Color.DarkGray
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Platform section - simplified for preview
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .background(Color.White, RoundedCornerShape(16.dp))
+                            .padding(16.dp)
+                    ) {
+                        Column {
+                            Text(
+                                text = "Platform",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp,
+                                color = SKyberBlue
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Row(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                verticalAlignment = Alignment.Top
+                            ) {
+                                Text(
+                                    text = "• ",
+                                    fontSize = 16.sp,
+                                    color = SKyberBlue
+                                )
+                                Text(
+                                    text = "Education Assistance - Provide financial aid and scholarships",
+                                    fontSize = 16.sp,
+                                    color = Color.DarkGray
+                                )
+                            }
+
+                            Row(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                verticalAlignment = Alignment.Top
+                            ) {
+                                Text(
+                                    text = "• ",
+                                    fontSize = 16.sp,
+                                    color = SKyberBlue
+                                )
+                                Text(
+                                    text = "Launch a community-based tutoring program",
+                                    fontSize = 16.sp,
+                                    color = Color.DarkGray
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
