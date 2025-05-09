@@ -1,5 +1,5 @@
 package com.example.skyber.repository
-
+/*
 import com.example.skyber.api.RetrofitClient
 import com.example.skyber.dataclass.CandidateProfile
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -101,3 +101,7 @@ class CandidateRepository {
         Result.failure(e)
     }
 }
+
+
+
+ */

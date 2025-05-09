@@ -1,5 +1,5 @@
 package com.example.skyber.viewmodel
-
+/*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.skyber.dataclass.CandidateProfile
@@ -102,3 +102,5 @@ class CandidateViewModel : ViewModel() {
         }
     }
 }
+
+ */

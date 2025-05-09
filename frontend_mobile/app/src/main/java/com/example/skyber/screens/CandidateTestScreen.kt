@@ -1,5 +1,5 @@
 package com.example.skyber.screens
-
+/*
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Base64
@@ -326,3 +326,5 @@ private fun CandidateCard(
         }
     }
 }
+
+ */

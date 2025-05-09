@@ -82,7 +82,6 @@ import com.example.skyber.navigationbar.userprofilescreens.EditProfile
 import com.example.skyber.navigationbar.userprofilescreens.VolunteerList
 import com.example.skyber.navigationbar.volunteerhubscreens.DetailsVolunteerHub
 import com.example.skyber.navigationbar.volunteerhubscreens.PostVolunteerHub
-import com.example.skyber.screens.CandidateTestScreen
 import com.example.skyber.ui.theme.SKyberBlue
 import com.example.skyber.ui.theme.SKyberDarkBlueGradient
 import com.example.skyber.ui.theme.SKyberYellow
@@ -90,7 +89,6 @@ import com.example.skyber.ui.theme.SkyberTheme
 import com.example.skyber.ui.theme.White
 import com.example.skyber.userauth.LoginScreen
 import com.example.skyber.userauth.SignupScreen
-import com.example.skyber.viewmodel.CandidateViewModel
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.firebase.FirebaseApp
 
@@ -168,7 +166,6 @@ class MainActivity : ComponentActivity() {
                             isLoading = false
                         }
                         .addOnFailureListener {
-                            Log.e("MainActivity", "Failed to refresh user profile", it)
                             isLoading = false
                         }
                 }
@@ -176,21 +173,16 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(uid) {
                 if (uid != null) {
-                    Log.d("LoginDebug", "Fetching user profile for UID: $uid")
                     FirebaseHelper.databaseReference.child("users").child(uid)
                         .get().addOnSuccessListener { snapshot ->
-                            Log.d("LoginDebug", "Raw snapshot: ${snapshot.value}")
                             val user = snapshot.getValue(User::class.java)
                             userProfile.value = user
-                            Log.d("LoginDebug", "Parsed user profile: $user")
                             isLoading = false
                         }
                         .addOnFailureListener { e ->
-                            Log.e("LoginDebug", "Failed to fetch user profile", e)
                             isLoading = false
                         }
                 } else {
-                    Log.w("LoginDebug", "UID is null when trying to fetch user profile")
                     isLoading = false
                 }
             }
@@ -225,11 +217,10 @@ class MainActivity : ComponentActivity() {
                         }
                     ) { innerPadding ->
                         // Main navigation and content handling
-                        // Navigation logic same as react routers
                         val currentBackStackEntry by navController.currentBackStackEntryAsState()
                         val currentRoute = currentBackStackEntry?.destination?.route
 
-                        // logic for showing the bottom nav when not in login or the signup screens
+                        // Define routes where the bottom nav should be visible
                         val bottomNavRoutes = listOf(
                             Screens.Home.screen,
                             Screens.VolunteerHub.screen,
@@ -261,8 +252,10 @@ class MainActivity : ComponentActivity() {
                             Screens.PostSKmembers.screen
                         )
 
-
-                        showBottomNav.value = currentRoute in bottomNavRoutes
+                        // Set visibility of the bottom nav
+                        showBottomNav.value = currentRoute in bottomNavRoutes &&
+                                currentRoute != Screens.SignUp.screen &&
+                                currentRoute != Screens.Login.screen
 
                         NavHost(
                             navController = navController,
@@ -376,10 +369,7 @@ class MainActivity : ComponentActivity() {
                             composable(Screens.DetailsVolunteerList.screen) { DetailsVolunteerList(navController) }
 
                             //Test Screens
-                            composable(Screens.CandidateTestScreen.screen) {
-                                val candidateViewModel: CandidateViewModel = viewModel()
-                                CandidateTestScreen(viewModel = candidateViewModel,navController)
-                            }
+
                         }
                     }
                 }
@@ -431,4 +421,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/*
+composable(Screens.CandidateTestScreen.screen) {
+    val candidateViewModel: CandidateViewModel = viewModel()
+    CandidateTestScreen(viewModel = candidateViewModel,navController)
+}
+ */
 

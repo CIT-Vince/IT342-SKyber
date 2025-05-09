@@ -1,5 +1,6 @@
 package com.example.skyber.userauth
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -48,6 +49,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -85,6 +87,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -166,148 +169,200 @@ fun SignupScreen(navController: NavHostController) {
         )
     )
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(SKyberDarkBlueGradient)
-    ) {
-        // Particle background
-        ParticleSystem(
-            modifier = Modifier.fillMaxSize(),
-            particleColor = Color.White,
-            particleCount = 80,
-            backgroundColor = Color(0xFF0D47A1)
-        )
-
-        // Decorative elements
-        Text(
-            text = "💠",
-            fontSize = 26.sp,
-            modifier = Modifier
-                .padding(start = topLeftPosition.dp + 10.dp, top = 20.dp)
-                .graphicsLayer(alpha = 0.5f)
-        )
-
-        Text(
-            text = "✨",
-            fontSize = 24.sp,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 30.dp, bottom = 20.dp)
-                .graphicsLayer(alpha = 0.5f)
-        )
-
-        Text(
-            text = "★",
-            fontSize = 32.sp,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(x = (-120).dp, y = (-150).dp)
-                .graphicsLayer(
-                    alpha = 0.4f,
-                    rotationZ = rotation
-                )
-        )
-
-        // Scrollable content
-        val scrollState = rememberScrollState()
-
-        Column(
+    Scaffold { _ ->
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 20.dp)
-                .verticalScroll(scrollState),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .background(SKyberDarkBlueGradient)
         ) {
-            // Main content card
-            Card(
+            // Particle background
+            ParticleSystem(
+                modifier = Modifier.fillMaxSize(),
+                particleColor = Color.White,
+                particleCount = 80,
+                backgroundColor = Color(0xFF0D47A1)
+            )
+
+            // Decorative elements
+            Text(
+                text = "💠",
+                fontSize = 26.sp,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .shadow(8.dp, RoundedCornerShape(24.dp)),
-                shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                    .padding(start = topLeftPosition.dp + 10.dp, top = 20.dp)
+                    .graphicsLayer(alpha = 0.5f)
+            )
+
+            Text(
+                text = "✨",
+                fontSize = 24.sp,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 30.dp, bottom = 20.dp)
+                    .graphicsLayer(alpha = 0.5f)
+            )
+
+            Text(
+                text = "★",
+                fontSize = 32.sp,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .offset(x = (-120).dp, y = (-150).dp)
+                    .graphicsLayer(
+                        alpha = 0.4f,
+                        rotationZ = rotation
+                    )
+            )
+
+            // Scrollable content
+            val scrollState = rememberScrollState()
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp, vertical = 20.dp)
+                    .verticalScroll(scrollState),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
+                // Main content card
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .shadow(8.dp, RoundedCornerShape(24.dp)),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
                 ) {
-                    // Logo
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.skyber),
-                            contentDescription = "SKYBER Logo",
-                            modifier = Modifier.size(40.dp),
-                            contentScale = ContentScale.Fit
-                        )
+                        // Logo
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.skyber),
+                                contentDescription = "SKYBER Logo",
+                                modifier = Modifier.size(40.dp),
+                                contentScale = ContentScale.Fit
+                            )
 
-                        Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
 
-                        Text(
-                            text = "SKYBER",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF0033CC)
-                        )
-                    }
-
-                    // Create Account header with bouncing emoji
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    ) {
-                        Text(
-                            text = "Create Account",
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black
-                        )
-
-                        Spacer(modifier = Modifier.width(6.dp))
-
-                        Text(
-                            text = "💠",
-                            fontSize = 24.sp,
-                            modifier = Modifier.scale(scale)
-                        )
-                    }
-
-                    // Already have account text
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(bottom = 20.dp)
-                    ) {
-                        Text(
-                            text = "Already have an account? ",
-                            fontSize = 14.sp,
-                            color = Color.Gray
-                        )
-
-                        Text(
-                            text = "Sign In",
-                            fontSize = 14.sp,
-                            color = SKyberRed,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.clickable {
-                                navController.navigate(Screens.Login.screen)
-                            }
-                        )
-                    }
-
-                    // Form fields
-                    // Name fields (First name and Last name)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        // First Name
-                        Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "First Name",
+                                text = "SKYBER",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF0033CC)
+                            )
+                        }
+
+                        // Create Account header with bouncing emoji
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = "Create Account",
+                                fontSize = 28.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
+                            )
+
+                            Spacer(modifier = Modifier.width(6.dp))
+
+                            Text(
+                                text = "💠",
+                                fontSize = 24.sp,
+                                modifier = Modifier.scale(scale)
+                            )
+                        }
+
+                        // Already have account text
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(bottom = 20.dp)
+                        ) {
+                            Text(
+                                text = "Already have an account? ",
+                                fontSize = 14.sp,
+                                color = Color.Gray
+                            )
+
+                            Text(
+                                text = "Sign In",
+                                fontSize = 14.sp,
+                                color = SKyberRed,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.clickable {
+                                    navController.navigate(Screens.Login.screen)
+                                }
+                            )
+                        }
+
+                        // Form fields
+                        // Name fields (First name and Last name)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            // First Name
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "First Name",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.DarkGray,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+
+                                OutlinedTextField(
+                                    value = firstname,
+                                    onValueChange = { firstname = it },
+                                    placeholder = { Text("John") },
+                                    singleLine = true,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                                        focusedBorderColor = Color(0xFF0066FF),
+                                        unfocusedBorderColor = Color(0xFFD1D5DB)
+                                    )
+                                )
+                            }
+
+                            // Last Name
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Last Name",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.DarkGray,
+                                    modifier = Modifier.padding(bottom = 4.dp)
+                                )
+
+                                OutlinedTextField(
+                                    value = lastname,
+                                    onValueChange = { lastname = it },
+                                    placeholder = { Text("Doe") },
+                                    singleLine = true,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                                        focusedBorderColor = Color(0xFF0066FF),
+                                        unfocusedBorderColor = Color(0xFFD1D5DB)
+                                    )
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Email field
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = "E-mail",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = Color.DarkGray,
@@ -315,9 +370,166 @@ fun SignupScreen(navController: NavHostController) {
                             )
 
                             OutlinedTextField(
-                                value = firstname,
-                                onValueChange = { firstname = it },
-                                placeholder = { Text("John") },
+                                value = email,
+                                onValueChange = { email = it },
+                                placeholder = { Text("example@gmail.com") },
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = Color(0xFF0066FF),
+                                    unfocusedBorderColor = Color(0xFFD1D5DB)
+                                )
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Password field
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = "Password",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.DarkGray,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+
+                            OutlinedTextField(
+                                value = password,
+                                onValueChange = { password = it },
+                                placeholder = { Text("••••••") },
+                                singleLine = true,
+                                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                                trailingIcon = {
+                                    IconButton(onClick = { showPassword = !showPassword }) {
+                                        Icon(
+                                            imageVector = if (showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                            contentDescription = "Toggle password visibility",
+                                            tint = Color.Gray
+                                        )
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = Color(0xFF0066FF),
+                                    unfocusedBorderColor = Color(0xFFD1D5DB)
+                                )
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Confirm Password field
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = "Confirm Password",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.DarkGray,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+
+                            OutlinedTextField(
+                                value = confirmPassword,
+                                onValueChange = { confirmPassword = it },
+                                placeholder = { Text("••••••") },
+                                singleLine = true,
+                                visualTransformation = if (showConfirmPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                                trailingIcon = {
+                                    IconButton(onClick = {
+                                        showConfirmPassword = !showConfirmPassword
+                                    }) {
+                                        Icon(
+                                            imageVector = if (showConfirmPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                                            contentDescription = "Toggle password visibility",
+                                            tint = Color.Gray
+                                        )
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = Color(0xFF0066FF),
+                                    unfocusedBorderColor = Color(0xFFD1D5DB)
+                                )
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Gender selection - using your existing RadioButtonGenders function
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = "What's your gender? (Optional)",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.DarkGray,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+
+                            // Using your existing radio button implementation
+                            RadioButtonGenders(
+                                gender = gender,
+                                onGenderSelected = { gender = it }
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Using your existing DatePickerField
+                        SimpleDatePickerField(
+                            selectedDate = dob,
+                            onDateSelected = { formattedDate ->
+                                dob = formattedDate
+                            }
+                        )
+
+                        // Phone Number field
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = "Phone Number",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.DarkGray,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+
+                            OutlinedTextField(
+                                value = phonenumber,
+                                onValueChange = { phonenumber = it },
+                                placeholder = { Text("09123456789") },
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    focusedBorderColor = Color(0xFF0066FF),
+                                    unfocusedBorderColor = Color(0xFFD1D5DB)
+                                )
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Address field
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = "Address",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.DarkGray,
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+
+                            OutlinedTextField(
+                                value = address,
+                                onValueChange = { address = it },
+                                placeholder = { Text("Your address") },
                                 singleLine = true,
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(8.dp),
@@ -328,369 +540,165 @@ fun SignupScreen(navController: NavHostController) {
                             )
                         }
 
-                        // Last Name
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "Last Name",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = Color.DarkGray,
-                                modifier = Modifier.padding(bottom = 4.dp)
-                            )
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                            OutlinedTextField(
-                                value = lastname,
-                                onValueChange = { lastname = it },
-                                placeholder = { Text("Doe") },
-                                singleLine = true,
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    focusedBorderColor = Color(0xFF0066FF),
-                                    unfocusedBorderColor = Color(0xFFD1D5DB)
-                                )
-                            )
-                        }
-                    }
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Email field
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "E-mail",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.DarkGray,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-
-                        OutlinedTextField(
-                            value = email,
-                            onValueChange = { email = it },
-                            placeholder = { Text("example@gmail.com") },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        // Remember me & Forgot Password
+                        Row(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(8.dp),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = Color(0xFF0066FF),
-                                unfocusedBorderColor = Color(0xFFD1D5DB)
-                            )
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Password field
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "Password",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.DarkGray,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-
-                        OutlinedTextField(
-                            value = password,
-                            onValueChange = { password = it },
-                            placeholder = { Text("••••••") },
-                            singleLine = true,
-                            visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                            trailingIcon = {
-                                IconButton(onClick = { showPassword = !showPassword }) {
-                                    Icon(
-                                        imageVector = if (showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                        contentDescription = "Toggle password visibility",
-                                        tint = Color.Gray
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Checkbox(
+                                    checked = rememberMe,
+                                    onCheckedChange = { rememberMe = it },
+                                    colors = CheckboxDefaults.colors(
+                                        checkedColor = Color(0xFF0066FF),
+                                        uncheckedColor = Color.Gray
                                     )
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(8.dp),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = Color(0xFF0066FF),
-                                unfocusedBorderColor = Color(0xFFD1D5DB)
-                            )
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Confirm Password field
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "Confirm Password",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.DarkGray,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-
-                        OutlinedTextField(
-                            value = confirmPassword,
-                            onValueChange = { confirmPassword = it },
-                            placeholder = { Text("••••••") },
-                            singleLine = true,
-                            visualTransformation = if (showConfirmPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                            trailingIcon = {
-                                IconButton(onClick = {
-                                    showConfirmPassword = !showConfirmPassword
-                                }) {
-                                    Icon(
-                                        imageVector = if (showConfirmPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                        contentDescription = "Toggle password visibility",
-                                        tint = Color.Gray
-                                    )
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(8.dp),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = Color(0xFF0066FF),
-                                unfocusedBorderColor = Color(0xFFD1D5DB)
-                            )
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Gender selection - using your existing RadioButtonGenders function
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "What's your gender? (Optional)",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.DarkGray,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-
-                        // Using your existing radio button implementation
-                        RadioButtonGenders(
-                            gender = gender,
-                            onGenderSelected = { gender = it }
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Using your existing DatePickerField
-                    SimpleDatePickerField(
-                        selectedDate = dob,
-                        onDateSelected = { formattedDate ->
-                            dob = formattedDate
-                        }
-                    )
-
-                    // Phone Number field
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "Phone Number",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.DarkGray,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-
-                        OutlinedTextField(
-                            value = phonenumber,
-                            onValueChange = { phonenumber = it },
-                            placeholder = { Text("09123456789") },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(8.dp),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = Color(0xFF0066FF),
-                                unfocusedBorderColor = Color(0xFFD1D5DB)
-                            )
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Address field
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = "Address",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.DarkGray,
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-
-                        OutlinedTextField(
-                            value = address,
-                            onValueChange = { address = it },
-                            placeholder = { Text("Your address") },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(8.dp),
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = Color(0xFF0066FF),
-                                unfocusedBorderColor = Color(0xFFD1D5DB)
-                            )
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Remember me & Forgot Password
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Checkbox(
-                                checked = rememberMe,
-                                onCheckedChange = { rememberMe = it },
-                                colors = CheckboxDefaults.colors(
-                                    checkedColor = Color(0xFF0066FF),
-                                    uncheckedColor = Color.Gray
                                 )
-                            )
 
-                            Text(
-                                text = "Remember me",
-                                fontSize = 14.sp,
-                                color = Color.DarkGray
-                            )
-                        }
-
-                        Text(
-                            text = "Forgot Password?",
-                            fontSize = 14.sp,
-                            color = SKyberRed,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.clickable { /* Handle forgot password */ }
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Sign up button with gradient and Firebase auth
-                    Button(
-                        onClick = {
-                            val auth = FirebaseHelper.auth // Get auth from firebase singleton
-                            val database =
-                                FirebaseHelper.databaseReference // Firebase Realtime db reference
-
-                            // Additional validation for password confirmation
-                            if (password != confirmPassword) {
-                                Toast.makeText(
-                                    context,
-                                    "Passwords do not match",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                return@Button
+                                Text(
+                                    text = "Remember me",
+                                    fontSize = 14.sp,
+                                    color = Color.DarkGray
+                                )
                             }
 
-                            // Basic validation
-                            if (firstname.isEmpty() || lastname.isEmpty() || email.isEmpty() ||
-                                password.isEmpty() || dob.isEmpty() || gender.isEmpty()
-                            ) {
-                                Toast.makeText(
-                                    context,
-                                    "Please fill in all fields.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } else {
-                                isLoading = true
-                                // 1. create Firebase Auth account
-                                auth.createUserWithEmailAndPassword(email.trim(), password.trim())
-                                    .addOnCompleteListener { task ->
-                                        isLoading = false
-                                        if (task.isSuccessful) {
-                                            val currentUser = auth.currentUser
-                                            val uid = currentUser?.uid
+                            Text(
+                                text = "Forgot Password?",
+                                fontSize = 14.sp,
+                                color = SKyberRed,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.clickable { /* Handle forgot password */ }
+                            )
+                        }
 
-                                            if (uid != null) {
-                                                //2. user profile creation and save to Realtime DB using UID as key
-                                                val user = User(
-                                                    id = uid,
-                                                    firstName = firstname,
-                                                    lastName = lastname,
-                                                    email = email,
-                                                    password = password,
-                                                    birthdate = dob,
-                                                    gender = gender,
-                                                    role = role,
-                                                    phoneNumber = phonenumber,
-                                                    address = address,
-                                                    age = calculateAge(dob)
-                                                )
+                        Spacer(modifier = Modifier.height(24.dp))
 
-                                                database.child("users").child(uid).setValue(user)
-                                                    .addOnCompleteListener { dbTask ->
-                                                        if (dbTask.isSuccessful) {
-                                                            Toast.makeText(
-                                                                context,
-                                                                "Registration Successful",
-                                                                Toast.LENGTH_SHORT
-                                                            ).show()
-                                                            navController.navigate(Screens.Login.screen)
-                                                        } else {
-                                                            Toast.makeText(
-                                                                context,
-                                                                "Failed to save user data",
-                                                                Toast.LENGTH_SHORT
-                                                            ).show()
+                        // Sign up button with gradient and Firebase auth
+                        Button(
+                            onClick = {
+                                val auth = FirebaseHelper.auth // Get auth from firebase singleton
+                                val database =
+                                    FirebaseHelper.databaseReference // Firebase Realtime db reference
+
+                                // Additional validation for password confirmation
+                                if (password != confirmPassword) {
+                                    Toast.makeText(
+                                        context,
+                                        "Passwords do not match",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    return@Button
+                                }
+
+                                // Basic validation
+                                if (firstname.isEmpty() || lastname.isEmpty() || email.isEmpty() ||
+                                    password.isEmpty() || dob.isEmpty() || gender.isEmpty()
+                                ) {
+                                    Toast.makeText(
+                                        context,
+                                        "Please fill in all fields.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    isLoading = true
+                                    // 1. create Firebase Auth account
+                                    auth.createUserWithEmailAndPassword(
+                                        email.trim(),
+                                        password.trim()
+                                    )
+                                        .addOnCompleteListener { task ->
+                                            isLoading = false
+                                            if (task.isSuccessful) {
+                                                val currentUser = auth.currentUser
+                                                val uid = currentUser?.uid
+
+                                                if (uid != null) {
+                                                    //2. user profile creation and save to Realtime DB using UID as key
+                                                    val user = User(
+                                                        id = uid,
+                                                        firstName = firstname,
+                                                        lastName = lastname,
+                                                        email = email,
+                                                        password = password,
+                                                        birthdate = dob,
+                                                        gender = gender,
+                                                        role = role,
+                                                        phoneNumber = phonenumber,
+                                                        address = address,
+                                                        age = calculateAge(dob)
+                                                    )
+
+                                                    database.child("users").child(uid)
+                                                        .setValue(user)
+                                                        .addOnCompleteListener { dbTask ->
+                                                            if (dbTask.isSuccessful) {
+                                                                Toast.makeText(
+                                                                    context,
+                                                                    "Registration Successful",
+                                                                    Toast.LENGTH_SHORT
+                                                                ).show()
+                                                                navController.navigate(Screens.Login.screen)
+                                                            } else {
+                                                                Toast.makeText(
+                                                                    context,
+                                                                    "Failed to save user data",
+                                                                    Toast.LENGTH_SHORT
+                                                                ).show()
+                                                            }
                                                         }
-                                                    }
+                                                } else {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Failed to get user ID",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
                                             } else {
+                                                val errorMessage =
+                                                    task.exception?.message
+                                                        ?: "Registration failed."
                                                 Toast.makeText(
                                                     context,
-                                                    "Failed to get user ID",
+                                                    errorMessage,
                                                     Toast.LENGTH_SHORT
                                                 ).show()
                                             }
-                                        } else {
-                                            val errorMessage =
-                                                task.exception?.message ?: "Registration failed."
-                                            Toast.makeText(
-                                                context,
-                                                errorMessage,
-                                                Toast.LENGTH_SHORT
-                                            ).show()
                                         }
-                                    }
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        shape = RoundedCornerShape(25.dp),
-                        contentPadding = PaddingValues(0.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        enabled = !isLoading
-                    ) {
-                        Box(
+                                }
+                            },
                             modifier = Modifier
-                                .fillMaxSize()
-                                .background(gradientBrush),
-                            contentAlignment = Alignment.Center
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            shape = RoundedCornerShape(25.dp),
+                            contentPadding = PaddingValues(0.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                            enabled = !isLoading
                         ) {
-                            if (isLoading) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(24.dp),
-                                    color = Color.White,
-                                    strokeWidth = 2.dp
-                                )
-                            } else {
-                                Text(
-                                    text = "Create Account",
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = Color.White
-                                )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(gradientBrush),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (isLoading) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp),
+                                        color = Color.White,
+                                        strokeWidth = 2.dp
+                                    )
+                                } else {
+                                    Text(
+                                        text = "Create Account",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color.White
+                                    )
+                                }
                             }
                         }
                     }
@@ -745,11 +753,3 @@ fun RadioButtonGenders(
             }
         }
     }
-
-/*@Preview(showBackground = true, device = "id:pixel_6")
-@Composable
-fun SignupScreenPreview() {
-    SkyberTheme {
-        SignupScreen(rememberNavController())
-    }
-}*/

@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-object RetrofitClient {
+/*object RetrofitClient {
     private const val BASE_URL = "skyber.onrender.com" // For Android Emulator localhost
     // Use your computer's IP address if testing on physical device
     // private const val BASE_URL = "http://192.168.1.xxx:8080/"
@@ -31,4 +31,4 @@ object RetrofitClient {
     val api: CandidateApi by lazy {
         retrofit.create(CandidateApi::class.java)
     }
-}
+}*/
